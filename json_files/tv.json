@@ -1,0 +1,177 @@
+{
+ "cells":[
+	{
+	   "name":"B",
+	   "mainClass":"default",
+	   "txtClass":"default",
+	   "boxClass":"default",
+	   "labelClass":"default",
+	   "width":"25%",
+	   "height":"80px"
+	},
+	{
+	   "name":"C",
+	   "mainClass":"default",
+	   "txtClass":"default",
+	   "boxClass":"default",
+	   "labelClass":"default",
+	   "width":"25%",
+	   "height":"140px"
+	}
+ ]
+,
+ "options":[
+	{
+	   "name":"A",
+	   "optionName":"QTV",
+	   "attributes":[
+		  {
+			 "label":"Option A",
+			 "txt":[
+				"<img src='tva.jpg' width=100%>",
+				"<img src='5star.png' width=100%>",
+				"1000 euro"
+			 ],
+			 "box":[
+						"image",
+						"rating",
+						"price"
+					],
+					
+			"var":[ "A_img",
+					"A_star",
+					"A_price"
+					]
+
+		  }
+		],
+	   "attributeLabels":[
+		  "image",
+		  "customer rating",
+		  "price QTV"
+	   ]
+	},
+	{
+	   "name":"B",
+	   "optionName":"TV-b",
+	   "attributes":[
+		  {
+			 "label":"Option B",
+			 "txt":[
+				"<img src='tvb.jpg' width=100%>",
+				"<img src='3star.png' width=100%>",
+				"850 euro"
+			 ],
+			 "box":[
+						"image",
+						"rating",
+						"price"
+					],
+					
+			"var":[ "B_img",
+					"B_star",
+					"B_price"
+					]
+
+		  }
+	   ],
+	   "attributeLabels":[
+		   "image",
+		  "customer rating",
+		  "price QTV"
+	   ]
+	},
+	{
+	   "name":"C",
+	   "optionName":"TVC",
+	   "attributes":[
+		  {
+			 "label":"Option C",
+			 "txt":[
+				"<img src='tvc.jpg' width=100%>",
+				"<img src='5star.png' width=100%>",
+				"700 euro"
+			 ],
+			 "box":[
+						"image",
+						"rating",
+						"price"
+					],
+					
+			"var":[ "C_img",
+					"C_star",
+					"C_price"
+					]
+
+		  }
+		],
+	   "attributeLabels":[
+		  "image",
+		  "customer rating",
+		  "price QTV"
+	   ]
+	}
+ ]
+,
+ "optOrders":[
+	{
+	   "name":"order1",
+	   "items":[
+		  "A",
+		  "B"
+	   ]
+	},
+	{
+	   "name":"order2",
+	   "items":[
+		  "B",
+		  "A"
+	   ]
+	}
+	,
+	{
+	   "name":"order3",
+	   "items":[
+		  "B",
+		  "A",
+		  "C"
+	   ]
+	}
+ ]
+,
+ "sets":[
+	{
+	   "name":"Set1",
+	   "styling":"byAtt",
+	   "styleStructure":[
+				"fixAttributes"
+			],
+	   "cellFormat":[
+		  {
+			 "cellType":"C",
+			 "boxType":"blur"
+		  },
+		  {
+			 "cellType":"B",
+			 "boxType":"blur"
+		  },
+		  {
+			 "cellType":"B",
+			 "boxType":"closed"
+		  }
+		],
+	   "optOrder":[
+			 "order1",
+			 "order2",
+			 "order3"
+	   ],
+	   "attOrder":"random",
+	   "layout":"optionCol",
+	   "buttons":"on",
+	   "displayLabels":"optOnly",
+	   "addedVars":[
+		  "test=1"
+	   ]
+	}
+ ]
+}

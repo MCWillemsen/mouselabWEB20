@@ -1,0 +1,70 @@
+{
+ "cells":[
+	{
+	   "name":"A",
+	   "mainClass":"default",
+	   "txtClass":"default",
+	   "boxClass":"default",
+	   "labelClass":"default",
+	   "width":"25%",
+	   "height":"80px"
+	}
+ ]
+,
+ "options":[
+	{
+	   "name":"A",
+	   "optionName":"A",
+	   "attributes":[
+		  {
+			 "label":"Option A",
+			 "txt":[
+				"inside box 1"
+				],
+			 "box":[
+			 "outside box1"
+					],
+			"var": ["box1"]
+		  }
+		],
+	   "attributeLabels":[
+		  "attr 1"
+	   ]
+	}
+ ]
+,
+ "optOrders":[
+	{
+	   "name":"order1",
+	   "items":[
+		  "A"
+		    ]
+	}
+ ]
+,
+ "sets":[
+	{
+	   "name":"Set1",
+	   "styling":"byAtt",
+	   "styleStructure":[
+				"fixAttributes"
+			],
+	   "cellFormat":[
+		   {
+			 "cellType":"A",
+			 "boxType":"closed"
+		  }
+		],
+	   "optOrder":[
+			 "order1"		 
+	   ],
+	   "attOrder":"random",
+	   "layout":"optionCol",
+	   "buttons":"on",
+	   "displayLabels":"optOnly",
+	   "addedVars":[
+		  "test=2"
+	   ]
+	}
+ ]
+}

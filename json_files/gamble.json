@@ -1,0 +1,221 @@
+{
+ "cells":[
+	{
+	   "name":"Ap",
+	   "mainClass":"default",
+	   "txtClass":"default",
+	   "boxClass":["w3-green"],
+	   "labelClass":"default",
+	   "width":"15%",
+	   "height":"80px"
+	},
+	{
+	   "name":"A",
+	   "mainClass":"default",
+	   "txtClass":"default",
+	   "boxClass":"default",
+	   "labelClass":"default",
+	   "width":"15%",
+	   "height":"80px"
+	},
+	{
+	   "name":"B",
+	   "mainClass":"default",
+	   "txtClass":"default",
+	   "boxClass":"default",
+	   "labelClass":"default",
+	   "width":"25%",
+	   "height":"80px"
+	},
+	{
+	   "name":"C",
+	   "mainClass":"default",
+	   "txtClass":"default",
+	   "boxClass":"default",
+	   "labelClass":"default",
+	   "width":"15%",
+	   "height":"140px"
+	}
+ ]
+,
+ "options":[
+	{
+	   "name":"A",
+	   "optionName":"A",
+	   "attributes":[
+		  {
+			 "label":"outcomes A",
+			 "txt":[
+				"50 euro",
+				"60 euro",
+				"1000 euro"
+			 ],
+			 "box":[
+						"D1",
+						"D2",
+						"D3"
+			],
+			"var":[ "A_o1",
+					"A_o2",
+					"A_o3"
+					]
+		  },
+		  {
+			 "label":"probabilities A",
+			 "txt":[
+				"5%",
+				"90%",
+				"5%"
+			 ],
+			 "box":[
+						"C1",
+						"C2",
+						"C3"
+					],
+			"var":[ "A_p1",
+					"A_p2",
+					"A_p3"
+					]
+		  }
+	   ],
+	   "attributeLabels":[
+		  "outcome 1",
+		  "outcome 2",
+		  "outcome 3"
+	   ]
+	   },
+	{
+	   "name":"B",
+	   "optionName":"B",
+	   "attributes":[
+		  {
+			 "label":"outcomes B",
+			 "txt":[
+				"40 euro",
+				"90 euro",
+				"500 euro"
+			 ],
+			 "box":[
+						"B1",
+						"B2",
+						"B3"
+					],
+			"var":[ "B_o1",
+					"B_o2",
+					"B_o3"
+					]
+
+		  },
+		  {
+			 "label":"probabilities B",
+			 "txt":[
+				"10%",
+				"70%",
+				"20%"
+			 ],
+			 "box":[
+						"A1",
+						"A2",
+						"A3"
+					],
+			"var":[ "B_p1",
+					"B_p2",
+					"B_p3"
+					]
+		  }
+	   ],
+	   "attributeLabels":[
+		  "outcome 1",
+		  "outcome 2",
+		  "outcome 3"
+	   ]
+	}
+ ]
+,
+ "optOrders":[
+	{
+	   "name":"order1",
+	   "items":[
+		  "A",
+		  "B"
+	   ]
+	},
+	{
+	   "name":"order2",
+	   "items":[
+		  "B",
+		  "A"
+	   ]
+	}
+ ]
+,
+ "sets":[
+	{
+	   "name":"dynSet",
+	   "styling":"byAtt",
+	   "styleStructure":["fixAttributes"],
+	   "cellFormat":[
+		  {
+			 "cellType":"A",
+			 "boxType":"blur"
+		  },
+		  {
+			 "cellType":"Ap",
+			 "boxType":"closed"
+		  },
+		  {
+			 "cellType":"A",
+			 "boxType":"closed"
+		}
+			
+	   ],
+	   "optOrder":[
+			 "order1",
+			 "order2"
+	   ],
+	   "attOrder":"random",
+	   "layout":"optionCol",
+	   "buttons":"on",
+	   "displayLabels":"all",
+	   "addedVars":[
+		  "test=2"
+	   ]
+	},
+	{
+	   "name":"dynSet2",
+	   "styling":"byAttr",
+	   "styleStructure":["fixAttributes"],
+	   "cellFormat":[
+		  {
+			 "cellType":"Ap",
+			 "boxType":"closed"
+		  },
+		  {
+			 "cellType":"Ap",
+			 "boxType":"blur"
+		  },
+		  {
+			 "cellType":"Ap",
+			 "boxType":"closed"
+		},
+		  {
+			 "cellType":"Ap",
+			 "boxType":"blur"
+		  }
+			
+	   ],
+	   "optOrder":[
+			 "order1",
+			 "order2"
+	   ],
+	   "attOrder":"random",
+	   "layout":"attributeCol",
+	   "buttons":"on",
+	   "displayLabels":"all",
+	   "addedVars":[
+		  "test=2"
+	   ]
+	}
+ ]
+}
+
