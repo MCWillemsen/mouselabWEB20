@@ -1,9 +1,9 @@
 <?php 
 // 		create_table.php create a mouselabWEB table 
 //
-//       v 1.00b, Aug 2008
+//       v 2.00, Nov 2017
 //
-//     (c) 2003-2008 Martijn C. Willemsen and Eric J. Johnson 
+//     (c) 2003-2017 Martijn C. Willemsen and Eric J. Johnson 
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
