@@ -64,8 +64,10 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
 
         <script type="text/javascript">
 
-			// here the json file to generate the trial, for a particular set in the json file is generated. If the third attribute is set to random, it will select an (option) order at random.
+			// here the json file to generate the trial, for a particular set in the json file, is generated. 
+			// If the third attribute is set to random, it will select an (option) order at random.
 			// if you enter a number, it will choose one of the orders using modulo of that number
+			// this code generates a number from the condnum as passed via the URL
 			o=$("#condnum").val();
 			if (o<0) {o="random"};
             generateTrial("json_files/tv.json", "Set1", o);
@@ -73,15 +75,12 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
 
 
      		//function that starts the page
-			$(document).ready(function () { 
-
-				InitBoxes();
-				
-				});	
-				
-
-
-
+	$(document).ready(function () { 
+		$(".confirm").click(function (event) {
+			if (choice=="" && $(".choiceButton").length>0) {event.preventDefault();return false;}           
+			});
+		});	
+			
         </script>
     </body>
 </html>
