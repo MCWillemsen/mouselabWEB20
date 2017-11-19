@@ -228,13 +228,9 @@ function InitBoxes(){
 		timefunction("btnClick", choice, "");
 		});
 
-	$(".confirm").click(function (event) {
-		if (choice=="" && $(".choiceButton").length>0) {event.preventDefault();return false;}           
-
-	});
-		blurBoxes.forEach(function (item) {
-			$("#" + item).foggy(foggyset).show();
-			});
+	blurBoxes.forEach(function (item) {
+		$("#" + item).foggy(foggyset).show();
+		});
 
 };
 
