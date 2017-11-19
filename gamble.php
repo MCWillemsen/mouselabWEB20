@@ -72,11 +72,13 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
 			generateTrial("json_files/gamble.json", "dynSet", o);
 
             			
- 
-			//function that starts the page
-			$(document).ready(function () { 
-				InitBoxes();
-				});	
+     		//function that starts the page
+	$(document).ready(function () { 
+		$(".confirm").click(function (event) {
+			if (choice=="" && $(".choiceButton").length>0) {event.preventDefault();return false;}           
+			});
+		});	
+	
 			
 
         </script>
