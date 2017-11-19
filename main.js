@@ -84,7 +84,10 @@ function interpreter(dataInput, setInput, orderNum){
     
     //put all added variables, including condition number, in hidden input fields
     fillAddedVariables(setData);
-    
+	
+    //call InitBoxes to make the boxes active/hoverable
+	InitBoxes();
+   
    	}
 
 
