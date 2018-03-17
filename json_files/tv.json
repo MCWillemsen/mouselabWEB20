@@ -18,6 +18,12 @@
 	   "width":"25%",
 	   "height":"140px"
 	}
+	,
+	{
+		"name":"label",
+		"width":"25%",
+      "height":"30px"
+	}
  ]
 ,
  "options":[
@@ -28,8 +34,8 @@
 		  {
 			 "label":"Option A",
 			 "txt":[
-				"<img src='tva.jpg' width=100%>",
-				"<img src='5star.png' width=100%>",
+				"<img src='tva.jpg' height='90%' class='w3-display-middle'>",
+				"<img src='5star.png' height='90%' class='w3-display-middle'>",
 				"1000 euro"
 			 ],
 			 "box":[
@@ -58,8 +64,8 @@
 		  {
 			 "label":"Option B",
 			 "txt":[
-				"<img src='tvb.jpg' width=100%>",
-				"<img src='3star.png' width=100%>",
+				"<img src='tvb.jpg' height='90%' class='w3-display-middle'>",
+				"<img src='3star.png' height='90%' class='w3-display-middle'>",
 				"850 euro"
 			 ],
 			 "box":[
@@ -88,8 +94,8 @@
 		  {
 			 "label":"Option C",
 			 "txt":[
-				"<img src='tvc.jpg' width=100%>",
-				"<img src='5star.png' width=100%>",
+				"<img src='tvc.jpg' height='90%' class='w3-display-middle'>",
+				"<img src='5star.png' height='90%'  class='w3-display-middle'>",
 				"700 euro"
 			 ],
 			 "box":[

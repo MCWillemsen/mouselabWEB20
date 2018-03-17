@@ -8,6 +8,11 @@
 	   "labelClass":"default",
 	   "width":"25%",
 	   "height":"80px"
+	},
+	{
+		"name":"label",
+		"width":"25%",
+      "height":"30px"
 	}
  ]
 ,
@@ -19,10 +24,10 @@
 		  {
 			 "label":"Option A",
 			 "txt":[
-				"inside box 1"
+				"<div class='w3-display-middle'>inside box 1</div>"
 				],
 			 "box":[
-			 "outside box1"
+			 "<div class='w3-display-middle'>outside box1</div>"
 					],
 			"var": ["box1"]
 		  }

@@ -358,15 +358,31 @@ function insertStimuli(dataInput, optionInput, btnInput){
                      
                         
                         $("#" + order[i] + (cellCounter)).attr("name",varSelector);
-                        $("#" + order[i] + (cellCounter) + "_txt").append('<div class="w3-display-middle"><p>' + txtSelector + '</p></div>');
-                        $("#" + order[i] + (cellCounter) + "_box").append('<div class="w3-display-middle"><p>' + boxLabelSelector + '</p></div>');
-                    
+						//if the element uses a container like div, img or span, do not add a w3-display-middle class
+						// other add it to improve the layout
+                        if ($.inArray(txtSelector.substr(0,4).toLowerCase(),["<div","<img", "<spa"])>-1) 
+							{
+								$("#" + order[i] + (cellCounter) + "_txt").append(txtSelector);
+							}
+							else
+							{
+								$("#" + order[i] + (cellCounter) + "_txt").append('<div class="w3-display-middle"><p>' + txtSelector + '</p></div>');
+							}
+						
+						if ($.inArray(boxLabelSelector.substr(0,4).toLowerCase(),["<div","<img", "<spa"])>-1) 
+							{
+								$("#" + order[i] + (cellCounter) + "_box").append(boxLabelSelector);
+							}
+							else
+							{
+								$("#" + order[i] + (cellCounter) + "_box").append('<div class="w3-display-middle"><p>' + boxLabelSelector + '</p></div>');
+							}
                         if(i == 0){
                             if(dataInput["displayLabels"] == "attOnly" || dataInput["displayLabels"] == "all"){
                                 if(dataInput["layout"] == "attributeCol"){
-                                    $("#headerLabel" + (cellCounter) + "_txt").append('<div class="w3-display-middle"><p>' + item["attributeLabels"][txtNumber] + '</p></div>');
+                                    $("#headerLabel" + (cellCounter) + "_txt").append('<div class="w3-middle">' + item["attributeLabels"][txtNumber] + '</div>');
                                 }else{
-                                    $("#sideLabel" + (cellCounter) + "_txt").append('<div class="w3-display-middle"><p>' + item["attributeLabels"][txtNumber] + '</p></div>');
+                                    $("#sideLabel" + (cellCounter) + "_txt").append('<div class="w3-middle">' + item["attributeLabels"][txtNumber] + '</div>');
                                 }
                             }
                         }
@@ -374,9 +390,9 @@ function insertStimuli(dataInput, optionInput, btnInput){
                     
                     if(dataInput["displayLabels"] == "optOnly" || dataInput["displayLabels"] == "all"){
                         if(dataInput["layout"] == "attributeCol"){
-                            $("#sideLabel" + (sideLabelCounter) + "_txt").append('<div class="w3-display-middle"><p>' + item["attributes"][j]["label"] + '</p></div>');
+                            $("#sideLabel" + (sideLabelCounter) + "_txt").append('<div class="w3-middle">' + item["attributes"][j]["label"] + '</div>');
                         }else{
-                            $("#headerLabel" + (sideLabelCounter) + "_txt").append('<div class="w3-display-middle"><p>' + item["attributes"][j]["label"] + '</p></div>');
+                            $("#headerLabel" + (sideLabelCounter) + "_txt").append('<div class="w3-middle">' + item["attributes"][j]["label"] + '</div>');
                         }
                     }    
                 }
@@ -413,25 +429,32 @@ function shuffle(array) {
 
 
 function insertStyles(dataInput, styleInput, optionInput, orderInput){
-    
+    //get label width/height
+	styleInput.forEach(function(item){
+				if (item["name"]=="label") {
+						labelheight = item["height"];
+						labelwidth = item["width"];
+						}
+	});
+	
     if(dataInput["styling"] == "uniform"){
         var styling = dataInput["cellFormat"][0];
         //set width and height
         styleInput.forEach(function(item){
-            if(item["name"] == styling["cellType"]){
+			
+			if(item["name"] == styling["cellType"]){
                 $(".colElement").css("width", item["width"]);
                 $(".mask").css("height", item["height"]);
                 $(".textBox").css("height", item["height"]);
-                
                 if(topLabels == true || sideLabels == true){
-                    labelStyles("uniform", item["width"], item["height"]);
-                }
-                buttonStyles("uniform", item["width"], item["height"], optionInput);
+                labelStyles("uniform", item["width"], item["height"], labelwidth, labelheight);
+				}
+                buttonStyles("uniform", item["width"], item["height"],labelwidth, labelheight, optionInput);
            
             //check for default classes
              if(item["mainClass"] != "default"){
                  def = item["mainClass"];
-             }
+			 }
              if(item["txtClass"] != "default"){
                  def_txt = item["txtClass"];
              }
@@ -477,6 +500,8 @@ function insertStyles(dataInput, styleInput, optionInput, orderInput){
                       
            var numberOfCols = $("#row1").children().length;
        }
+	   
+	   
        for(k = 0; k < styling.length; k++){
            
             var styleSelector = k;
@@ -507,8 +532,8 @@ function insertStyles(dataInput, styleInput, optionInput, orderInput){
            var currentBox = styling[styleSelector]["boxType"];
            //set width and height for column based different boxes
            styleInput.forEach(function(item){
-
-                if(item["name"] == currentCell){
+				
+					if(item["name"] == currentCell){
                     //check for default classes for this column
                     if(item["mainClass"] != "default"){
                         def = item["mainClass"];
@@ -570,8 +595,9 @@ function insertStyles(dataInput, styleInput, optionInput, orderInput){
                         assignClasses(def_txt, txt, "id");
                         assignClasses(def_box, box, "id");
                         
-                        labelStyles(structuralStyling, item["width"], item["height"], (k+1), rowCounter);
-                        
+                        labelStyles(structuralStyling, item["width"],item["height"], labelwidth,labelheight, (k+1), rowCounter);
+						
+						
                        var ifButton = $("#" + selector).hasClass("buttonCell");
                         if(ifButton == false){
                             //set display for boxtypes in this column
@@ -593,17 +619,30 @@ function insertStyles(dataInput, styleInput, optionInput, orderInput){
                 }
            })
        } 
-       buttonStyles(structuralStyling, "null", "null", styleInput, styling, styleArr);
+       buttonStyles(structuralStyling, null,null,labelwidth, labelheight,styleInput, styling, styleArr);
     }
 }
 
 
 
-function labelStyles(layoutType, width, height, rowColNumber, rowCounter, newRow){
-    if(layoutType == "uniform"){
-            $(".headerElement").css("width", width);
-            $(".headerTxt").css("height", height);
-            $(".sideElement").css("width", width);
+function labelStyles(layoutType, width, height, labelwidth, labelheight, rowColNumber, rowCounter, newRow){
+    
+	if(layoutType == "uniform"){
+          
+		  if(topLabels == true){
+            if(rowColNumber == 1){
+                $("#headerLabel0").css("width", labelwidth);
+                $("headerLabel0_txt").css("height", labelheight);
+                
+                assignClasses(def, "headerLabel0", "id");
+                assignClasses(def_labelTxt, "headerLabel0_txt", "id");
+            }
+			
+			$(".headerElement").css("width", width);
+            $(".headerTxt").css("height", labelheight);
+		  }
+		  
+            $(".sideElement").css("width", labelwidth);
             $(".sideTxt").css("height", height);
             
             assignClasses(def, "headerElement", "class");
@@ -614,13 +653,19 @@ function labelStyles(layoutType, width, height, rowColNumber, rowCounter, newRow
     if(layoutType == "byRow"){
         if(rowColNumber == 1){
             $(".headerElement").css("width", width);
-            $(".headerTxt").css("height", height);
+            $(".headerTxt").css("height", labelheight);
             
             assignClasses(def, "headerElement", "class");
             assignClasses(def_labelTxt, "headerTxt", "class");
+			
+			$("#headerLabel0").css("width", labelwidth);
+                $("headerLabel0_txt").css("height", labelheight);
+                
+                assignClasses(def, "headerLabel0", "id");
+                assignClasses(def_labelTxt, "headerLabel0_txt", "id");
         }
 
-        $("#sideLabel" + rowColNumber).css("width", width);
+        $("#sideLabel" + rowColNumber).css("width", labelwidth);
         $("#sideLabel" + rowColNumber + "_txt").css("height", height);
             
         assignClasses(def, ("sideLabel" + rowColNumber), "id");
@@ -631,21 +676,21 @@ function labelStyles(layoutType, width, height, rowColNumber, rowCounter, newRow
         //console.log(rowColNumber);
         if(topLabels == true){
             if(rowColNumber == 1){
-                $("#headerLabel0").css("width", width);
-                $("headerLabel0_txt").css("height", height);
+                $("#headerLabel0").css("width", labelwidth);
+                $("headerLabel0_txt").css("height", labelheight);
                 
                 assignClasses(def, "headerLabel0", "id");
                 assignClasses(def_labelTxt, "headerLabel0_txt", "id");
             }
             
             $("#headerLabel" + rowColNumber).css("width", width);
-            $("#headerLabel" + rowColNumber + "_txt").css("height", height);
+            $("#headerLabel" + rowColNumber + "_txt").css("height", labelheight);
             
             assignClasses(def, ("headerLabel" + rowColNumber), "id");
             assignClasses(def_labelTxt, ("headerLabel" + rowColNumber + "_txt"), "id");
         }
         if(sideLabels == true && rowColNumber == 1){
-            $(".sideElement").css("width", width);
+            $(".sideElement").css("width", labelwidth);
             $(".sideTxt").css("height", height);
             
             assignClasses(def, "sideElement", "class");
@@ -656,10 +701,11 @@ function labelStyles(layoutType, width, height, rowColNumber, rowCounter, newRow
 
 
 
-function buttonStyles(layoutType, width, height, styleInput, styling, styleArr){
+function buttonStyles(layoutType, width, height, labelwidth, labelheight, styleInput, styling, styleArr){
     if(layoutType == "uniform"){
         $(".buttonCell").css("width", width);
         $(".buttonTxt").css("height", height);
+		
   
     }else if(layoutType == "byRow"){
         var countRows = $("#container").children().length;
@@ -684,6 +730,7 @@ function buttonStyles(layoutType, width, height, styleInput, styling, styleArr){
                         }else{
                             $(".buttonCell").css("width", item["width"]);
                             $(".buttonTxt").css("height", item["height"]);
+							$("#button0").css("width", labelwidth);
                         }
                     }
                 }
@@ -711,7 +758,7 @@ function buttonStyles(layoutType, width, height, styleInput, styling, styleArr){
                         if(bottomButtons == true){
                             if(i==0){
                                 if(sideLabels == true){
-                                    $("#button0").css("width", item["width"]);
+                                    $("#button0").css("width", labelwidth);
                                 }
                                 $(".buttonTxt").css("height", item["height"]);
                             }

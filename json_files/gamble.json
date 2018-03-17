@@ -35,6 +35,11 @@
 	   "labelClass":"default",
 	   "width":"15%",
 	   "height":"140px"
+	},
+	{
+		"name":"label",
+		"width":"15%",
+      "height":"30px"
 	}
  ]
 ,
