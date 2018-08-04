@@ -1,6 +1,6 @@
 // 	main.js:  central script file to generate mlweb table from json file
 //
-//       v 2.00, Nov 2017
+//       v 2.01, Nov 2017
 //		
 //     (c) 2017 Martijn C. Willemsen and Martijn ter Meulen
 //
