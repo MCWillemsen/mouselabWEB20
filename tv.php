@@ -5,7 +5,7 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
 	else {$condnum=-1;}
 ?><html>
     <head>
-        <title>Gamble</title>
+        <title>TV</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script type="text/javascript" src="main.js"></script>

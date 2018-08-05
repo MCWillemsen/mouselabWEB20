@@ -13,7 +13,7 @@
 	   "name":"C",
 	   "mainClass":"default",
 	   "txtClass":"default",
-	   "boxClass":"default",
+	   "boxClass":"default" ,
 	   "labelClass":"default",
 	   "width":"25%",
 	   "height":"140px"
@@ -23,6 +23,13 @@
 		"name":"label",
 		"width":"25%",
       "height":"30px"
+	},
+	{
+		"name":"button",
+		"btnClass":"default",
+		"btnTxt": "default",
+		"btnSel":"default", 
+		"btnNotSel":"default"
 	}
  ]
 ,
@@ -32,7 +39,7 @@
 	   "optionName":"QTV",
 	   "attributes":[
 		  {
-			 "label":"Option A",
+			 "label":"QTV",
 			 "txt":[
 				"<img src='tva.jpg' height='90%' class='w3-display-middle'>",
 				"<img src='5star.png' height='90%' class='w3-display-middle'>",
@@ -50,19 +57,14 @@
 					]
 
 		  }
-		],
-	   "attributeLabels":[
-		  "image",
-		  "customer rating",
-		  "price QTV"
-	   ]
+		]
 	},
 	{
 	   "name":"B",
 	   "optionName":"TV-b",
 	   "attributes":[
 		  {
-			 "label":"Option B",
+			 "label":"TV-b",
 			 "txt":[
 				"<img src='tvb.jpg' height='90%' class='w3-display-middle'>",
 				"<img src='3star.png' height='90%' class='w3-display-middle'>",
@@ -80,11 +82,6 @@
 					]
 
 		  }
-	   ],
-	   "attributeLabels":[
-		   "image",
-		  "customer rating",
-		  "price QTV"
 	   ]
 	},
 	{
@@ -110,14 +107,23 @@
 					]
 
 		  }
-		],
-	   "attributeLabels":[
-		  "image",
-		  "customer rating",
-		  "price QTV"
-	   ]
+		]
 	}
  ]
+ ,
+ "attributes":
+	{
+		  "labels" : [
+		  "image",
+		  "customer rating",
+		  "price"
+	   	],
+		"var" : [
+		"img", 
+		"rat", 
+		"price"
+		]
+	}
 ,
  "optOrders":[
 	{

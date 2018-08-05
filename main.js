@@ -26,13 +26,14 @@ var JSONData = [];
 var elementIdentifier;
 
 //default values of layout
-var def = ["w3-white", "w3-center", "w3-padding-4", "w3-margin-left"]; 
-var def_txt = ["w3-light-blue"];
-var def_box = ["w3-indigo"];
-var def_labelTxt = ["w3-white"];
-var def_btnTxt = ["w3-white"];
-var def_btnClass = ["w3-button", "w3-block", "w3-border", "w3-border-gray", "w3-round-xlarge"];
-var def_buttonclick = "w3-blue w3-hover-blue";
+var def = ["w3-white", "w3-center", "w3-padding-4", "w3-margin-left"];  //general layout and space between boxes
+var def_txt = ["w3-light-blue"]; // properties of the inside color and text in a box
+var def_box = ["w3-indigo"]; // properties of the outside color and text on a box
+var def_labelTxt = ["w3-white"]; // properties of the background and text color of labels
+var def_btnTxt = ["w3-white"]; // properties of the background and text color of buttons
+var def_btnClass = ["w3-button", "w3-block", "w3-border", "w3-border-gray", "w3-round-xlarge"]; // button type and style
+var def_btnNotSel = ["w3-light-blue"]; //color of button when not selected
+var def_btnSel = ["w3-blue", "w3-hover-blue"]; //color of button when selected
 
 var topLabels = false;
 var sideLabels = false;
@@ -42,16 +43,18 @@ var numRows = 0;
 var numCols = 0;
 var totalRows = 0;
 var totalCols = 0;
-
-    
+var jsonFile = "";
+var set = "";   
 
 
 //Main function to call from LimeSurvey or standalon HTML page --> jsonIdentifier is the filename, trialIdentifier is the name of the set element (trial) to call
 function generateTrial(jsonUrl, trialIdentifier, orderNum){
-   
+   //store values for datafile
+   jsonFile = jsonUrl;
+   set = trialIdentifier;  
    //retrieve data from json file
   var retrieveData = $.getJSON(jsonUrl); 
-  set = trialIdentifier;  
+  
     retrieveData.done(function(JSONdata){
         interpreter(JSONdata, trialIdentifier, orderNum);
     })
@@ -72,10 +75,12 @@ function interpreter(dataInput, setInput, orderNum){
     //insert the basic structure (columns and rows)
     var orderData = dataInput["optOrders"];
     var optionData = dataInput["options"];
-    insertStructure(setData, orderData, optionData, orderNum);
+	var attrLabels = dataInput["attributes"];
+	
+    insertStructure(setData, orderData, optionData, attrLabels, orderNum);
     
     //insert stimuli/text in the boxes
-    insertStimuli(setData, optionData);
+    insertStimuli(setData, optionData, attrLabels);
     
     
     //insert styling (width, blur, closed boxes, classes etc.)
@@ -93,7 +98,7 @@ function interpreter(dataInput, setInput, orderNum){
 
 
 //Main function for displaying the structure (rows and columns
-function insertStructure(dataInput, orderInput, optionInput, orderNum){
+function insertStructure(dataInput, orderInput, optionInput, attrInput, orderNum){
     //retrieve the order and resolve random is necessary
     if(orderNum == "random"){
         orderNum = getRandom(0, (dataInput["optOrder"].length-1));
@@ -109,7 +114,7 @@ function insertStructure(dataInput, orderInput, optionInput, orderNum){
     
     //call the main structural functions
     insertRows(dataInput, orderInput, optionInput);
-    insertColumns(dataInput, orderInput, optionInput);
+    insertColumns(dataInput, orderInput, optionInput, attrInput);
 }
 
 
@@ -131,7 +136,7 @@ function convertToNumeric(inputArray, outputArray){
 
 
 //insert rows and define strucural elements (number of rows and number of columns for the inversed stimuli alignment)
-function insertRows(dataInput, orderInput, optionInput, btnInput){
+function insertRows(dataInput, orderInput, optionInput){
     var numOptions = order.length;
     var rowCounter = 0;
     var rowArray;
@@ -142,7 +147,7 @@ function insertRows(dataInput, orderInput, optionInput, btnInput){
         optionInput.forEach(function(item){
             if(item["name"] == currentOption){
                 rowArray = item["attributes"];
-                
+                				
                 if(dataInput["layout"] == "attributeCol"){
                     totalRows = totalRows + (rowArray.length);
                     if((dataInput['displayLabels'] == "all" || dataInput['displayLabels'] == "attOnly") && i==0){
@@ -185,7 +190,7 @@ function insertRows(dataInput, orderInput, optionInput, btnInput){
 
 
 //Insert columns
-function insertColumns(dataInput, orderInput, optionInput){
+function insertColumns(dataInput, orderInput, optionInput,attrInput){
     var numOptions = order.length;
     var rowCounter = 0;
     var colCounter = 0;
@@ -218,9 +223,11 @@ function insertColumns(dataInput, orderInput, optionInput){
                     }else{
                         numCols = colArray.length;
 						rowCounter = (j+1);
-                        var sideLabelIdentifier = item["attributeLabels"][j];
+                        var sideLabelIdentifier = attrInput["labels"][j];
+												
                     }
                     
+					
                     for(k=0; k < numCols; k++){
                         colCounter++;
                         if(dataInput["layout"]=="attributeCol"){
@@ -298,7 +305,7 @@ function insertColumns(dataInput, orderInput, optionInput){
 
 
 //insert stimuli in the boxes
-function insertStimuli(dataInput, optionInput, btnInput){
+function insertStimuli(dataInput, optionInput, attrInput){
     var randomTxtArray = [];
     var workingArray = [];
     var txtNumber;
@@ -352,7 +359,7 @@ function insertStimuli(dataInput, optionInput, btnInput){
                                     attributeOrder += "/";
                                     attNumericOrder += "/";
                                 }
-                                attributeOrder += item["attributeLabels"][txtNumber];
+                                attributeOrder += attrInput["var"][txtNumber];
                                 attNumericOrder += txtNumber;
                             }
                      
@@ -380,9 +387,9 @@ function insertStimuli(dataInput, optionInput, btnInput){
                         if(i == 0){
                             if(dataInput["displayLabels"] == "attOnly" || dataInput["displayLabels"] == "all"){
                                 if(dataInput["layout"] == "attributeCol"){
-                                    $("#headerLabel" + (cellCounter) + "_txt").append('<div class="w3-middle">' + item["attributeLabels"][txtNumber] + '</div>');
+                                    $("#headerLabel" + (cellCounter) + "_txt").append('<div class="w3-middle">' + attrInput["labels"][txtNumber] + '</div>');
                                 }else{
-                                    $("#sideLabel" + (cellCounter) + "_txt").append('<div class="w3-middle">' + item["attributeLabels"][txtNumber] + '</div>');
+                                    $("#sideLabel" + (cellCounter) + "_txt").append('<div class="w3-middle">' + attrInput["labels"][txtNumber] + '</div>');
                                 }
                             }
                         }
@@ -396,7 +403,7 @@ function insertStimuli(dataInput, optionInput, btnInput){
                         }
                     }    
                 }
-                $("#button" + item["name"] + "_txt").append('<button type="button" class="choiceButton" id="' + item["optionName"] + '" name="choice" value="' + item["optionName"] + '">' + item["optionName"] + '</button>'); 
+                $("#button" + item["name"] + "_txt").append('<button type="button" class="choiceButton" id="' + item["name"] + '" name="choice" value="' + item["name"] + '">' + item["optionName"] + '</button>'); 
                 
             }
         });
@@ -429,12 +436,24 @@ function shuffle(array) {
 
 
 function insertStyles(dataInput, styleInput, optionInput, orderInput){
-    //get label width/height
+    //get global label width/height and btnStyles 
+	console.log(styleInput);
 	styleInput.forEach(function(item){
 				if (item["name"]=="label") {
 						labelheight = item["height"];
 						labelwidth = item["width"];
 						}
+				// get button styles and assign them
+				if (item["name"]=="button") {
+					if(item["btnClass"] != "default"){
+					def_btnClass = item["btnClass"];}
+				 if(item["btnTxt"] != "default"){
+                 def_btnTxt = item["btnTxt"];}
+				 if(item["btnSel"] != "default"){
+                 btnSel = item["btnSel"];}
+				 if(item["btnNotSel"] != "default"){
+                 btnNotSel = item["btnNotSel"];}
+				}
 	});
 	
     if(dataInput["styling"] == "uniform"){
@@ -449,7 +468,7 @@ function insertStyles(dataInput, styleInput, optionInput, orderInput){
                 if(topLabels == true || sideLabels == true){
                 labelStyles("uniform", item["width"], item["height"], labelwidth, labelheight);
 				}
-                buttonStyles("uniform", item["width"], item["height"],labelwidth, labelheight, optionInput);
+                buttonStyles("uniform", item["width"], item["height"],labelwidth, labelheight);
            
             //check for default classes
              if(item["mainClass"] != "default"){
@@ -537,23 +556,15 @@ function insertStyles(dataInput, styleInput, optionInput, orderInput){
                     //check for default classes for this column
                     if(item["mainClass"] != "default"){
                         def = item["mainClass"];
-                    }else{
-                        def = ["w3-white", "w3-center", "w3-padding-4", "w3-margin-left"]; 
                     }
                     if(item["txtClass"] != "default"){
                         def_txt = item["txtClass"];
-                    }else{
-                        def_txt = ["w3-light-blue"];
                     }
                     if(item["boxClass"] != "default"){
                         def_box = item["boxClass"];
-                    }else{
-                        def_box = ["w3-indigo"];
                     }
                     if(item["labelClass"] != "default"){
                         def_labelTxt = item["labelClass"];
-                    }else{
-                        def_labelTxt = ["w3-white"];
                     }
                     //check if styling is by column, row or both
                     if(structuralStyling == "byRow"){
@@ -781,23 +792,27 @@ function buttonStyles(layoutType, width, height, labelwidth, labelheight, styleI
             });
         } 
     }
+	
     assignClasses(def, ("buttonCell"), "class");
     assignClasses(def_btnTxt, ("buttonTxt"), "class");
-    assignClasses(def_btnClass, ("choiceButton"), "class");   
+    assignClasses(def_btnClass, ("choiceButton"), "class");  
+	assignClasses(def_btnNotSel, ("choiceButton"), "class");  // set all buttons to not selected
 }
 
 
 
 function assignClasses(classInput, divElement, elementType){
     for(j=0; j < classInput.length; j++){
-        if(elementType == "id"){
-            $("#" + divElement).addClass(classInput[j]);
-        }else{
-            $("." + divElement).addClass(classInput[j]);
-        }    
-    }
+        if(elementType == "id"){var sel = "#"} else {var sel="."}; 
+			 $(sel + divElement).addClass(classInput[j]);
+        }
 }
-
+function removeClasses(classInput, divElement, elementType){
+    for(j=0; j < classInput.length; j++){
+        if(elementType == "id"){var sel = "#"} else {var sel="."}; 
+			 $(sel + divElement).removeClass(classInput[j]);
+        }
+    }
 
 
 //add all the extra variables as a hidden input
@@ -824,6 +839,7 @@ function fillAddedVariables(dataInput){
     }
     $("#mlwebform").append('<input type=hidden name="optionOrder" value="' + orderString + '">');
     $("#mlwebform").append('<input type=hidden name="attributeOrder" value="' + attributeOrder + '">');
+	$("#mlwebform").append('<input type=hidden name="jsonfile" value="' + jsonFile + '">');
 	$("#mlwebform").append('<input type=hidden name="set" value="' + set + '">');
 	
 }

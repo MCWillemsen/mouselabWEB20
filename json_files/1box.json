@@ -13,13 +13,20 @@
 		"name":"label",
 		"width":"25%",
       "height":"30px"
+	},
+	{
+		"name":"button",
+		"btnClass":"default",
+		"btnTxt": "default",
+		"btnSel":"default", 
+		"btnNotSel":"default"
 	}
  ]
 ,
  "options":[
 	{
 	   "name":"A",
-	   "optionName":"A",
+	   "optionName":"Option A",
 	   "attributes":[
 		  {
 			 "label":"Option A",
@@ -31,12 +38,19 @@
 					],
 			"var": ["box1"]
 		  }
-		],
-	   "attributeLabels":[
-		  "attr 1"
-	   ]
+		]
 	}
  ]
+ ,
+"attributes":
+	{
+		  "labels" : [
+		  "box1"
+	   	],
+		"var" : [
+		"b1"
+		]
+	}
 ,
  "optOrders":[
 	{

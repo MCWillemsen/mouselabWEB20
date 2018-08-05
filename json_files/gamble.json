@@ -4,7 +4,7 @@
 	   "name":"Ap",
 	   "mainClass":"default",
 	   "txtClass":"default",
-	   "boxClass":["w3-green"],
+	   "boxClass":["w3-green", "w3-large"],
 	   "labelClass":"default",
 	   "width":"15%",
 	   "height":"80px"
@@ -40,6 +40,14 @@
 		"name":"label",
 		"width":"15%",
       "height":"30px"
+	}
+	,
+	{
+		"name":"button",
+		"btnClass":"default",
+		"btnTxt": "default",
+		"btnSel":"default", 
+		"btnNotSel":"default"
 	}
  ]
 ,
@@ -82,11 +90,6 @@
 					"A_p3"
 					]
 		  }
-	   ],
-	   "attributeLabels":[
-		  "outcome 1",
-		  "outcome 2",
-		  "outcome 3"
 	   ]
 	   },
 	{
@@ -128,15 +131,25 @@
 					"B_p3"
 					]
 		  }
-	   ],
-	   "attributeLabels":[
-		  "outcome 1",
-		  "outcome 2",
-		  "outcome 3"
 	   ]
 	}
  ]
-,
+ ,
+"attributes":
+	{
+		  "labels" : [
+		  "outcome 1",
+		  "outcome 2",
+		  "outcome 3"
+	   	],
+		"var" : [
+		"o1", 
+		"o2", 
+		"o3"
+		]
+	}
+
+ ,
  "optOrders":[
 	{
 	   "name":"order1",
@@ -157,7 +170,7 @@
  "sets":[
 	{
 	   "name":"dynSet",
-	   "styling":"byAtt",
+	   "styling":"byAttr",
 	   "styleStructure":["fixAttributes"],
 	   "cellFormat":[
 		  {

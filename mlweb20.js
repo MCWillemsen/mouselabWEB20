@@ -220,16 +220,28 @@ function InitBoxes(){
 
 	});
 
+	
+
 	$("#container .choiceButton").click(function (event) {
+		// remove previous choice style if one has been made
+		if (choice!="") {removeClasses(def_btnSel, $("#"+choice).attr("id"), "id");
+		assignClasses(def_btnNotSel, $("#"+choice).attr("id"), "id");}
+		//save choice in gloval var and add to form
 		choice = $(this).val();
 		$("#choice").val(choice);
-		$(".choiceButton").removeClass(def_buttonclick);
-		$(this).addClass(def_buttonclick);
+		removeClasses(def_btnNotSel, $(this).attr("id"), "id");
+		assignClasses(def_btnSel, $(this).attr("id"), "id");
 		timefunction("btnClick", choice, "");
 		});
 
 	blurBoxes.forEach(function (item) {
-		$("#" + item).foggy(foggyset).show();
+		
+		if (item==".textBox") 
+		{// for uniform styles use class to blur 
+			$(item).foggy(foggyset).show();}
+		else{
+		//otherwise only blur specific items	
+		$("#" + item).foggy(foggyset).show();}
 		});
 
 };
