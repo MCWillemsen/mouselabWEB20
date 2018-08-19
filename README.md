@@ -7,14 +7,15 @@ This github contains a beta version of mouselabWEB 2.0. What are the important n
 - works with a touch screen 
 - using blurring on boxes rather than a box covering the information
 - new mysqli code compatible with newer php versions in the php scripts
+- this version: delays
 ------------------
 # Demo
 Go the the following link to test a demo version (enter your own identifier in the "subject=" part)
-http://www.mouselabweb.org/MLWEB20demo/tv.php?subject=test&condnum=0
+http://www.mouselabweb.org/mouselabWEB20-withDelays/tv.php?subject=test&condnum=0
 Use condnum to see different versions of the orders or use condnum=-1 to determine this randomly
 
 Check for the data:
-http://www.mouselabweb.org/MLWEB20demo/datalyser.php 
+http://www.mouselabweb.org/mouselabWEB20-withDelays/datalyser.php 
 
 ------------------
 # Installation
