@@ -24,6 +24,7 @@ var attributeOrder = "";
 var attNumericOrder = "";
 var JSONData = [];
 var elementIdentifier;
+var delayMatrix = [];
 
 //default values of layout
 var def = ["w3-white", "w3-center", "w3-padding-4", "w3-margin-left"];  //general layout and space between boxes
@@ -76,7 +77,16 @@ function interpreter(dataInput, setInput, orderNum){
     var orderData = dataInput["optOrders"];
     var optionData = dataInput["options"];
 	var attrLabels = dataInput["attributes"];
+	var delayData = dataInput["delay"];
 	
+	//create delaymatrix
+	for( var i = 0; i<delayData["var"].length;i++)
+	{
+			delayMatrix[delayData["var"][i]] = [];
+		for( var j = 0; j<delayData["var"].length;j++)
+		{delayMatrix[delayData["var"][i]][delayData["var"][j]]=delayData["delays"][i][j];}
+	}
+		
     insertStructure(setData, orderData, optionData, attrLabels, orderNum);
     
     //insert stimuli/text in the boxes
@@ -363,7 +373,7 @@ function insertStimuli(dataInput, optionInput, attrInput){
                                 attNumericOrder += txtNumber;
                             }
                      
-                        
+                        						
                         $("#" + order[i] + (cellCounter)).attr("name",varSelector);
 						//if the element uses a container like div, img or span, do not add a w3-display-middle class
 						// other add it to improve the layout
@@ -437,7 +447,7 @@ function shuffle(array) {
 
 function insertStyles(dataInput, styleInput, optionInput, orderInput){
     //get global label width/height and btnStyles 
-	console.log(styleInput);
+	
 	styleInput.forEach(function(item){
 				if (item["name"]=="label") {
 						labelheight = item["height"];
@@ -489,17 +499,20 @@ function insertStyles(dataInput, styleInput, optionInput, orderInput){
         //add the classes
         assignClasses(def, "colElement", "class");
         assignClasses(def_txt, "textBox", "class");
-        assignClasses(def_box, "mask", "class");
+        if(styling["boxType"] == "blur")
+		{assignClasses(def_txt, "mask", "class");}
+		else
+		{assignClasses(def_box, "mask", "class");}
        
         //set display for boxtypes
-           if(styling["boxType"] == "closed"){
+           if(styling["boxType"] != "open"){
                 $(".textBox").css("display", "none");
             }else{
                $(".mask").css("display", "none");
             }
             if(styling["boxType"] == "blur"){
-                blurBoxes.push(".textBox");
-                $(".mask").remove();
+                blurBoxes.push(".mask");
+                //$(".mask").remove();
             }
             if(styling["boxType"] != "open"){
                 $(".colElement").addClass("Hoverable")
@@ -604,7 +617,7 @@ function insertStyles(dataInput, styleInput, optionInput, orderInput){
                         //add classes to the items in this column
                         assignClasses(def, selector, "id");
                         assignClasses(def_txt, txt, "id");
-                        assignClasses(def_box, box, "id");
+                        if(currentBox == "blur") {assignClasses(def_txt, box, "id");} else {assignClasses(def_box, box, "id");}
                         
                         labelStyles(structuralStyling, item["width"],item["height"], labelwidth,labelheight, (k+1), rowCounter);
 						
@@ -612,15 +625,16 @@ function insertStyles(dataInput, styleInput, optionInput, orderInput){
                        var ifButton = $("#" + selector).hasClass("buttonCell");
                         if(ifButton == false){
                             //set display for boxtypes in this column
-                            if(currentBox == "closed"){
+                            if(currentBox != "open"){
                                 $("#" + txt).css("display", "none");
                             }else{
                                 $("#" + box).css("display", "none");
                             }
 
                             if(currentBox == "blur"){
-                                blurBoxes.push(txt);
-                                $("#" + box).remove();
+                                if (typeof selector !== "undefined") {blurBoxes.push(box);}
+								
+                                //$("#" + box).remove();
                             }
                             if(currentBox != "open"){
                                 $("#" + selector).addClass("Hoverable");

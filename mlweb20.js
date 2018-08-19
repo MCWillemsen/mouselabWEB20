@@ -39,6 +39,7 @@ var foggyset = {
 };
 
 currentid = "";
+previd = "";
 
 
 
@@ -152,22 +153,24 @@ function hideBox(bid, evt)
 	
 	if ($("#" + bid + "_box").length)
 	{
-		$("#" + bid + "_box").show();
-		$("#" + bid + "_txt").hide();
+		$("#" + bid + "_box").finish().show();
+		$("#" + bid + "_txt").finish().hide();
 	} else
 	{
 		$("#" + bid + "_txt").foggy(foggyset);
 	}
 }
 
-function showBox(bid, evt)
+function showBox(bid, evt, delay)
 {
 	timefunction(evt, $("#"+bid).attr("name"), "");
 	//blur if not _box div
 	if ($("#" + bid + "_box").length)
 	{
-		$("#" + bid + "_box").hide();
-		$("#" + bid + "_txt").show();
+		$("#" + bid + "_box").fadeOut(0.9*delay, function() {
+		$("#" + bid + "_txt").fadeIn(0.1*delay);}
+			);
+		
 	} else
 	{
 		$("#" + bid + "_txt").foggy(false);
@@ -188,8 +191,11 @@ function InitBoxes(){
 				hideBox(currentid, 'mouseout')
 			}
 			;
-			currentid = $(this).attr("id"); // stores the current open box 
-			showBox(currentid, 'mouseover');
+			currentid = $(this).attr("id");
+			if (previd == "") {previd=currentid;}
+			var delay = delayMatrix[$("#"+previd).attr("name")][$("#"+currentid).attr("name")];
+			// stores the current open box 
+			showBox(currentid, 'mouseover', delay);
 		},
 		touchstart: function (event) {
 			event.preventDefault();
@@ -197,12 +203,15 @@ function InitBoxes(){
 				hideBox(currentid, 'touchout')
 			}
 			;
-			currentid = $(this).attr("id"); // stores the current open box 
-			showBox(currentid, 'touchover');
+			currentid = $(this).attr("id");
+			if (previd == "") {previd=currentid;}
+			var delay = delayMatrix[$("#"+previd).attr("name")][$("#"+currentid).attr("name")];
+			showBox(currentid, 'touchover', delay);
 		},
 		mouseleave: function () {
 			if (currentid == "")
 				return false;
+			previd = currentid; 
 			currentid = "";
 			hideBox($(this).attr("id"), 'mouseout')
 		},
@@ -210,12 +219,9 @@ function InitBoxes(){
 			event.preventDefault();
 			if (currentid == "")
 				return false;
+			previd = currentid; 
 			currentid = "";
 			hideBox($(this).attr("id"), 'touchout')
-		},
-		dblclick: function () {
-
-			alert($("#" + $(this).attr("id") + "_txt").html());
 		}
 
 	});
@@ -236,11 +242,15 @@ function InitBoxes(){
 
 	blurBoxes.forEach(function (item) {
 		
-		if (item==".textBox") 
+		if (item==".mask") 
 		{// for uniform styles use class to blur 
-			$(item).foggy(foggyset).show();}
+		$("div[id$='_box']").each(function (i) {$(this).html($("#"+$(this).attr("id").replace("box","txt")).html());});		
+		$(item).foggy(foggyset).show();
+			}
 		else{
-		//otherwise only blur specific items	
+		//otherwise only blur specific items
+		// but first swap content from each _txt box to _box 	
+		$("#" + item).html($("#"+item.replace("box","txt")).html());
 		$("#" + item).foggy(foggyset).show();}
 		});
 
