@@ -72,9 +72,13 @@ $sqlquery = "INSERT INTO $table (id, expname, subject, ip, condnum, choice, subm
 $result = mysqli_query($link, $sqlquery);
 mysqli_close($link);
 
+// overrule session variable with form output
+if ($_SESSION['subject']!=$subject) {$_SESSION['subject']=$subject;}
+if ($_SESSION['condnum']!=$condnum) {$_SESSION['condnum']=$condnum;}
+
 /* Redirect to a different page in the current directory that was requested */
 $host  = $_SERVER['HTTP_HOST'];
 $uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-header("Location: http://$host$uri/$nextURL?subject=$subject&condnum=$condnum");
+header("Location: http://$host$uri/$nextURL");
 exit;
 ?>

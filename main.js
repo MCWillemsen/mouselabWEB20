@@ -1,8 +1,8 @@
 // 	main.js:  central script file to generate mlweb table from json file
 //
-//       v 2.01, Nov 2017
+//       v 2.1, July 2019 (more flexible JSON files)
 //		
-//     (c) 2017 Martijn C. Willemsen and Martijn ter Meulen
+//     (c) 2019 Martijn C. Willemsen and Martijn ter Meulen
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ var elementIdentifier;
 var delayMatrix = [];
 
 //default values of layout
-var def = ["w3-white", "w3-center", "w3-padding-4", "w3-margin-left"];  //general layout and space between boxes
+var def = ["w3-white", "w3-center"];  //general layout and space between boxes
 var def_txt = ["w3-light-blue"]; // properties of the inside color and text in a box
 var def_box = ["w3-indigo"]; // properties of the outside color and text on a box
 var def_labelTxt = ["w3-white"]; // properties of the background and text color of labels
@@ -41,7 +41,7 @@ var sideLabels = false;
 var bottomButtons = false;
 var sideButtons = false;
 var numRows = 0;
-var numCols = 0;
+var numCols =0;
 var totalRows = 0;
 var totalCols = 0;
 var jsonFile = "";
@@ -75,10 +75,13 @@ function interpreter(dataInput, setInput, orderNum){
     
     //insert the basic structure (columns and rows)
     var orderData = dataInput["optOrders"];
-    var optionData = dataInput["options"];
-	var attrLabels = dataInput["attributes"];
+    var optionData = dataInput["opt"];
+	var attrData = dataInput["attr"];
+	var cellData = dataInput["cell"];
 	var delayData = dataInput["delay"];
+	var styleInput = dataInput["styles"];
 	
+    console.log(optionData, attrData)
 	//create delaymatrix
 	for( var i = 0; i<delayData["var"].length;i++)
 	{
@@ -87,15 +90,14 @@ function interpreter(dataInput, setInput, orderNum){
 		{delayMatrix[delayData["var"][i]][delayData["var"][j]]=delayData["delays"][i][j];}
 	}
 		
-    insertStructure(setData, orderData, optionData, attrLabels, orderNum);
+    insertStructure(setData, orderData, optionData, attrData, orderNum);
     
     //insert stimuli/text in the boxes
-    insertStimuli(setData, optionData, attrLabels);
+    insertStimuli(setData, optionData, attrData, cellData,styleInput);
     
     
     //insert styling (width, blur, closed boxes, classes etc.)
-    var styleInput = dataInput["cells"];
-    insertStyles(setData, styleInput, optionData, orderData);
+    //insertStyles(setData, styleInput, optionData, attrData, cellData);
     
     //put all added variables, including condition number, in hidden input fields
     fillAddedVariables(setData);
@@ -123,7 +125,7 @@ function insertStructure(dataInput, orderInput, optionInput, attrInput, orderNum
     });
     
     //call the main structural functions
-    insertRows(dataInput, orderInput, optionInput);
+    insertRows(dataInput, orderInput, optionInput, attrInput);
     insertColumns(dataInput, orderInput, optionInput, attrInput);
 }
 
@@ -146,38 +148,33 @@ function convertToNumeric(inputArray, outputArray){
 
 
 //insert rows and define strucural elements (number of rows and number of columns for the inversed stimuli alignment)
-function insertRows(dataInput, orderInput, optionInput){
+function insertRows(dataInput, orderInput, optionInput, attrInput){
     var numOptions = order.length;
     var rowCounter = 0;
     var rowArray;
      
     for(i=0; i<numOptions; i++){ //drie keer voor iedere optie
         var currentOption = order[i];
-                  
-        optionInput.forEach(function(item){
-            if(item["name"] == currentOption){
-                rowArray = item["attributes"];
-                				
-                if(dataInput["layout"] == "attributeCol"){
-                    totalRows = totalRows + (rowArray.length);
+		
+         if(dataInput["layout"] == "attributeCol"){
+					totalRows = optionInput.length;
+					totalCols = attrInput.length;
+		
                     if((dataInput['displayLabels'] == "all" || dataInput['displayLabels'] == "attOnly") && i==0){
                         topLabels = true;
                     }
                     
                 }else{
-                    for(n=0; n<rowArray.length; n++){
-                        if(rowArray[n]["txt"].length > numRows){
-                            totalRows = rowArray[n]["txt"].length;
-                        }  
-                    }
-                    if((dataInput['displayLabels'] == "all" || dataInput['displayLabels'] == "optOnly") && i==0){
-                        topLabels = true;
-                    }
+                    totalRows = attrInput.length;
+					totalCols = optionInput.length;
+					
+                        if((dataInput['displayLabels'] == "all" || dataInput['displayLabels'] == "optOnly") && i==0){
+                        topLabels = true;  }
                 }
-            }
-        });
-    }
-        
+			}
+         ;
+    
+        //console.log(totalCols,totalRows)
     for(j=0; j<totalRows; j++){
         rowCounter++;
                       
@@ -207,36 +204,33 @@ function insertColumns(dataInput, orderInput, optionInput,attrInput){
     var colConstraint = 0;
     var optionCounter = 0;
     var topLabelCounter = 0;
-    var numTopLabels = 0;
     
     for(i=0; i<numOptions; i++){ 
         var currentOption = order[i];
         
         optionInput.forEach(function(item){
             if(item["name"] == currentOption){
-                var colArray = item["attributes"];
                 colCounter = 0;
-				
-                if(dataInput["layout"] == "attributeCol"){
-                    numRows = item["attributes"].length;
+		
+			if(dataInput["layout"] == "attributeCol"){
+                    numRows = 1;
                 }else{
                     numRows = totalRows;
-                    numTopLabels = (topLabelCounter + item["attributes"].length);
+                    //numTopLabels = (topLabelCounter + item["attributes"].length);
                 }
-                
                 for(j=0; j<numRows; j++){
                     
                     if(dataInput["layout"]=="attributeCol"){
-                        numCols = colArray[j]["txt"].length;
-                        rowCounter++;
-                        var sideLabelIdentifier = item["attributes"][j]["label"];
+                        numCols=totalCols;
+						rowCounter++;
+                        //check if this works with order
+				//		var sideLabelIdentifier = optionInput[j]["label"];
                     }else{
-                        numCols = colArray.length;
-						rowCounter = (j+1);
-                        var sideLabelIdentifier = attrInput["labels"][j];
+                       numCols = 1;
+					   rowCounter = (j+1);
+                    //    var sideLabelIdentifier = attrInput[j]["label"];
 												
-                    }
-                    
+                    }                    
 					
                     for(k=0; k < numCols; k++){
                         colCounter++;
@@ -252,15 +246,14 @@ function insertColumns(dataInput, orderInput, optionInput,attrInput){
                             }
                         }
                        
-                        if(topLabels == true && j==0 && ((dataInput["layout"] == "optionCol" && topLabelCounter < numTopLabels) || (dataInput["layout"] == "attributeCol" && i == 0))){
+                        if(topLabels == true && j==0 && ((dataInput["layout"] == "optionCol" && topLabelCounter < totalCols) || (dataInput["layout"] == "attributeCol" && i == 0))){
                             topLabelCounter++;
                             $("#headerLabels").append('<div id="headerLabel' + (topLabelCounter) + '" class="headerElement w3-col"></div>');
                             $("#headerLabel" + (topLabelCounter)).append('<div id="headerLabel' + (topLabelCounter) + '_txt" class="headerTxt w3-display-container"></div>');
                         }
                         
 						$("#row" + rowCounter).append('<div id="' + currentOption + (colSelector) + '" class="colElement w3-col"></div>');
-                        $("#" + currentOption + (colSelector)).append('<div id="' + currentOption + (colSelector) + '_txt" class="w3-display-container textBox"></div>');
-                        $("#" + currentOption + (colSelector)).append('<div id="' + currentOption + (colSelector) + '_box" class="w3-display-container mask"></div>');   
+                         
                     }
                        
                    
@@ -285,12 +278,12 @@ function insertColumns(dataInput, orderInput, optionInput,attrInput){
             $("#buttons").append('<div id="button' + currentOption + '" class="buttonCell w3-col"></div>');
             $("#button" + (currentOption)).append('<div id="button' + (currentOption) + '_txt" class="buttonTxt w3-display-container"></div>');
 
-            if(numCols > 1 && dataInput["layout"] == "optionCol"){
-                for(q = 1; q < numCols; q++){
-                    $("#buttons").append('<div class="buttonCell w3-col buttonSpace"></div>');
-                }
+            //if(totalCols > 1 && dataInput["layout"] == "optionCol"){
+            //    for(q = 1; q < totalCols; q++){
+            //        $("#buttons").append('<div class="buttonCell w3-col buttonSpace"></div>');
+            //    }
                 
-            }
+            //}
         }  
     }
     if(sideButtons == true){
@@ -299,23 +292,23 @@ function insertColumns(dataInput, orderInput, optionInput,attrInput){
             rowBtnCounter++;
             $("#row" + (rowBtnCounter)).append('<div id="button' + order[l] + '" class="buttonCell w3-col"></div>');
             $("#button" + order[l]).append('<div id="button' + order[l] + '_txt" class=" buttonTxt w3-display-container"></div>');
-            optionInput.forEach(function(object){
-                if((object["name"] == order[l]) && (object["attributes"].length > 1) && (dataInput["layout"] == "attributeCol")){
-                    for(m=1; m<object["attributes"].length; m++){
-                        rowBtnCounter++;
-                          $("#row" + (rowBtnCounter)).append('<div class="buttonCell w3-col buttonSpace"></div>');
-                    }
-                }
-            })
+            //optionInput.forEach(function(object){
+                //if((object["name"] == order[l]) && (object["attributes"].length > 1) && (dataInput["layout"] == "attributeCol")){
+                //    for(m=1; m<object["attributes"].length; m++){
+                //        rowBtnCounter++;
+              //            $("#row" + (rowBtnCounter)).append('<div class="buttonCell w3-col buttonSpace"></div>');
+              //      }
+              //  }
+            //})
         }
     }
-    $(".buttonSpace").append('<div class="buttonTxt w3-display-container"></div>');
+    //$(".buttonSpace").append('<div class="buttonTxt w3-display-container"></div>');
 }
 
 
 
 //insert stimuli in the boxes
-function insertStimuli(dataInput, optionInput, attrInput){
+function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput){
     var randomTxtArray = [];
     var workingArray = [];
     var txtNumber;
@@ -331,89 +324,281 @@ function insertStimuli(dataInput, optionInput, attrInput){
                 
             if(item["name"] == order[i]){
                 var cellCounter = 0;
-                
+                currentOption=order[i];
+				//shuffle labels
                 if(i==0 && dataInput["attOrder"]=="random"){
-                    for(h=0; h<(item["attributes"][0]["txt"]).length; h++){
+                    for(h=0; h<attrInput.length; h++){
                         workingArray.push(h);
                     }
                     randomTxtArray = shuffle(workingArray);
                 }
                 
-                for(j=0; j<(item["attributes"].length); j++){
+               //for(j=0; j<(item["attributes"].length); j++){
                     
-                    sideLabelCounter++;
-                    
-                    for(k=0; k<(item["attributes"][j]["txt"]).length; k++){
-                        cellCounter++;
-                        
-                        if(dataInput["attOrder"]=="standard"){
-                            txtNumber = k;
-                            txtSelector = (item["attributes"][j]["txt"][k]);
-                            boxLabelSelector = (item["attributes"][j]["box"][k]);
-							varSelector = (item["attributes"][j]["var"][k]);
-							
-                        }else if(dataInput["attOrder"] == "reverse"){
-                            txtNumber = ((item["attributes"][j]["txt"].length)-(k+1));
-                            txtSelector = (item["attributes"][j]["txt"][txtNumber]);
-                            boxLabelSelector = (item["attributes"][j]["box"][txtNumber]);
-							varSelector = (item["attributes"][j]["var"][txtNumber]);
-							
-                        }else{
-                            txtNumber = (randomTxtArray[k]);
-                            txtSelector = item["attributes"][j]["txt"][txtNumber];
-                            boxLabelSelector = (item["attributes"][j]["box"][txtNumber]);
-							varSelector = (item["attributes"][j]["var"][txtNumber]);
-                        }
-                            if(i == 0 && j == 0){
-                                if(attributeOrder != ""){
-                                    attributeOrder += "/";
-                                    attNumericOrder += "/";
-                                }
-                                attributeOrder += attrInput["var"][txtNumber];
-                                attNumericOrder += txtNumber;
-                            }
-                     
-                        						
-                        $("#" + order[i] + (cellCounter)).attr("name",varSelector);
-						//if the element uses a container like div, img or span, do not add a w3-display-middle class
-						// other add it to improve the layout
-                        if ($.inArray(txtSelector.substr(0,4).toLowerCase(),["<div","<img", "<spa"])>-1) 
+                    //sideLabelCounter++;
+                   test=cellInput;
+					 
+				for(k=0; k<attrInput.length; k++){
+					cellCounter++;
+					
+					if(dataInput["attOrder"]=="standard"){
+						txtNumber = k;
+									
+					}else if(dataInput["attOrder"] == "reverse"){
+						txtNumber = attrInput.length-k-1;
+											
+					}else{
+						txtNumber = (randomTxtArray[k]);
+					}
+					//handle to cell object
+					
+					var cellSel = (cellInput[txtNumber][currentOption]);
+					// check number of columns
+					if (cellSel.length)
+						{
+						var multipleCells=1;
+						if (cellSel[0].length)
 							{
-								$("#" + order[i] + (cellCounter) + "_txt").append(txtSelector);
+							var cellCols=cellSel[0].length;
+							var cellRows=cellSel.length;
 							}
 							else
-							{
-								$("#" + order[i] + (cellCounter) + "_txt").append('<div class="w3-display-middle"><p>' + txtSelector + '</p></div>');
+							{//only one row
+							cellRows=1;
+							cellCols=cellSel.length;
 							}
+						}
+						else
+						{
+						var multipleCells = 0;
+						var cellRows=1;
+						var cellCols=1;
+						}
+					
+				//set attributeOrder					
+					if(i == 0){
+						if(attributeOrder != ""){
+							attributeOrder += "/";
+							attNumericOrder += "/";
+						}
+						attributeOrder += attrInput[txtNumber]["name"];
+						attNumericOrder += txtNumber;
+					}
+				 
+				for (cr=0;cr<cellRows;cr++)
+					{
+					if (multipleCells)
+					{
+					$("#" + currentOption + (cellCounter)).css("width",item["width"]).append('<div id="' + currentOption + (cellCounter)+'r'+(cr+1)+'" class="w3-row"></div>')
+					}
+				
+					for (cc=0;cc<cellCols;cc++)
+					{
+					if (!multipleCells)
+						{
+						addLabel="";
+						txtSelector = (cellInput[txtNumber][currentOption]["txt"]);
+						boxLabelSelector = (cellInput[txtNumber][currentOption]["box"]);
+						varSelector = (cellInput[txtNumber][currentOption]["var"]);
+						styleSelector = (cellInput[txtNumber][currentOption]["style"]);
+						}
+					else
+					{
+						addLabel="_"+(cr+1)+"_"+(cc+1);
+						$("#" + currentOption + (cellCounter) + "r"+(cr+1)).append('<div id="' + currentOption + (cellCounter) + addLabel+'" class="colElement w3-col"></div>');
+					
+					if (cellRows==1)
+						{
+						txtSelector = (cellInput[txtNumber][currentOption][cc]["txt"]);
+						boxLabelSelector = (cellInput[txtNumber][currentOption][cc]["box"]);
+						varSelector = (cellInput[txtNumber][currentOption][cc]["var"]);
+						styleSelector = (cellInput[txtNumber][currentOption][cc]["style"]);
+						ph = (cellInput[txtNumber][currentOption][cc]["pheight"])
+						pw = (cellInput[txtNumber][currentOption][cc]["pwidth"])
 						
-						if ($.inArray(boxLabelSelector.substr(0,4).toLowerCase(),["<div","<img", "<spa"])>-1) 
+						}
+						else 
+						{
+						txtSelector = (cellInput[txtNumber][currentOption][cr][cc]["txt"]);
+						boxLabelSelector = (cellInput[txtNumber][currentOption][cr][cc]["box"]);
+						varSelector = (cellInput[txtNumber][currentOption][cr][cc]["var"]);
+						styleSelector = (cellInput[txtNumber][currentOption][cr][cc]["style"]);
+						ph = (cellInput[txtNumber][currentOption][cr][cc]["pheight"])
+						pw = (cellInput[txtNumber][currentOption][cr][cc]["pwidth"])
+						
+						}
+					}	
+					
+					if (multipleCells)
+					{
+					cellH=(parseInt(attrInput[txtNumber]["height"])*ph)+"px";
+					cellW=(pw*100)+"%";
+					}
+					else
+					{cellH=attrInput[txtNumber]["height"];
+					cellW=item["width"];}
+				
+					var cellSelector = currentOption + (cellCounter)+addLabel;
+					$("#" + cellSelector).attr("name",varSelector).css("width",cellW);
+					
+					$("#" + cellSelector).append('<div id="' + currentOption + (cellCounter)+addLabel + '_txt" class="w3-display-container textBox" style="height: '+cellH+';"></div>');
+                        $("#" + cellSelector).append('<div id="' + currentOption + (cellCounter) +addLabel+ '_box" class="w3-display-container mask" style="height: '+cellH+';"></div>');  
+					
+					
+					//if the element uses a container like div, img or span, do not add a w3-display-middle class
+					// other add it to improve the layout
+					if ($.inArray(txtSelector.substr(0,4).toLowerCase(),["<div","<img", "<spa"])>-1) 
+						{
+							$("#" + cellSelector+ "_txt").append(txtSelector);
+						} 
+						else
+						{
+							$("#" + cellSelector + "_txt").append('<div class="w3-display-middle"><p>' + txtSelector + '</p></div>');
+						}
+					
+					if ($.inArray(boxLabelSelector.substr(0,4).toLowerCase(),["<div","<img", "<spa"])>-1) 
+						{
+							$("#" + cellSelector+ "_box").append(boxLabelSelector);
+						}
+						else
+						{
+							$("#" + cellSelector + "_box").append('<div class="w3-display-middle"><p>' + boxLabelSelector + '</p></div>');
+						}
+					//styles 
+					styleInput.forEach(function(item){
+						if(item["name"] == "defaults")
+						{
+						//reset defaults for every style assignment
+						def = item["mainClass"];
+						def_txt = item["txtClass"];
+						def_box = item["boxClass"];
+						def_labelTxt = item["labelClass"];
+						def_btnClass = item["btnClass"];
+						def_btnTxt = item["btnTxt"];
+						btnSel = item["btnSel"];
+						btnSel = item["btnSel"];
+						}
+						
+						if(item["name"] == styleSelector)
 							{
-								$("#" + order[i] + (cellCounter) + "_box").append(boxLabelSelector);
-							}
+							console.log(currentOption, txtNumber, styleSelector)
+							if(item["mainClass"] != "default"){
+								def = item["mainClass"]; }
+							if(item["txtClass"] != "default"){
+								def_txt = item["txtClass"];}
+							if(item["boxClass"] != "default"){
+								def_box = item["boxClass"];}
+								 
+													
+							assignClasses(def, cellSelector, "id");
+							assignClasses(def_box, cellSelector+ "_box", "id");
+							assignClasses(def_txt, cellSelector+ "_txt", "id");
+						
+							if(item["boxType"] == "blur")		
+								{assignClasses(def_txt, cellSelector+"_box", "id");}
 							else
-							{
-								$("#" + order[i] + (cellCounter) + "_box").append('<div class="w3-display-middle"><p>' + boxLabelSelector + '</p></div>');
+								{assignClasses(def_box, cellSelector+"_box", "id");}
+       
+							//set display for boxtypes
+							   if(item["boxType"] != "open"){
+									$("#" + cellSelector+"_txt").css("display", "none");
+								}else{
+								   $("#" + cellSelector+"_box").css("display", "none");
+								}
+								if(item["boxType"] == "blur"){
+									blurBoxes.push(cellSelector+"_box");
+									//$(".mask").remove();
+								}
+								if(item["boxType"] != "open"){
+									$("#" + cellSelector).addClass("Hoverable")
+								}
+							
+							
 							}
-                        if(i == 0){
-                            if(dataInput["displayLabels"] == "attOnly" || dataInput["displayLabels"] == "all"){
-                                if(dataInput["layout"] == "attributeCol"){
-                                    $("#headerLabel" + (cellCounter) + "_txt").append('<div class="w3-middle">' + attrInput["labels"][txtNumber] + '</div>');
-                                }else{
-                                    $("#sideLabel" + (cellCounter) + "_txt").append('<div class="w3-middle">' + attrInput["labels"][txtNumber] + '</div>');
-                                }
-                            }
-                        }
+						if(item["name"] == "label")
+							{
+							if(item["labelClass"] != "default"){
+							def_labelTxt = item["labelClass"];}
+							
+							labelWidth=item["width"];
+							labelHeight=item["height"];
+							}
+						if (item["name"]=="button") {
+							if(item["btnClass"] != "default"){
+							def_btnClass = item["btnClass"];}
+							 if(item["btnTxt"] != "default"){
+							 def_btnTxt = item["btnTxt"];}
+							 if(item["btnSel"] != "default"){
+							 btnSel = item["btnSel"];}
+							 if(item["btnNotSel"] != "default"){
+						btnNotSel = item["btnNotSel"];}
+							buttonWidth = item["width"];
+							buttonHeight = item["height"];
+						}							 
+										
+
+						})
+					}	
+				}		
+				optionWidth = 	$("#"+currentOption + (cellCounter)).css("width");
+				
+					if(i == 0){
+						if(dataInput["displayLabels"] == "attOnly" || dataInput["displayLabels"] == "all"){
+							if(dataInput["layout"] == "attributeCol"){
+								$("#headerLabel" + (txtNumber+1) + "_txt").append('<div class="w3-display-middle">' + attrInput[txtNumber]["label"] + '</div>').css("height",labelHeight);
+								$("#headerLabel" + (txtNumber+1)).css("width",optionWidth)
+								$("#headerLabel0").css("width",labelWidth);
+								$("#headerLabel0_txt").css("height",labelHeight);
+				
+								
+							}else{
+								$("#sideLabel" + (cellCounter) + "_txt").append('<div class="w3-display-middle">' + attrInput[txtNumber]["label"] + '</div>').css("height",attrInput[txtNumber]["height"]);
+								$("#sideLabel"+ (cellCounter)).css("width",labelWidth);
+								
+							}
+						}
+					}
+				
+				if (k==0){
+					if(dataInput["displayLabels"] == "optOnly" || dataInput["displayLabels"] == "all"){
+					if(dataInput["layout"] == "attributeCol"){
+						$("#sideLabel" + (i+1)).css("width",labelWidth);
+						$("#sideLabel" + (i+1) + "_txt").append('<div class="w3-display-middle">' + item["label"] + '</div>').css("height",attrInput[txtNumber]["height"])
+						;
+					}else{
+						$("#headerLabel" + (i+1)).css("width",optionWidth);
+						$("#headerLabel" + (i+1) + "_txt").append('<div class="w3-display-middle">' + item["label"] + '</div>').css("height",labelHeight);
+						$("#headerLabel0").css("width",labelWidth);
+						$("#headerLabel0_txt").css("height",labelHeight);
+				
+						}
                     }
-                    
-                    if(dataInput["displayLabels"] == "optOnly" || dataInput["displayLabels"] == "all"){
-                        if(dataInput["layout"] == "attributeCol"){
-                            $("#sideLabel" + (sideLabelCounter) + "_txt").append('<div class="w3-middle">' + item["attributes"][j]["label"] + '</div>');
-                        }else{
-                            $("#headerLabel" + (sideLabelCounter) + "_txt").append('<div class="w3-middle">' + item["attributes"][j]["label"] + '</div>');
-                        }
-                    }    
-                }
-                $("#button" + item["name"] + "_txt").append('<button type="button" class="choiceButton" id="' + item["name"] + '" name="choice" value="' + item["name"] + '">' + item["optionName"] + '</button>'); 
+					
+				}
+				}
+				assignClasses(def, "sideElement", "class");
+				assignClasses(def_labelTxt, "sideTxt", "class");
+				 assignClasses(def, "headerElement", "class");
+            assignClasses(def_labelTxt, "headerTxt", "class");
+                
+                $("#button" + currentOption + "_txt").append('<button type="button" class="choiceButton" id="' + currentOption + '" name="choice" value="' + currentOption + '">' + item["label"] + '</button>');
+				if(sideButtons){
+					$("#button" + currentOption).css("width",buttonWidth);
+				$("#button" + currentOption+ "_txt").css("height",attrInput[txtNumber]["height"]);
+				}
+				else{
+					$("#button" + currentOption).css("width",optionWidth);
+				$("#button" + currentOption+ "_txt").css("height",buttonHeight);
+				
+				}
+				$("#button0").css("width",labelWidth);
+				$("#button0").css("height",buttonHeight);
+				
+				
+				assignClasses(def, ("buttonCell"), "class");
+				assignClasses(def_btnTxt, ("buttonTxt"), "class");
+				assignClasses(def_btnClass, ("choiceButton"), "class");  
+				assignClasses(def_btnNotSel, ("choiceButton"), "class");  // set all buttons to not selected
                 
             }
         });
@@ -442,378 +627,6 @@ function shuffle(array) {
   }
   return array;
 }
-
-
-
-function insertStyles(dataInput, styleInput, optionInput, orderInput){
-    //get global label width/height and btnStyles 
-	
-	styleInput.forEach(function(item){
-				if (item["name"]=="label") {
-						labelheight = item["height"];
-						labelwidth = item["width"];
-						}
-				// get button styles and assign them
-				if (item["name"]=="button") {
-					if(item["btnClass"] != "default"){
-					def_btnClass = item["btnClass"];}
-				 if(item["btnTxt"] != "default"){
-                 def_btnTxt = item["btnTxt"];}
-				 if(item["btnSel"] != "default"){
-                 btnSel = item["btnSel"];}
-				 if(item["btnNotSel"] != "default"){
-                 btnNotSel = item["btnNotSel"];}
-				}
-	});
-	
-    if(dataInput["styling"] == "uniform"){
-        var styling = dataInput["cellFormat"][0];
-        //set width and height
-        styleInput.forEach(function(item){
-			
-			if(item["name"] == styling["cellType"]){
-                $(".colElement").css("width", item["width"]);
-                $(".mask").css("height", item["height"]);
-                $(".textBox").css("height", item["height"]);
-                if(topLabels == true || sideLabels == true){
-                labelStyles("uniform", item["width"], item["height"], labelwidth, labelheight);
-				}
-                buttonStyles("uniform", item["width"], item["height"],labelwidth, labelheight);
-           
-            //check for default classes
-             if(item["mainClass"] != "default"){
-                 def = item["mainClass"];
-			 }
-             if(item["txtClass"] != "default"){
-                 def_txt = item["txtClass"];
-             }
-             if(item["boxClass"] != "default"){
-                 def_box = item["boxClass"];
-             }
-             if(item["labelClass"] != "default"){
-                 def_labelTxt = item["labelClass"];
-             }
-        }
-        });
-        
-        //add the classes
-        assignClasses(def, "colElement", "class");
-        assignClasses(def_txt, "textBox", "class");
-        if(styling["boxType"] == "blur")
-		{assignClasses(def_txt, "mask", "class");}
-		else
-		{assignClasses(def_box, "mask", "class");}
-       
-        //set display for boxtypes
-           if(styling["boxType"] != "open"){
-                $(".textBox").css("display", "none");
-            }else{
-               $(".mask").css("display", "none");
-            }
-            if(styling["boxType"] == "blur"){
-                blurBoxes.push(".mask");
-                //$(".mask").remove();
-            }
-            if(styling["boxType"] != "open"){
-                $(".colElement").addClass("Hoverable")
-            }
-            
-    }else{
-        var styleArr = [];
-       var styling = dataInput["cellFormat"];
-       var rowCounter = 1;
-       var structuralStyling = "";
-       
-       if((dataInput["styling"] == "byOpt" && dataInput["layout"] == "optionCol") || (dataInput["styling"] == "byAtt" && dataInput["layout"] == "attributeCol") ){
-           structuralStyling = "byCol";
-
-       }else{
-           structuralStyling = "byRow";
-                      
-           var numberOfCols = $("#row1").children().length;
-       }
-	   
-	   
-       for(k = 0; k < styling.length; k++){
-           
-            var styleSelector = k;
-            var index = "";
-            if(dataInput["styleStructure"][0] == "fixAttributes"){
-                if(dataInput["styling"] == "byAtt"){
-                    switch(dataInput["attOrder"]){
-                        case "reverse":
-                            var numStyles = (styling.length-1);
-                            styleSelector = numStyles - k;
-                            break;
-                        case "random":
-                            var splitAtts = attNumericOrder.split("/");
-                            styleSelector = splitAtts[k];
-                            break;
-                    }
-                }
-            }else if(dataInput["styleStructure"][0] != "independent"){
-                if(k < order.length){
-                    var currentOption = order[k];
-                    var currentStyle = dataInput["styleStructure"][0][currentOption];
-                    styleSelector = currentStyle;
-                }
-            }
-            styleArr.push(styleSelector);
-
-           var currentCell = styling[styleSelector]["cellType"]; //either specifying celltype for column or row
-           var currentBox = styling[styleSelector]["boxType"];
-           //set width and height for column based different boxes
-           styleInput.forEach(function(item){
-				
-					if(item["name"] == currentCell){
-                    //check for default classes for this column
-                    if(item["mainClass"] != "default"){
-                        def = item["mainClass"];
-                    }
-                    if(item["txtClass"] != "default"){
-                        def_txt = item["txtClass"];
-                    }
-                    if(item["boxClass"] != "default"){
-                        def_box = item["boxClass"];
-                    }
-                    if(item["labelClass"] != "default"){
-                        def_labelTxt = item["labelClass"];
-                    }
-                    //check if styling is by column, row or both
-                    if(structuralStyling == "byRow"){
-                        var cellIdentifier = numberOfCols;
-                        
-                    }else if(structuralStyling == "byCol"){
-                        var cellIdentifier = totalRows;
-                    }
-                    
-                    for(h = 0; h < cellIdentifier; h++){
-                       
-                       var childSelector;
-                       
-                        if(structuralStyling == "byRow"){
-                            childSelector = h;
-                        }else if(structuralStyling == "byCol"){
-                            childSelector = k;
-                        }
-                        if(sideLabels == true){
-                            childSelector = childSelector + 1;
-                        }
-                        
-                       if(structuralStyling == "byRow"){
-                            var selector = $("#row" + (k+1)).children().eq(childSelector).attr("id");
-                           // console.log(selector);
-                        }else if(structuralStyling == "byCol"){
-                            var selector = $("#row" + (h+1)).children().eq(childSelector).attr("id");
-                            //console.log(selector);
-                        }
-                        
-                        var box = selector + "_box";
-                        var txt = selector + "_txt";
-                        
-                        $("#" + selector).css("width", item["width"]);
-                        $("#" + selector).children().css("height", item["height"]);
-                        
-                        //add classes to the items in this column
-                        assignClasses(def, selector, "id");
-                        assignClasses(def_txt, txt, "id");
-                        if(currentBox == "blur") {assignClasses(def_txt, box, "id");} else {assignClasses(def_box, box, "id");}
-                        
-                        labelStyles(structuralStyling, item["width"],item["height"], labelwidth,labelheight, (k+1), rowCounter);
-						
-						
-                       var ifButton = $("#" + selector).hasClass("buttonCell");
-                        if(ifButton == false){
-                            //set display for boxtypes in this column
-                            if(currentBox != "open"){
-                                $("#" + txt).css("display", "none");
-                            }else{
-                                $("#" + box).css("display", "none");
-                            }
-
-                            if(currentBox == "blur"){
-                                if (typeof selector !== "undefined") {blurBoxes.push(box);}
-								
-                                //$("#" + box).remove();
-                            }
-                            if(currentBox != "open"){
-                                $("#" + selector).addClass("Hoverable");
-                            }
-                        }
-                    }
-                }
-           })
-       } 
-       buttonStyles(structuralStyling, null,null,labelwidth, labelheight,styleInput, styling, styleArr);
-    }
-}
-
-
-
-function labelStyles(layoutType, width, height, labelwidth, labelheight, rowColNumber, rowCounter, newRow){
-    
-	if(layoutType == "uniform"){
-          
-		  if(topLabels == true){
-            if(rowColNumber == 1){
-                $("#headerLabel0").css("width", labelwidth);
-                $("headerLabel0_txt").css("height", labelheight);
-                
-                assignClasses(def, "headerLabel0", "id");
-                assignClasses(def_labelTxt, "headerLabel0_txt", "id");
-            }
-			
-			$(".headerElement").css("width", width);
-            $(".headerTxt").css("height", labelheight);
-		  }
-		  
-            $(".sideElement").css("width", labelwidth);
-            $(".sideTxt").css("height", height);
-            
-            assignClasses(def, "headerElement", "class");
-            assignClasses(def_labelTxt, "headerTxt", "class");
-            assignClasses(def, "sideElement", "class");
-            assignClasses(def_labelTxt, "sideTxt", "class");
-    }
-    if(layoutType == "byRow"){
-        if(rowColNumber == 1){
-            $(".headerElement").css("width", width);
-            $(".headerTxt").css("height", labelheight);
-            
-            assignClasses(def, "headerElement", "class");
-            assignClasses(def_labelTxt, "headerTxt", "class");
-			
-			$("#headerLabel0").css("width", labelwidth);
-                $("headerLabel0_txt").css("height", labelheight);
-                
-                assignClasses(def, "headerLabel0", "id");
-                assignClasses(def_labelTxt, "headerLabel0_txt", "id");
-        }
-
-        $("#sideLabel" + rowColNumber).css("width", labelwidth);
-        $("#sideLabel" + rowColNumber + "_txt").css("height", height);
-            
-        assignClasses(def, ("sideLabel" + rowColNumber), "id");
-        assignClasses(def_labelTxt, ("sideLabel" + rowColNumber + "_txt"), "id");
-    }
-    
-    if(layoutType == "byCol"){
-        //console.log(rowColNumber);
-        if(topLabels == true){
-            if(rowColNumber == 1){
-                $("#headerLabel0").css("width", labelwidth);
-                $("headerLabel0_txt").css("height", labelheight);
-                
-                assignClasses(def, "headerLabel0", "id");
-                assignClasses(def_labelTxt, "headerLabel0_txt", "id");
-            }
-            
-            $("#headerLabel" + rowColNumber).css("width", width);
-            $("#headerLabel" + rowColNumber + "_txt").css("height", labelheight);
-            
-            assignClasses(def, ("headerLabel" + rowColNumber), "id");
-            assignClasses(def_labelTxt, ("headerLabel" + rowColNumber + "_txt"), "id");
-        }
-        if(sideLabels == true && rowColNumber == 1){
-            $(".sideElement").css("width", labelwidth);
-            $(".sideTxt").css("height", height);
-            
-            assignClasses(def, "sideElement", "class");
-            assignClasses(def_labelTxt, "sideTxt", "class");
-        }
-    }
-}
-
-
-
-function buttonStyles(layoutType, width, height, labelwidth, labelheight, styleInput, styling, styleArr){
-    if(layoutType == "uniform"){
-        $(".buttonCell").css("width", width);
-        $(".buttonTxt").css("height", height);
-		
-  
-    }else if(layoutType == "byRow"){
-        var countRows = $("#container").children().length;
-        if(topLabels == true){
-            countRows--;
-        }
-        if(bottomButtons == true){
-            countRows--;
-        }
-        for(i=0; i<countRows; i++){
-            var styleNameID = styleArr[i];
-            var styleName = styling[styleNameID]["cellType"];
-
-            styleInput.forEach(function(item){
-                if(item["name"] == styleName){
-                    if(sideButtons == true || i==(countRows-1)){
-                        var width = item["width"];
-                        var height = item["height"];
-                        if(sideButtons == true){
-                            $("#row" + (i+1)).children(".buttonCell").css("width", item["width"]);
-                            $("#row" + (i+1)).children(".buttonTxt").css("height", item["height"]);
-                        }else{
-                            $(".buttonCell").css("width", item["width"]);
-                            $(".buttonTxt").css("height", item["height"]);
-							$("#button0").css("width", labelwidth);
-                        }
-                    }
-                }
-            });
-        }
-    }else{
-        var countCols = $("#row1").children().length;
-        if(sideLabels == true){
-            countCols--;
-        }
-        if(sideButtons == true){
-            countCols--;
-        }
-        for(i=0; i<countCols; i++){
-            
-             var styleNameID = styleArr[i];
-             
-            var styleName = styling[styleNameID]["cellType"];
-           
-            styleInput.forEach(function(item){
-                if(item["name"] == styleName){
-                    var width = item["width"];
-                    var height = item["height"];
-                    if(bottomButtons == true || i == (countCols-1)){
-                        if(bottomButtons == true){
-                            if(i==0){
-                                if(sideLabels == true){
-                                    $("#button0").css("width", labelwidth);
-                                }
-                                $(".buttonTxt").css("height", item["height"]);
-                            }
-                            if(sideLabels == true){
-                                $("#buttons").children().eq(i+1).css("width", item["width"]);
-                            }else{
-                                $("#buttons").children().eq(i).css("width", item["width"]);
-                            }
-                        }else{
-                            var countRows = $("#container").children().length;
-                            if(topLabels == true){
-                                countRows--;
-                            }
-                            for(j=0; j<countRows; j++){
-                                $("#row" + (j+1)).children(".buttonCell").css("width", item["width"]);
-                            }
-                        }
-                    }
-                }
-            });
-        } 
-    }
-	
-    assignClasses(def, ("buttonCell"), "class");
-    assignClasses(def_btnTxt, ("buttonTxt"), "class");
-    assignClasses(def_btnClass, ("choiceButton"), "class");  
-	assignClasses(def_btnNotSel, ("choiceButton"), "class");  // set all buttons to not selected
-}
-
-
 
 function assignClasses(classInput, divElement, elementType){
     for(j=0; j < classInput.length; j++){

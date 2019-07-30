@@ -57,7 +57,7 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
         <div class="w3-white w3-container">
 
             <h1>Introduction</h1>
-            <p>In this example, You decide between two gambles, that each have three outcomes with three probabilities. The rows are randomized and the order of the options is determined. This version uses the second set (dynSet2) that flips the rows and cols via layout: attributeCol and changes the styling of the cells compared to the previous set </p>
+            <p>testing</p>
             <div id="container"  class="w3-white w3-container w3-col" style="width:90%">
             </div>
 			
@@ -74,20 +74,21 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
 
 			// here the json file to generate the trial, for a particular set in the json file is generated. If the third attribute is set to random, it will select an order at random.
 			// if you enter a number, it will choose one of the orders using modulo of that number
+			// now taking the number from the condnum variable to set the order of the options
             o=$("#condnum").val();
 			if (o<0) {o="random"};
             
-			generateTrial("json_files/gamble.json", "dynSet2", o);
+			generateTrial("json_files/flex.json", "dynSet", o);
 
             			
- 
      		//function that starts the page
 	$(document).ready(function () { 
 		$(".confirm").click(function (event) {
 			if (choice=="" && $(".choiceButton").length>0) {event.preventDefault();return false;}           
 			});
 		});	
-
+	
+			
 
         </script>
     </body>

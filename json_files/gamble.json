@@ -1,45 +1,35 @@
 {
- "cells":[
+ "styles":[
 	{
-	   "name":"Ap",
-	   "mainClass":"default",
-	   "txtClass":"default",
-	   "boxClass":["w3-green", "w3-large"],
-	   "labelClass":"default",
-	   "width":"15%",
-	   "height":"80px"
+		"name":"defaults",
+		"mainClass":["w3-white", "w3-center","w3-padding-small"],
+		"txtClass":["w3-light-blue"],
+		"boxClass":["w3-indigo", "w3-small"],
+		"labelClass":["w3-white"],
+		"btnClass":["w3-button", "w3-block", "w3-border", "w3-border-gray", "w3-round-xlarge", "w3-display-middle"],
+		"btnTxt": ["w3-white"],
+		"btnSel":["w3-blue", "w3-hover-blue"], 
+		"btnNotSel":["w3-light-blue"]
 	},
 	{
 	   "name":"A",
 	   "mainClass":"default",
 	   "txtClass":"default",
 	   "boxClass":"default",
-	   "labelClass":"default",
-	   "width":"15%",
-	   "height":"80px"
+	   "boxType":"closed"
 	},
 	{
 	   "name":"B",
 	   "mainClass":"default",
 	   "txtClass":"default",
-	   "boxClass":"default",
-	   "labelClass":"default",
-	   "width":"25%",
-	   "height":"80px"
-	},
-	{
-	   "name":"C",
-	   "mainClass":"default",
-	   "txtClass":"default",
-	   "boxClass":"default",
-	   "labelClass":"default",
-	   "width":"15%",
-	   "height":"140px"
-	},
+	   "boxClass":["w3-green", "w3-small"],
+	   "boxType":"blur"
+	   },
 	{
 		"name":"label",
-		"width":"15%",
-      "height":"30px"
+		"width":"8%",
+		"labelClass":"default",
+	    "height":"50px"
 	}
 	,
 	{
@@ -47,109 +37,143 @@
 		"btnClass":"default",
 		"btnTxt": "default",
 		"btnSel":"default", 
-		"btnNotSel":"default"
+		"btnNotSel":"default",
+		"height": "30px",
+		"width":"8%"
 	}
  ]
 ,
- "options":[
+ "opt":[
 	{
 	   "name":"A",
-	   "optionName":"A",
-	   "attributes":[
-		  {
-			 "label":"outcomes A",
-			 "txt":[
-				"50 euro",
-				"60 euro",
-				"1000 euro"
-			 ],
-			 "box":[
-						"D1",
-						"D2",
-						"D3"
-			],
-			"var":[ "A_o1",
-					"A_o2",
-					"A_o3"
-					]
-		  },
-		  {
-			 "label":"probabilities A",
-			 "txt":[
-				"5%",
-				"90%",
-				"5%"
-			 ],
-			 "box":[
-						"C1",
-						"C2",
-						"C3"
-					],
-			"var":[ "A_p1",
-					"A_p2",
-					"A_p3"
-					]
-		  }
-	   ]
-	   },
-	{
-	   "name":"B",
-	   "optionName":"B",
-	   "attributes":[
-		  {
-			 "label":"outcomes B",
-			 "txt":[
-				"40 euro",
-				"90 euro",
-				"500 euro"
-			 ],
-			 "box":[
-						"B1",
-						"B2",
-						"B3"
-					],
-			"var":[ "B_o1",
-					"B_o2",
-					"B_o3"
-					]
-
-		  },
-		  {
-			 "label":"probabilities B",
-			 "txt":[
-				"10%",
-				"70%",
-				"20%"
-			 ],
-			 "box":[
-						"A1",
-						"A2",
-						"A3"
-					],
-			"var":[ "B_p1",
-					"B_p2",
-					"B_p3"
-					]
-		  }
-	   ]
+	   "label":"option A",
+	   "width":"28%"
 	}
- ]
- ,
-"attributes":
+	,
 	{
-		  "labels" : [
-		  "outcome 1",
-		  "outcome 2",
-		  "outcome 3"
-	   	],
-		"var" : [
-		"o1", 
-		"o2", 
-		"o3"
-		]
+		"name":"B",
+		"label":"option B",
+	   "width":"28%"
 	}
-
+	
+]
  ,
+"attr":[
+	{
+		"name":"outc1",
+		"label":"outcome 1",
+	   	"height":"50px"
+	}
+	,
+	{
+		"name":"outc2",
+		"label":"outcome 2",
+	   	"height":"50px"
+	}
+	,
+	{
+		"name":"outc3",
+		"label":"outcome 3",
+	   	"height":"50px"
+	}
+]
+,
+"cell":
+	[
+		
+		{"A":[{"var":"A_o1",
+			 "txt":"50 euro",
+			 "box":"A outcome 1",
+			 "pwidth":".50",
+			 "pheight":"1",
+			 "style":"A"
+			 },{"var":"A_p1",
+			 "txt":"5%",
+			 "box":"A probability 1",
+			 "pwidth":".50",
+			 "pheight":"1",
+			 "style":"A"
+			 }]
+			 
+		,
+		"B":[{"var":"B_o1",
+			 "txt":"40 euro",
+			 "box":"B outcome 1",
+			 "pwidth":".50",
+			 "pheight":"1",
+			 "style":"B"
+			 },{"var":"B_p1",
+			 "txt":"10%",
+			 "box":"B probability 1",
+			 "pwidth":".50",
+			 "pheight":"1",
+			 "style":"B"
+			 }]
+			 
+		},
+		{"A":[{"var":"A_o2",
+			 "txt":"60 euro",
+			 "box":"A outcome 2",
+			 "pwidth":".50",
+			 "pheight":"1",
+			 "style":"A"
+			 },{"var":"A_p2",
+			 "txt":"90%",
+			 "box":"A probability 2",
+			 "pwidth":".50",
+			 "pheight":"1",
+			 "style":"A"
+			 }]
+			 
+		,
+		"B":[{"var":"B_o2",
+			 "txt":"90 euro",
+			 "box":"B outcome 2",
+			 "pwidth":".50",
+			 "pheight":"1",
+			 "style":"B"
+			 },{"var":"B_p2",
+			 "txt":"70%",
+			 "box":"B probability 2",
+			 "pwidth":".50",
+			 "pheight":"1",
+			 "style":"B"
+			 }]
+			 
+		},
+		{"A":[{"var":"A_o3",
+			 "txt":"1000 euro",
+			 "box":"A outcome 3",
+			 "pwidth":".50",
+			 "pheight":"1",
+			 "style":"A"
+			 },{"var":"A_p3",
+			 "txt":"5%",
+			 "box":"A probability 3",
+			 "pwidth":".50",
+			 "pheight":"1",
+			 "style":"A"
+			 }]
+			 
+		,
+		"B":[{"var":"B_o3",
+			 "txt":"500 euro",
+			 "box":"B outcome 3",
+			 "pwidth":".50",
+			 "pheight":"1",
+			 "style":"B"
+			 },{"var":"B_p3",
+			 "txt":"20%",
+			 "box":"B probability 3",
+			 "pwidth":".50",
+			 "pheight":"1",
+			 "style":"B"
+			 }]
+			 
+		}
+		
+	]
+,
  "delay":
 	{
 	"var" : [
@@ -203,23 +227,6 @@
  "sets":[
 	{
 	   "name":"dynSet",
-	   "styling":"byAttr",
-	   "styleStructure":["fixAttributes"],
-	   "cellFormat":[
-		  {
-			 "cellType":"A",
-			 "boxType":"blur"
-		  },
-		  {
-			 "cellType":"Ap",
-			 "boxType":"closed"
-		  },
-		  {
-			 "cellType":"A",
-			 "boxType":"closed"
-		}
-			
-	   ],
 	   "optOrder":[
 			 "order1",
 			 "order2"
@@ -234,27 +241,6 @@
 	},
 	{
 	   "name":"dynSet2",
-	   "styling":"byAttr",
-	   "styleStructure":["fixAttributes"],
-	   "cellFormat":[
-		  {
-			 "cellType":"Ap",
-			 "boxType":"closed"
-		  },
-		  {
-			 "cellType":"Ap",
-			 "boxType":"blur"
-		  },
-		  {
-			 "cellType":"Ap",
-			 "boxType":"closed"
-		},
-		  {
-			 "cellType":"Ap",
-			 "boxType":"blur"
-		  }
-			
-	   ],
 	   "optOrder":[
 			 "order1",
 			 "order2"
