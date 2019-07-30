@@ -7,9 +7,9 @@ This github contains a beta version of mouselabWEB 2.0. What are the important n
 - works with a touch screen 
 - using blurring on boxes rather than a box covering the information
 - new mysqli code compatible with newer php versions in the php scripts
-- this version: delays
+- this version: new flexible layout
 ------------------
-# Demo
+# Demo (old version, not updated yet)
 Go the the following link to test a demo version (enter your own identifier in the "subject=" part)
 http://www.mouselabweb.org/mouselabWEB20-withDelays/tv.php?subject=test&condnum=0
 Use condnum to see different versions of the orders or use condnum=-1 to determine this randomly
@@ -26,9 +26,9 @@ http://www.mouselabweb.org/mouselabWEB20-withDelays/datalyser.php
 
 -----------------
 # test
-Start with tv.php 
+Start with gamble.php 
 if you add subject and condnum, you have more control over presentation order
-(e.g. tv.php?subject=martijn&condnum=2)
+(e.g. gamble.php?subject=martijn&condnum=2)
 
 The demo files show the possibilities of using the JSON description files
 
