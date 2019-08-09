@@ -12,6 +12,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="w3.css">
+		<link rel="stylesheet" href="mouselabEditor.css"/>												  
 		<script src="mouselabEditor.js"></script>
         
 	
@@ -203,7 +204,7 @@ Styles &#9660;</button>
 				console.log(jsonPart)
 				if (jsonPart) {
 						try { jsonChange = JSON.parse(jsonPart); }
-						catch (e) { alert('Error in parsing json. ' + e); }
+						catch (e) { alert('Error in parsing json. ' + e); return false}
 						json[handle]=jsonChange;
 						showJSON(handle);
 						updateScreenJson(json);
