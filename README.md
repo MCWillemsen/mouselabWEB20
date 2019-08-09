@@ -45,7 +45,7 @@ if you add subject and condnum, you have more control over presentation order
 The demo files show the possibilities of using the JSON description files
 
 ------------------
-#how does it work
+# how does it work
 check the document with the JSON properties, and pick an existing JSON file to edit it. The JSON editor currently being developed (mouselabEditor.html) can help with this. Note that if the json code breaks, you can use an online JSON validator to see where the errors are. 
 Take an existing php page (like gamble.php) and edit that for your own purposes. You only need to edit nextURL, expname and the json file that is loaded in the comment generateTrial to create a new page. 
 The basic idea is that a study is a set of pages that link to eachother via the nextURL. See the original MouselabWEB documentation for the basic idea.
