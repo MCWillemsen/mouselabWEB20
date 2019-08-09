@@ -1,0 +1,369 @@
+{
+ "styles":[
+	{
+		"name":"defaults",
+		"mainClass":["w3-white", "w3-center","w3-padding-small"],
+		"txtClass":["w3-light-blue"],
+		"boxClass":["w3-indigo"],
+		"labelClass":["w3-white"],
+		"btnClass":["w3-button", "w3-block", "w3-border", "w3-border-gray", "w3-round-xlarge", "w3-display-middle"],
+		"btnTxt": ["w3-white"],
+		"btnSel":["w3-blue", "w3-hover-blue"], 
+		"btnNotSel":["w3-light-blue"]
+	},
+	{
+	   "name":"P",
+	   "mainClass":"default",
+	   "txtClass":["w3-white","w3-text-red"],
+	   "boxClass":"default",
+	   "boxType":"open"
+	},
+	{
+	   "name":"A",
+	   "mainClass":"default",
+	   "txtClass":"default",
+	   "boxClass":"default",
+	   "boxType":"closed"
+	},
+	{
+	   "name":"f1",
+	   "mainClass":"default",
+	   "txtClass":["w3-small","w3-text-darkgrey"],
+	   "boxClass":["w3-white"],
+	   "boxType":"blur"
+	   },
+	   {
+	   "name":"f2",
+	   "mainClass":"default",
+	   "txtClass":["w3-text-darkgrey"],
+	   "boxClass":["w3-white"],
+	   "boxType":"blur"
+	   },
+	   {
+	   "name":"r",
+	   "mainClass":"default",
+	   "txtClass":["w3-text-blue","w3-left-align"],
+	   "boxClass":["w3-white"],
+	   "boxType":"blur"
+	   },
+	{
+		"name":"label",
+		"width":"10%",
+		"labelClass":"default",
+	    "height":"50px"
+	}
+	,
+	{
+		"name":"button",
+		"btnClass":"default",
+		"btnTxt": "default",
+		"btnSel":"default", 
+		"btnNotSel":"default",
+		"height": "30px",
+		"width":"10%"
+	}
+ ]
+,
+ "opt":[
+	{
+	   "name":"A",
+	   "label":"option A",
+	   "txt_button":"<i class='fas fa-shopping-cart'></i> option A",
+	   "width":"25%"
+	}
+	,
+	{
+		"name":"B",
+		"label":"option B",
+		"txt_button":"<i class='fas fa-shopping-cart'></i> option B",
+	   "width":"25%"
+	}
+	,
+	{
+		"name":"C",
+		"label":"option C",
+		"txt_button":"<i class='fas fa-shopping-cart'></i> option C",
+	   "width":"25%"
+	}
+]
+ ,
+"attr":[
+	{
+		"name":"img",
+		"label":"picture",
+	   	"height":"150px"
+	}
+	,
+	{
+		"name":"price",
+		"label":"price",
+	    "height":"20px"
+	}
+	,
+	{
+		"name":"features",
+		"label":"features",
+		"height":"180px"
+	}
+	,
+	{
+		"name":"reviews",
+		"label":"reviews",
+		"height":"160px"
+	}
+]
+,
+"cell":
+	[
+		{"A":{"var":"imgA",
+			 "txt":"<img src='tva.jpg' height=150px style='overflow: hidden;'>",
+			 "box":"Pict A",
+			 "style":"A"
+			 }
+		 
+		,
+		"B":
+			{"var":"imgB",
+			 "txt":"<img src='tvb.jpg' height=150px style='overflow: hidden;'>",
+			 "box":"Pict B",
+			 "style":"A"
+			 }
+			 
+		,
+		"C":
+			 {"var":"imgC",
+			 "txt":"<img src='tvc.jpg' height=150px style='overflow: hidden;'>",
+			 "box":"Pict C",
+			 "style":"A"
+			 }
+		}
+	,
+	
+		{"A":{"var":"prA",
+			 "txt":"<b>249 euro</b>",
+			 "box":"Price A",
+			 "style":"P"
+			 }
+		,
+		"B":{
+			 "var":"prB",
+			 "txt":"<b>319 euro</b>",
+			 "box":"Price B",
+			 "style":"P"
+			 }
+			 
+		,
+		"C":
+			 {"var":"prC",
+			 "txt":"<b>209 euro</b>",
+			 "box":"Price C",
+			 "style":"P"
+			 }
+		}
+	,
+	
+		{"A":[[
+			{"var":"fA1",
+			 "txt":"<div class='w3-left-align w3-padding-small'><i class='fas fa-plus-square w3-text-green'></i> Great image quality<br/><i class='fas fa-plus-square w3-text-green'></i> Good looks<br/><i class='fas fa-minus-square w3-text-red'></i> bad sound quality<br/>",
+			 "box":"properties A",
+			 "pheight":".40",
+			 "pwidth":"1",
+			 "style":"f2"
+			 }],
+			 [{"var":"fA2",
+			 "txt":"<div class='w3-left-align w3-padding-small'>Blas asjkd ashdkash dhkjs hkshdfkjsdh fjksdhf dkfh uifhjksdfh sdkhfjksdhf hs jkashjkfh jkf hsdjkf h sdjkfhjk akjhjkasdhfkhfjksdh kfjh skdjfhsdkjfh kjsadfkjsdh fkshdkjfhjksadhfksdjhf kjsdfh kh askjdh fkshfjkhsdjkfh ksdjfhsdjkfh sdjkfh sdjkf</div> ",
+			 "box":"description A",
+			 "pheight":".6",
+			 "pwidth":"1",
+			 "style":"f1"
+			 }]]
+			 
+		
+		,
+		"B":[[
+			{"var":"fB1",
+			 "txt":"<div class='w3-left-align w3-padding-small'><i class='fas fa-plus-square w3-text-green'></i> Great image quality<br/><i class='fas fa-plus-square w3-text-green'></i> Good looks<br/><i class='fas fa-minus-square w3-text-red'></i> bad sound quality<br/>",
+			 "box":"properties B",
+			 "pheight":".40",
+			 "pwidth":"1",
+			 "style":"f2"
+			 }],
+			 [{"var":"fB2",
+			 "txt":"<div class='w3-left-align w3-padding-small'>Blas asjkd ashdkash dhkjs hkshdfkjsdh fjksdhf dkfh uifhjksdfh sdkhfjksdhf hs jkashjkfh jkf hsdjkf h sdjkfhjk akjhjkasdhfkhfjksdh kfjh skdjfhsdkjfh kjsadfkjsdh fkshdkjfhjksadhfksdjhf kjsdfh kh askjdh fkshfjkhsdjkfh ksdjfhsdjkfh sdjkfh sdjkf</div> ",
+			 "box":"description B",
+			 "pheight":".60",
+			 "pwidth":"1",
+			 "style":"f1"
+			 }]]
+			 
+		,
+				"C":[[
+			{"var":"fC1",
+			 "txt":"<div class='w3-left-align w3-padding-small'><i class='fas fa-plus-square w3-text-green'></i> Great image quality<br/><i class='fas fa-plus-square w3-text-green'></i> Good looks<br/><i class='fas fa-minus-square w3-text-red'></i> bad sound quality<br/>",
+			 "box":"properties C",
+			 "pheight":".40",
+			 "pwidth":"1",
+			 "style":"f2"
+			 }],
+			 [{"var":"fC2",
+			 "txt":"<div class='w3-left-align w3-padding-small'>Blas asjkd ashdkash dhkjs hkshdfkjsdh fjksdhf dkfh uifhjksdfh sdkhfjksdhf hs jkashjkfh jkf hsdjkf h sdjkfhjk akjhjkasdhfkhfjksdh kfjh skdjfhsdkjfh kjsadfkjsdh fkshdkjfhjksadhfksdjhf kjsdfh kh askjdh fkshfjkhsdjkfh ksdjfhsdjkfh sdjkfh sdjkf </div>",
+			 "box":"description C",
+			 "pheight":".60",
+			 "pwidth":"1",
+			 "style":"f1"
+			 }]]
+			 
+		},
+		{"A":[[{"var":"rA1",
+			 "txt":"<div><i class='fas fa-star w3-text-yellow'></i><i class='fas fa-star w3-text-yellow'></i><i class='fas fa-star w3-text-yellow'></i><i class='fas fa-star w3-text-yellow'></i><i class='far fa-star w3-text-yellow'></i> ok machine</div>",
+			 "box":"Review A1",
+			 "pwidth":"1",
+			 "pheight":".2",
+			 "style":"r"
+			 }],
+			 [{"var":"rA2",
+			 "txt":"<div><i class='fas fa-star w3-text-blue'></i><i class='fas fa-star w3-text-blue'></i><i class='fas fa-star w3-text-blue'></i><i class='fas fa-star w3-text-blue'></i><i class='far fa-star w3-text-grey'></i> awesome</div>",
+			 "box":"Review A2",
+			 "pwidth":"1",
+			 "pheight":".2",
+			 "style":"r"
+			 }],
+			 [{"var":"rA3",
+			 "txt":"<div><i class='fas fa-star w3-text-blue'></i><i class='fas fa-star w3-text-blue'></i><i class='fas fa-star w3-text-blue'></i><i class='far fa-star w3-text-blue'></i><i class='far fa-star w3-text-blue'></i> fine</div>",
+			 "box":"Review A3",
+			 "pwidth":"1",
+			 "pheight":".2",
+			 "style":"r"
+			 }],
+			 [{"var":"rA4",
+			 "txt":"<div><i class='fas fa-star w3-text-red'></i><i class='fas fa-star w3-text-red'></i><i class='far fa-star w3-text-red'></i><i class='far fa-star w3-text-red'></i><i class='far fa-star w3-text-red'></i> poor</div>",
+			 "box":"Review A4",
+			 "pwidth":"1",
+			 "pheight":".2",
+			 "style":"r"
+			 }],
+			 [{"var":"rA5",
+			 "txt":"<div><i class='fas fa-star w3-text-blue'></i><i class='fas fa-star w3-text-blue'></i><i class='fas fa-star w3-text-blue'></i><i class='fas fa-star w3-text-blue'></i><i class='far fa-star w3-text-grey'></i> pretty good</div>",
+			 "box":"Review A5",
+			 "pwidth":"1",
+			 "pheight":".2",
+			 "style":"r"
+			 }]]
+		,
+		"B":[[{"var":"rB1",
+			  "txt":"<img src='3star.png' height=20px/> nice machine",
+			 "box":"Review B1",
+			 "pwidth":"1",
+			 "pheight":".2",
+			 "style":"r"
+			 }],
+			 [{"var":"rB2",
+			 "txt":"<img src='5star.png' height=20px/> awesome",
+			 "box":"Review B2",
+			 "pwidth":"1",
+			 "pheight":".2",
+			 "style":"r"
+			 }],
+			 [{"var":"rB3",
+			 "txt":"<img src='5star.png' height=20px/> awesome",
+			 "box":"Review B3",
+			 "pwidth":"1",
+			 "pheight":".2",
+			 "style":"r"
+			 }]]
+		,
+		"C":[[{"var":"rC1",
+			 "txt":"<img src='5star.png' height=20px/> Super great",
+			 "box":"Review C1",
+			 "pwidth":"1",
+			 "pheight":".2",
+			 "style":"r"
+			 }],
+			 [{"var":"rC2",
+			  "txt":"<img src='3star.png' height=20px/> fine device",
+			 "box":"Review C2",
+			 "pwidth":"1",
+			 "pheight":".2",
+			 "style":"r"
+			 }]]
+		}
+	]
+,
+ "delay":
+	{
+	"var" : [
+					"imgA", "imgB",	"imgC", "rC1", "rC2"
+					],
+	"delays" : [
+				[0, 0, 200, 0, 0],
+				[0,200,0, 0, 0],
+				[500,100,0, 0, 0],
+				[0, 0, 0, 200, 400],
+				[0, 0, 0, 200, 400]
+				]
+	}
+,
+ "optOrders":[
+	{
+	   "name":"order1",
+	   "opt":"random"
+	   ,
+	   "attr":
+	   ["price","img","features","reviews"]
+	},
+	{
+	   "name":"order2",
+	   "opt":[
+		  "B",
+		  "A",
+		  "C"
+		],
+		"attr":
+	   ["img","price","reviews"]
+	   
+	}
+	,
+	{
+	   "name":"order3",
+	   "opt":[
+		  "C",
+		  "B"
+	   ],
+	   "attr":
+	   "standard"
+	   
+	}
+ ]
+,
+ "sets":[
+	{
+	   "name":"dynSet",
+	   "optOrder":[
+			 "order1",
+			 "order2",
+			 "order3"
+	   ],
+	   "layout":"optionCol",
+	   "buttons":"on",
+	   "displayLabels":"all",
+	   "addedVars":[
+		  "test=2"
+	   ]
+	},
+	{
+	   "name":"dynSet2",
+	   "optOrder":[
+			 "order1",
+			 "order2",
+			 "order3"
+	   ],
+	   "layout":"attributeCol",
+	   "buttons":"on",
+	   "displayLabels":"all",
+	   "addedVars":[
+		  "test=2"
+	   ]
+	}
+ ]
+}
+

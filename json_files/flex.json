@@ -54,19 +54,22 @@
 	{
 	   "name":"A",
 	   "label":"option A",
-	   "width":"25%"
+	   "width":"25%",
+	   "txt_button":"Choose option A"
 	}
 	,
 	{
 		"name":"B",
 		"label":"option B",
-	   "width":"25%"
+	   "width":"25%",
+	   "txt_button":"Choose option B"
 	}
 	,
 	{
 		"name":"C",
 		"label":"option C",
-	   "width":"25%"
+	   "width":"25%",
+	   "txt_button":"Choose option C"
 	}
 ]
  ,
@@ -244,11 +247,12 @@
  "optOrders":[
 	{
 	   "name":"order1",
-	   "items":[
+	   "opt":[
 		  "A",
 		  "B",
 		  "C"
-	   ]
+	   ],
+	   "attr":"random"
 	},
 	{
 	   "name":"order2",
@@ -256,7 +260,8 @@
 		  "B",
 		  "A",
 		  "C"
-	   ]
+	   ],
+	   "attr":"random"
 	}
 	,
 	{
@@ -264,7 +269,8 @@
 	   "items":[
 		  "C",
 		  "B"
-	   ]
+	   ],
+	   "attr":"random"
 	}
  ]
 ,
@@ -276,7 +282,6 @@
 			 "order2",
 			 "order3"
 	   ],
-	   "attOrder":"random",
 	   "layout":"optionCol",
 	   "buttons":"on",
 	   "displayLabels":"all",
@@ -291,7 +296,6 @@
 			 "order2",
 			 "order3"
 	   ],
-	   "attOrder":"random",
 	   "layout":"attributeCol",
 	   "buttons":"on",
 	   "displayLabels":"all",

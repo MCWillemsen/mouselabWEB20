@@ -25,11 +25,11 @@ dtNewDate = new Date();
 starttime = dtNewDate.getTime(); // abs. starttime of experiment
 
 // default values 
-mlweb_outtype="XML"; 	// format for output to database in [XML,CSV]
-mlweb_fname=0;			// name of form [0=is first or only form]
+mlweb_outtype="CSV"; 	// format for output to database in [XML,CSV]
+mlweb_fname="mlwebform";	// name of form [0=is first or only form]
 chkFrm = false // flag to test whether additional form elements have to be checked on submission
 warningTxt = "Some questions have not been answered. Please answer all questions before continuing!";
-
+choice="";
 
 //define basic blur settings 
 var foggyset = {
@@ -117,6 +117,16 @@ if (chkFrm)
 	noElm = document.forms[mlweb_fname].elements.length;
 
 	var filled=true;
+
+	var radio_groups = {}
+$(":radio").each(function(){
+    radio_groups[this.name] = true;
+})
+
+for(group in radio_groups){
+    if_checked = !!$(":radio[name='"+group+"']:checked").length
+    alert(group+(if_checked?' has checked radios':' does not have checked radios'))
+}
 
 	for (i=0;i<noElm;i++)
 		{	

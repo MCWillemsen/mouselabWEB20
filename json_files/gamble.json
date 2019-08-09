@@ -210,17 +210,16 @@
  "optOrders":[
 	{
 	   "name":"order1",
-	   "items":[
+	   "opt":[
 		  "A",
 		  "B"
-	   ]
+	   ],
+	   "attr": "random"
 	},
 	{
 	   "name":"order2",
-	   "items":[
-		  "B",
-		  "A"
-	   ]
+	   "opt":"random",
+	   "attr":["outc2","outc1","outc3"]
 	}
  ]
 ,
@@ -231,7 +230,6 @@
 			 "order1",
 			 "order2"
 	   ],
-	   "attOrder":"random",
 	   "layout":"optionCol",
 	   "buttons":"on",
 	   "displayLabels":"all",
@@ -245,7 +243,6 @@
 			 "order1",
 			 "order2"
 	   ],
-	   "attOrder":"random",
 	   "layout":"attributeCol",
 	   "buttons":"on",
 	   "displayLabels":"all",

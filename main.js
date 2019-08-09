@@ -19,7 +19,9 @@
 //    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 var blurBoxes = [];
-var order;
+var orderO;
+var orderA;
+var orderAnum;
 var attributeOrder = "";
 var attNumericOrder = "";
 var JSONData = [];
@@ -81,19 +83,10 @@ function interpreter(dataInput, setInput, orderNum){
 	var delayData = dataInput["delay"];
 	var styleInput = dataInput["styles"];
 	
-    console.log(optionData, attrData)
-	//create delaymatrix
-	for( var i = 0; i<delayData["var"].length;i++)
-	{
-			delayMatrix[delayData["var"][i]] = [];
-		for( var j = 0; j<delayData["var"].length;j++)
-		{delayMatrix[delayData["var"][i]][delayData["var"][j]]=delayData["delays"][i][j];}
-	}
-		
     insertStructure(setData, orderData, optionData, attrData, orderNum);
     
     //insert stimuli/text in the boxes
-    insertStimuli(setData, optionData, attrData, cellData,styleInput);
+    insertStimuli(setData, optionData, attrData, cellData,styleInput,delayData);
     
     
     //insert styling (width, blur, closed boxes, classes etc.)
@@ -111,7 +104,9 @@ function interpreter(dataInput, setInput, orderNum){
 
 //Main function for displaying the structure (rows and columns
 function insertStructure(dataInput, orderInput, optionInput, attrInput, orderNum){
-    //retrieve the order and resolve random is necessary
+    var optList = [];
+	var attrList = [];
+	//retrieve the order and resolve random is necessary
     if(orderNum == "random"){
         orderNum = getRandom(0, (dataInput["optOrder"].length-1));
     }
@@ -120,14 +115,56 @@ function insertStructure(dataInput, orderInput, optionInput, attrInput, orderNum
     
     orderInput.forEach(function(item){
         if(item["name"] == orderID){
-            order = item["items"];
-        }
+            orderO = item["opt"];
+			orderA = item["attr"];
+		optionInput.forEach(function(item){
+            optList.push(item["name"]);
+		});
+		switch (orderO) {
+			case "standard":
+			orderO=optList;
+			break;
+			case "reverse":
+			orderO=[];
+			for (i=0;i<optList.length;i++)
+					{orderO[i]=optList[optList.length-i-1]}
+			break;
+			case "random":
+			orderO=shuffle(optList);
+			break;
+			default:
+		}
+		
+		attrInput.forEach(function(item){
+            attrList.push(item["name"]);
+		});
+		switch (orderA) {
+			case "standard":
+			orderA=attrList;
+			break;
+			case "reverse":
+			orderA=[];
+			for (i=0;i<attrList.length;i++)
+					{orderA[i]=attrList[attrList.length-i-1]}
+			break;
+			case "random":
+			orderA=shuffle(attrList);
+			break;
+			default:
+		}
+		orderAnum=[];
+		for( var j = 0; j<orderA.length;j++)
+		{
+			orderAnum[j]=attrList.indexOf(orderA[j]);
+		}
+	}
     });
     
     //call the main structural functions
-    insertRows(dataInput, orderInput, optionInput, attrInput);
-    insertColumns(dataInput, orderInput, optionInput, attrInput);
-}
+    insertRows(dataInput);
+    insertColumns(dataInput, optionInput);
+	
+	}
 
 
 
@@ -148,25 +185,25 @@ function convertToNumeric(inputArray, outputArray){
 
 
 //insert rows and define strucural elements (number of rows and number of columns for the inversed stimuli alignment)
-function insertRows(dataInput, orderInput, optionInput, attrInput){
-    var numOptions = order.length;
-    var rowCounter = 0;
+function insertRows(dataInput){
+    var numOptions=orderO.length;
+    var numAttributes=orderA.length; 
+	var rowCounter = 0;
     var rowArray;
      
     for(i=0; i<numOptions; i++){ //drie keer voor iedere optie
-        var currentOption = order[i];
 		
          if(dataInput["layout"] == "attributeCol"){
-					totalRows = optionInput.length;
-					totalCols = attrInput.length;
+					totalRows = numOptions;
+					totalCols = numAttributes;
 		
                     if((dataInput['displayLabels'] == "all" || dataInput['displayLabels'] == "attOnly") && i==0){
                         topLabels = true;
                     }
                     
                 }else{
-                    totalRows = attrInput.length;
-					totalCols = optionInput.length;
+                    totalRows = numAttributes;
+					totalCols = numOptions;
 					
                         if((dataInput['displayLabels'] == "all" || dataInput['displayLabels'] == "optOnly") && i==0){
                         topLabels = true;  }
@@ -174,7 +211,6 @@ function insertRows(dataInput, orderInput, optionInput, attrInput){
 			}
          ;
     
-        //console.log(totalCols,totalRows)
     for(j=0; j<totalRows; j++){
         rowCounter++;
                       
@@ -197,16 +233,16 @@ function insertRows(dataInput, orderInput, optionInput, attrInput){
 
 
 //Insert columns
-function insertColumns(dataInput, orderInput, optionInput,attrInput){
-    var numOptions = order.length;
+function insertColumns(dataInput, optionInput){
+    var numOptions = orderO.length;
+	var numAttributes=orderA.length; 
+	
     var rowCounter = 0;
     var colCounter = 0;
-    var colConstraint = 0;
-    var optionCounter = 0;
     var topLabelCounter = 0;
     
     for(i=0; i<numOptions; i++){ 
-        var currentOption = order[i];
+        var currentOption = orderO[i];
         
         optionInput.forEach(function(item){
             if(item["name"] == currentOption){
@@ -216,20 +252,16 @@ function insertColumns(dataInput, orderInput, optionInput,attrInput){
                     numRows = 1;
                 }else{
                     numRows = totalRows;
-                    //numTopLabels = (topLabelCounter + item["attributes"].length);
                 }
                 for(j=0; j<numRows; j++){
                     
                     if(dataInput["layout"]=="attributeCol"){
                         numCols=totalCols;
 						rowCounter++;
-                        //check if this works with order
-				//		var sideLabelIdentifier = optionInput[j]["label"];
                     }else{
                        numCols = 1;
 					   rowCounter = (j+1);
-                    //    var sideLabelIdentifier = attrInput[j]["label"];
-												
+                    							
                     }                    
 					
                     for(k=0; k < numCols; k++){
@@ -278,39 +310,26 @@ function insertColumns(dataInput, orderInput, optionInput,attrInput){
             $("#buttons").append('<div id="button' + currentOption + '" class="buttonCell w3-col"></div>');
             $("#button" + (currentOption)).append('<div id="button' + (currentOption) + '_txt" class="buttonTxt w3-display-container"></div>');
 
-            //if(totalCols > 1 && dataInput["layout"] == "optionCol"){
-            //    for(q = 1; q < totalCols; q++){
-            //        $("#buttons").append('<div class="buttonCell w3-col buttonSpace"></div>');
-            //    }
-                
-            //}
         }  
     }
     if(sideButtons == true){
         var rowBtnCounter = 0;
-        for(l = 0; l < (order.length); l++){
+        for(l = 0; l < (orderO.length); l++){
             rowBtnCounter++;
-            $("#row" + (rowBtnCounter)).append('<div id="button' + order[l] + '" class="buttonCell w3-col"></div>');
-            $("#button" + order[l]).append('<div id="button' + order[l] + '_txt" class=" buttonTxt w3-display-container"></div>');
-            //optionInput.forEach(function(object){
-                //if((object["name"] == order[l]) && (object["attributes"].length > 1) && (dataInput["layout"] == "attributeCol")){
-                //    for(m=1; m<object["attributes"].length; m++){
-                //        rowBtnCounter++;
-              //            $("#row" + (rowBtnCounter)).append('<div class="buttonCell w3-col buttonSpace"></div>');
-              //      }
-              //  }
-            //})
-        }
+            $("#row" + (rowBtnCounter)).append('<div id="button' + orderO[l] + '" class="buttonCell w3-col"></div>');
+            $("#button" + orderO[l]).append('<div id="button' + orderO[l] + '_txt" class=" buttonTxt w3-display-container"></div>');
+            }
     }
-    //$(".buttonSpace").append('<div class="buttonTxt w3-display-container"></div>');
+   
 }
 
 
 
 //insert stimuli in the boxes
-function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput){
+function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput,delayInput){
     var randomTxtArray = [];
     var workingArray = [];
+	varList = [];
     var txtNumber;
     var txtSelector;
 	var varSelector;
@@ -318,39 +337,20 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput){
    var sideLabelCounter = 0;
    
     
-    for(i = 0; i < order.length; i++){
+    for(i = 0; i < orderO.length; i++){
             
         optionInput.forEach(function(item){
                 
-            if(item["name"] == order[i]){
+            if(item["name"] == orderO[i]){
                 var cellCounter = 0;
-                currentOption=order[i];
-				//shuffle labels
-                if(i==0 && dataInput["attOrder"]=="random"){
-                    for(h=0; h<attrInput.length; h++){
-                        workingArray.push(h);
-                    }
-                    randomTxtArray = shuffle(workingArray);
-                }
-                
-               //for(j=0; j<(item["attributes"].length); j++){
-                    
-                    //sideLabelCounter++;
-                   test=cellInput;
-					 
-				for(k=0; k<attrInput.length; k++){
+                currentOption=orderO[i];
+				
+				
+				orderAnum.forEach(function(k){
 					cellCounter++;
 					
-					if(dataInput["attOrder"]=="standard"){
-						txtNumber = k;
+					txtNumber = k;
 									
-					}else if(dataInput["attOrder"] == "reverse"){
-						txtNumber = attrInput.length-k-1;
-											
-					}else{
-						txtNumber = (randomTxtArray[k]);
-					}
-					//handle to cell object
 					
 					var cellSel = (cellInput[txtNumber][currentOption]);
 					// check number of columns
@@ -440,6 +440,7 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput){
 				
 					var cellSelector = currentOption + (cellCounter)+addLabel;
 					$("#" + cellSelector).attr("name",varSelector).css("width",cellW);
+					varList.push(varSelector);
 					
 					$("#" + cellSelector).append('<div id="' + currentOption + (cellCounter)+addLabel + '_txt" class="w3-display-container textBox" style="height: '+cellH+';"></div>');
                         $("#" + cellSelector).append('<div id="' + currentOption + (cellCounter) +addLabel+ '_box" class="w3-display-container mask" style="height: '+cellH+';"></div>');  
@@ -481,7 +482,6 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput){
 						
 						if(item["name"] == styleSelector)
 							{
-							console.log(currentOption, txtNumber, styleSelector)
 							if(item["mainClass"] != "default"){
 								def = item["mainClass"]; }
 							if(item["txtClass"] != "default"){
@@ -575,13 +575,15 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput){
                     }
 					
 				}
-				}
+				})
 				assignClasses(def, "sideElement", "class");
 				assignClasses(def_labelTxt, "sideTxt", "class");
 				 assignClasses(def, "headerElement", "class");
             assignClasses(def_labelTxt, "headerTxt", "class");
                 
-                $("#button" + currentOption + "_txt").append('<button type="button" class="choiceButton" id="' + currentOption + '" name="choice" value="' + currentOption + '">' + item["label"] + '</button>');
+			   if (item["txt_button"]) {txtButton=item["txt_button"]} else {txtButton=item["label"]}
+			   
+                $("#button" + currentOption + "_txt").append('<button type="button" class="choiceButton" id="' + currentOption + '" name="choice" value="' + currentOption + '">' + txtButton + '</button>');
 				if(sideButtons){
 					$("#button" + currentOption).css("width",buttonWidth);
 				$("#button" + currentOption+ "_txt").css("height",attrInput[txtNumber]["height"]);
@@ -603,11 +605,24 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput){
             }
         });
     }
+	//create delaymatrix
+	for( var i = 0; i<varList.length;i++)
+	{
+			delayMatrix[varList[i]] = [];
+		for( var j = 0; j<varList.length;j++)
+		{
+			var di=delayInput["var"].indexOf(varList[i]);
+			var dj=delayInput["var"].indexOf(varList[j]);
+		
+			if (di>-1 && dj>-1) {
+			delayMatrix[varList[i]][varList[j]]=delayInput["delays"][di][dj];}
+			else 
+			{delayMatrix[varList[i]][varList[j]]=0;}
+			}
+	}
+	
 }
-
-
-
-
+	
 
 
 function shuffle(array) {
@@ -657,11 +672,11 @@ function fillAddedVariables(dataInput){
     
     var orderString = "";
     
-    for(j=0; j < order.length; j++){
+    for(j=0; j < orderO.length; j++){
         if(j==0){
-            orderString = order[j];
+            orderString = orderO[j];
         }else{
-            orderString = orderString + "-" + order[j];
+            orderString = orderString + "-" + orderO[j];
         }   
     }
     $("#mlwebform").append('<input type=hidden name="optionOrder" value="' + orderString + '">');

@@ -76,19 +76,17 @@
  "optOrders":[
 	{
 	   "name":"order1",
-	   "items":[
-		  "A"
-	   ]
+	   "opt":["A"],
+	   "attr":"standard"
 	}
  ]
 ,
  "sets":[
 	{
-	   "name":"Set1",
+	   "name":"dynSet",
 	   "optOrder":[
 			 "order1"
 	   ],
-	   "attOrder":"random",
 	   "layout":"optionCol",
 	   "buttons":"on",
 	   "displayLabels":"all",
