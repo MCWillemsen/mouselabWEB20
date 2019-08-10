@@ -201,13 +201,17 @@ Styles &#9660;</button>
 			}
 			function updateJSON(handle) {
 				var jsonPart = $('#JSON_'+handle).val();
-				console.log(jsonPart)
 				if (jsonPart) {
 						try { jsonChange = JSON.parse(jsonPart); }
 						catch (e) { alert('Error in parsing json. ' + e); return false}
-						json[handle]=jsonChange;
+						jsonVal[handle]=jsonChange;
+						//console.log(jsonVal[handle])
+				
 						showJSON(handle);
-						updateScreenJson(json);
+						selectedElements = [];
+    
+						updateScreenJson(jsonVal);
+						
 					} else {
 						jsonChange = {};
 					}

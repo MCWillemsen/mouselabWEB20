@@ -153,8 +153,9 @@
         {
             var cellNumber;
             cellNumber = selectedElements[i].id.substr(-1) - 1;
-            dropdownStyleHtml = dropdownStyleHtml.replace('id="cellHeightInput" value="' + jsonVal["attr"][cellNumber]["height"]
-                .slice(0, -1) + '"', 'id="cellHeightInput" value="' + this.value + '"');
+            console.log(selectedElements[i].id)
+			//dropdownStyleHtml = dropdownStyleHtml.replace('id="cellHeightInput" value="' + jsonVal["attr"][cellNumber]["height"]
+            //    .slice(0, -1) + '"', 'id="cellHeightInput" value="' + this.value + '"');
             changeAttriValues(selectedElements[i].id, undefined, undefined, this.value);
         }
         if(delSelEl)
