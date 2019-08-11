@@ -21,7 +21,7 @@
     <body class="w3-light-grey w3-content" style="max-width:1600px" onLoad="timefunction('onload', 'body', 'body')">
         <!--BEGIN set vars-->
         
-<FORM id="mlwebform" name="mlwebform">
+<FORM id="mlwebform" name="mlwebform" onsubmit="return false;">
  
 			<INPUT type=hidden id='processData' name="procdata" value="">
             <!-- set all variables here -->
@@ -164,12 +164,10 @@ Styles &#9660;</button>
 
         <script type="text/javascript">
 
-			// here the json file to generate the trial, for a particular set in the json file is generated. If the third attribute is set to random, it will select an order at random.
-			// if you enter a number, it will choose one of the orders using modulo of that number
-            
-            trialID = "dynSet";
-            oNum = "random";
-            generateTrial("json_files/1box.json", trialID, oNum);
+			
+            generateTrial("json_files/1box.json", 0, 0);
+				
+           
             
 			function printJSON() {
 			$('#JSON_styles').val(JSON.stringify(json["styles"],null,'\t'));
@@ -237,23 +235,23 @@ Styles &#9660;</button>
 
 				   $("#container").empty();
 				   interpreter(json,trialIdentifier, orderNum);
-				   InitBoxes();
 				}
 
 
      		//function that starts the page
 			$(document).ready(function () { 
 
-				$("#trialid").val(trialID);
-				$("#oNum").val(oNum);
+				
 				$("#update").click(function (){
 				//refreshTrial($("#trialid").val(), $("#oNum").val());
 				updateScreenJson(json)
 				});
 				
-				printJSON();
-				InitBoxes();
+
+				
 				initializeEdit();
+				$("#trialid").val(json["sets"][0]["name"]);
+				printJSON();
 				});	
 				
 

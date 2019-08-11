@@ -68,12 +68,16 @@ function generateTrial(jsonUrl, trialIdentifier, orderNum){
 function interpreter(dataInput, setInput, orderNum){
     json=dataInput;
 	var setData = [];
-    
-    dataInput["sets"].forEach(function(item){
+    if (setInput==0)
+		{setData=dataInput["sets"][0]}
+		else
+		{
+		dataInput["sets"].forEach(function(item){
         if (item["name"] == setInput){
             setData = item;
         };
-    });
+		});
+		}
     
     //insert the basic structure (columns and rows)
     var orderData = dataInput["optOrders"];
