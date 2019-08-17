@@ -18,15 +18,7 @@
     /** all things that need to be done at the start*/
     function initializeEdit()
     {
-        /* loads the current json file into jsonVal*/
-        // var val = $('#json').val();
-        // if (val) {
-        //     try { jsonVal = JSON.parse(val);}
-        //     catch (e) { alert('Error in parsing json. ' + e); }
-        // } else {
-        //     jsonVal = {};
-        // }
-
+        
         loadJson(undefined, json);
 
         /* adds the add button for collumns*/
@@ -231,6 +223,7 @@
     {
         var newStyle = this.id;
         var parEl = this.parentElement.parentElement.parentElement.parentElement.parentElement;
+		console.log(newStyle,parEl)
         if(parEl.id.slice(0, -1) === "headerLabel")
         {
             changeStyle(newStyle, parEl.id, undefined, undefined);
@@ -252,6 +245,8 @@
         {
             changeColumnValues(this.parentElement.parentElement.parentElement.id, undefined,  this.value,undefined);
         }
+		else
+		{alert("option name in use")}
     });
 
     $(document).on('change', '[id="labelAttriInput"]', function()
@@ -315,10 +310,12 @@
 
     $(document).on('change', '[id="varNameInput"]', function()
     {
-        if(!checkVarInUse(this.value))
+        if(!checkNameInUse(this.value))
         {
             changeVarName(this.parentElement.parentElement.parentElement.parentElement.id, this.value);
         }
+		else
+		{alert("variable name in use");}
     });
 
     /** functions for the dropdown menu*/
@@ -662,10 +659,7 @@
         /* check if the dropdown button needs to be added or removed*/
         if(dropdownOff && document.getElementById("boxDropdown") === null)
         {
-            // var optionalButtons = dropdownStyleHtml;
-            /* get the current values as start text for the input fields, also remove unneeded tags*/
-            //var innerText = element.firstChild.innerHTML;//removeTag(element.firstChild.innerHTML, "<p>");
-            //var outerText = element.parentElement.lastChild.firstChild.innerHTML;
+            
             var cell = getCellFromId(element.parentElement.id);
 			var varName = cell["var"];
 			var innerText = cell["txt"];
@@ -794,8 +788,7 @@
         deleteName(jsonVal["opt"][indexTarget]["name"]);
         // deleteName(jsonVal["opt"][indexTarget]["label"]);
 
-        /* remove the column*/
-        jsonVal["opt"].splice(indexTarget, 1);
+        
 
         /* remove the cells*/
         for(i = 0; i < jsonVal["cell"].length; i++)
@@ -803,6 +796,9 @@
             delete jsonVal["cell"][i][getKey(i, indexTarget)];
         }
 
+		/* remove the column*/		
+        jsonVal["opt"].splice(indexTarget, 1);
+		
         /* update the screen*/
         updateScreenJson(jsonVal);
     }
@@ -880,97 +876,6 @@
         updateScreenJson(jsonVal);
     }
 
-    // /** changes the main style of the given cell to the given style*/
-    // function ChangeStyle(mainClass, textClass, boxClass, changeBoxType, columnNumber, rowNumber)
-    // {
-    //     var styleElements = [];
-    //     if(columnNumber === undefined && rowNumber === undefined)
-    //     {
-    //         return
-    //     }
-    //     else if(rowNumber === undefined)
-    //     {
-    //         var key = jsonVal["opt"][columnNumber]["name"];
-    //         for(var i = 0; i < jsonVal["cell"].length; i++)
-    //         {
-    //             for(var j = 0; j < jsonVal["styles"].length; j++)
-    //             {
-    //                 if(jsonVal["styles"][j]["name"] === jsonVal["cell"][i][key]["style"])
-    //                 {
-    //                     styleElements.push(jsonVal["styles"][j]);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     else if(columnNumber === undefined)
-    //     {
-    //         console.log(jsonVal["cell"][rowNumber]);
-    //         for(i = 0; i < Object.keys(jsonVal["cell"][rowNumber]).length; i++)
-    //         {
-    //             for(j = 0; j < jsonVal["styles"].length; j++)
-    //             {
-    //                 console.log(jsonVal["cell"][rowNumber][getKey(rowNumber, i)]["style"]);
-    //                 if(jsonVal["styles"][j]["name"] === jsonVal["cell"][rowNumber][getKey(rowNumber, i)]["style"])
-    //                 {
-    //                     styleElements.push(jsonVal["styles"][j]);
-    //                     console.log(jsonVal["styles"][j]);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     else
-    //     {
-    //         for(i = 0; i < jsonVal["styles"].length; i++)
-    //         {
-    //             if(jsonVal["styles"][i]["name"] ===  jsonVal["cell"][rowNumber][getKey(rowNumber, columnNumber)]["styles"])
-    //             {
-    //                 styleElements.push(jsonVal["styles"][i]);
-    //             }
-    //         }
-    //     }
-    //
-    //     /* if no style is specified, take the default style*/
-    //     if(mainClass === undefined)
-    //     {
-    //         mainClass = ["w3-white", "w3-center", "w3-padding-4", "w3-margin-left"];
-    //     }
-    //     if(textClass === undefined)
-    //     {
-    //         textClass = "default";
-    //     }
-    //     if(boxClass === undefined)
-    //     {
-    //         boxClass = "default";
-    //     }
-    //
-    //     for(i = 0; i < styleElements.length; i++)
-    //     {
-    //         /* if changeBoxType is true change boxType to the next type, else keep it the same*/
-    //         if (changeBoxType === true)
-    //         {
-    //             if (styleElements[i]["boxType"] === "closed")
-    //             {
-    //                 styleElements[i]["boxType"] = "blur";
-    //             }
-    //             else if (styleElements[i]["boxType"] === "blur")
-    //             {
-    //                 styleElements[i]["boxType"] = "open";
-    //             }
-    //             else if (styleElements[i]["boxType"] === "open")
-    //             {
-    //                 styleElements[i]["boxType"] = "closed";
-    //             }
-    //         }
-    //
-    //         /* changes the styles and update the screen*/
-    //         styleElements[i]["mainClass"] = mainClass;
-    //         styleElements[i]["textClass"] = textClass;
-    //         styleElements[i]["boxClass"] = boxClass;
-    //     }
-    //
-    //     updateScreenJson(jsonVal);
-    // }
-
     /** changes the width and height of the given cell to the given values (in % and px)*/
     function ChangeCellWidth(width, height, cellNumber)
     {
@@ -1028,34 +933,19 @@
 		jsonVal["opt"][optIndex2]["name"] = optName1;
 		jsonVal["opt"][optIndex1]["name"] = optName2;
 		
-		//changeOptKey("tempKey", optName1, undefined);
 		
-		//changeOptKey(optName2, optName1, undefined);
-		//changeOptKey(optName1, "tempKey", undefined);
 		newCell=[]
 		for(var i = 0; i < jsonVal["cell"].length; i++)
         {
             
 			[jsonVal["cell"][i][optName1],jsonVal["cell"][i][optName2]]=[jsonVal["cell"][i][optName2],jsonVal["cell"][i][optName1]]
-			
         }
 		
 		
 		
-        // var storeOrder = jsonVal["optOrders"][0]["opt"][optIndex1];
-        // jsonVal["optOrders"][0]["opt"][optIndex1] = jsonVal["optOrders"][0]["opt"][optIndex2];
-        // jsonVal["optOrders"][0]["opt"][optIndex2] = storeOrder;
-
-        // if(jsonVal["sets"][0]["styling"] === "byOpt")
-        // {
-        //     var storeCellFormat = arrayCopy(jsonVal["sets"][0]["cellFormat"][optIndex1]);
-        //     jsonVal["sets"][0]["cellFormat"][optIndex1] = arrayCopy(jsonVal["sets"][0]["cellFormat"][optIndex2]);
-        //     jsonVal["sets"][0]["cellFormat"][optIndex2] = storeCellFormat;
-        //
-        //     var storeCell = arrayCopy(jsonVal["cells"][optIndex1]);
-        //     jsonVal["cells"][optIndex1] = arrayCopy(jsonVal["cells"][optIndex2]);
-        //     jsonVal["cells"][optIndex2] = storeCell;
-        // }
+        jsonVal["optOrders"][0]["opt"][optIndex1]=optName2;
+        jsonVal["optOrders"][0]["opt"][optIndex2] = optName1;
+        
         updateScreenJson(jsonVal);
     }
 
@@ -1066,40 +956,11 @@
         jsonVal["cell"][attriIndex1] = arrayCopy(jsonVal["cell"][attriIndex2]);
         jsonVal["cell"][attriIndex2] = storeCell;
 
-        // var options = jsonVal["options"];
-        // for(i = 0; i < options.length; i++)
-        // {
-        //     var storeAttriTxt = options[i]["attributes"][0]["txt"][attriIndex1];
-        //     options[i]["attributes"][0]["txt"][attriIndex1] = options[i]["attributes"][0]["txt"][attriIndex2];
-        //     options[i]["attributes"][0]["txt"][attriIndex2] = storeAttriTxt;
-        //
-        //     var storeAttriBox = options[i]["attributes"][0]["box"][attriIndex1];
-        //     options[i]["attributes"][0]["box"][attriIndex1] = options[i]["attributes"][0]["box"][attriIndex2];
-        //     options[i]["attributes"][0]["box"][attriIndex2] = storeAttriBox;
-        //
-        //     var storeAttriVar = options[i]["attributes"][0]["var"][attriIndex1];
-        //     options[i]["attributes"][0]["var"][attriIndex1] = options[i]["attributes"][0]["var"][attriIndex2];
-        //     options[i]["attributes"][0]["var"][attriIndex2] = storeAttriVar;
-        // }
-        //
-        // var storeLabel = jsonVal["attributes"]["labels"][attriIndex1];
-        // jsonVal["attributes"]["labels"][attriIndex1] = jsonVal["attributes"]["labels"][attriIndex2];
-        // jsonVal["attributes"]["labels"][attriIndex2] = storeLabel;
-        //
-        // var storeVar = jsonVal["attributes"]["var"][attriIndex1];
-        // jsonVal["attributes"]["var"][attriIndex1] = jsonVal["attributes"]["var"][attriIndex2];
-        // jsonVal["attributes"]["var"][attriIndex2] = storeVar;
-        //
-        // if(jsonVal["sets"][0]["styling"] === "byAtt")
-        // {
-        //     var storeCellFormat = arrayCopy(jsonVal["sets"][0]["cellFormat"][attriIndex1]);
-        //     jsonVal["sets"][0]["cellFormat"][attriIndex1] = arrayCopy(jsonVal["sets"][0]["cellFormat"][attriIndex2]);
-        //     jsonVal["sets"][0]["cellFormat"][attriIndex2] = storeCellFormat;
-        //
-        //     var storeCell = arrayCopy(jsonVal["cells"][attriIndex1]);
-        //     jsonVal["cells"][attriIndex1] = arrayCopy(jsonVal["cells"][attriIndex2]);
-        //     jsonVal["cells"][attriIndex2] = storeCell;
-        // }
+		var storeAttr = arrayCopy(jsonVal["attr"][attriIndex1]);
+		jsonVal["attr"][attriIndex1]= arrayCopy(jsonVal["attr"][attriIndex2]);
+		jsonVal["attr"][attriIndex2]=storeAttr;
+		
+        
 
         updateScreenJson(jsonVal);
     }
@@ -1163,7 +1024,8 @@
         }
 
         jsonVal["delay"]["var"][jsonVal["delay"]["var"].indexOf(oldname)] = varName;
-
+		deleteName(oldname);
+		names.push(varName);
         /* changes the text in the correct attribute and update the screen*/
         cell["var"] = varName;
 
@@ -1189,9 +1051,14 @@
         }
         if(newName !== undefined && newName !== "")
         {
-            jsonVal["optOrders"][0]["opt"][jsonVal["optOrders"][0]["opt"].indexOf(option["name"])] = newName;
-            changeOptKey(newName, option["name"]);
+            if (checkNameInUse(newName)) {console.log("option name in use");return false};
+			jsonVal["optOrders"][0]["opt"][jsonVal["optOrders"][0]["opt"].indexOf(option["name"])] = newName;
+            deleteName(option["name"]);
+			names.push(newName);
+			changeOptKey(newName, option["name"]);
             option["name"] = newName;
+			
+			
         }
         if(width !== undefined && width > 0)
         {
@@ -1218,8 +1085,13 @@
         }
         if(newName !== undefined && newName !== "")
         {
-            jsonVal["attr"][squareId.substr(-1) - 1]["name"] = newName;
-        }
+            if (checkNameInUse(newName)) {alert("attribute name in use"); return false}
+			else {
+			deleteName(jsonVal["attr"][squareId.substr(-1) - 1]["name"]);
+			jsonVal["attr"][squareId.substr(-1) - 1]["name"] = newName;
+			names.push(newName);
+			}
+		}
         if(height !== undefined && height > 0)
         {
             jsonVal["attr"][squareId.substr(-1) - 1]["height"] = height.toString() + "px";
@@ -1262,37 +1134,7 @@
         updateScreenJson(jsonVal);
     }
 
-    // /** changes the styling based on button input*/
-    // function changeStyling(newStlye)
-    // {
-    //     jsonVal["sets"][0]["styling"] = newStlye;
-    //     fixStylingCells(newStlye);
-    //     updateScreenJson(jsonVal);
-    // }
-
-    // /** adds to cellformat and cells if needed when switching styling options*/
-    // function fixStylingCells(newStyling)
-    // {
-    //     /* check how much new entries are needed*/
-    //     var numNeedCells;
-    //     if(newStyling === "byAtt")
-    //     {
-    //         numNeedCells = jsonVal["attributes"]["labels"].length;
-    //     }
-    //     else if (newStyling === "byOpt")
-    //     {
-    //         numNeedCells = jsonVal["options"].length;
-    //     }
-    //
-    //     /* adds the new entries*/
-    //     for(var i = jsonVal["sets"][0]["cellFormat"].length; i < numNeedCells; i++)
-    //     {
-    //         addCell();
-    //         var sets = jsonVal["sets"][0];
-    //         sets["cellFormat"].push(arrayCopy(sets["cellFormat"][sets["cellFormat"].length - 1]));
-    //         sets["cellFormat"][sets["cellFormat"].length - 1]["cellType"] = jsonVal["cells"][jsonVal["cells"].length - 3]["name"];
-    //     }
-    // }
+  
 
     /** sets the json back to the previous action*/
     function undo()
@@ -1434,28 +1276,19 @@
     /** check if the inputted name is already in use*/
     function checkNameInUse(name)
     {
-        for(var i = 0; i < jsonVal["opt"].length; i++)
-        {
-            if(name === jsonVal["opt"][i]["name"])
-            {
-                return true;
-            }
-        }
-        return false;
+        if (names.indexOf(name)==-1) {return false}
+		else{return true}
+		//for(var i = 0; i < jsonVal["opt"].length; i++)
+        //{
+        //    if(name === jsonVal["opt"][i]["name"])
+        //    {
+        //        return true;
+         //   }
+        //}
+        //return false;
     }
 
-    /** check if the inputted variable is already in use*/
-    function checkVarInUse(variable)
-    {
-        for(var i = 0; i < jsonVal["delay"]["var"].length; i++)
-        {
-            if(variable === jsonVal["delay"]["var"][i])
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+    
 
     /** uses html ids to check if an element is already selected*/
     function checkElementInSelected(element)
@@ -1471,19 +1304,7 @@
         return false;
     }
 
-    // /** adds a copy of a style element to styles*/
-    // function addStyle()
-    // {
-    //     jsonVal["styles"].splice(jsonVal["styles"].length - 3, 0, arrayCopy(jsonVal["styles"][jsonVal["styles"].length - 3]));
-    //     jsonVal["styles"][jsonVal["styles"].length - 3]["name"] = newName(jsonVal["styles"][jsonVal["styles"].length - 3]["name"]);
-    //     return  jsonVal["styles"][jsonVal["styles"].length - 3];
-    // }
-
-    // /** returns the nth letter of the alphabet in uppercase*/
-    // function getLetter(n)
-    // {
-    //     return String.fromCharCode(n + 65);
-    // }
+   
 
     /** returns a new name based on the inputted name that is not already in the names var*/
     function newName(oldName)
@@ -1520,20 +1341,12 @@
         return result;
     }
 
-    // function removeTag(string, tag)
-    // {
-    //     if(string.indexOf(tag) === 0)
-    //     {
-    //         string = string.substr(tag.length);
-    //         string = string.slice(0, -(tag.length + 1));
-    //     }
-    //     return string;
-    // }
-
+   
     /** gets the cell key from the cake*/
     function getKey(attriNum, optNum)
     {
-        return Object.keys(jsonVal["cell"][attriNum])[optNum];
+        return jsonVal["opt"][optNum]["name"]
+		//return Object.keys(jsonVal["cell"][attriNum])[optNum];
     }
 
     /** finds the option corresponding to the given html id*/
