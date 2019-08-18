@@ -14,8 +14,6 @@
     var selectedElements = [];
     var dragMouseX = null;
     var dragMouseY = null;
-    var menuOn = null;
-    var tempJsonVal = null;					  
 
     /** all things that need to be done at the start*/
     function initializeEdit()
@@ -53,18 +51,7 @@
         //     '<li class="dropright"><a class="dropdown-toggle dropdown-item" id="background">background</a>' +
         //     '<ul class="dropdown-menu">' + colorTable;
 
-    /** stops button clicking from closing the dropdown*/
-    $(document).on('click', '[class*="dropdown-item"]', function(e)
-    {
-        e.stopPropagation();
-    });
-
-    $(document).on('click', '[class*="dropdown-menu"]', function(e)
-    {
-        e.stopPropagation();
-    });
-
-    /** functions for the add and delete column/row buttons*/
+    /** functions for tha add and delete column/row buttons*/
     $(document).on('click', '[id="addButton"]', function()
     {
         addSameColumn();
@@ -73,7 +60,6 @@
     $(document).on('click', '[id="delButton"]', function()
     {
         /* note: only works with label ids lower than 10*/
-		menuOn = null;			  
         var delSelEl = false;
         var parEl = this.parentElement.parentElement.parentElement.parentElement;
         if(selectedElements.length === 0 || selectedElements[0].id.slice(0, -1) === "sideLabel")
@@ -101,7 +87,6 @@
     $(document).on('click', '[id="attriDelButton"]', function()
     {
         /* note: only works with div ids lower than 10*/
-        menuOn = null;					  
         var delSelEl = false;
         var parEl = this.parentElement.parentElement.parentElement.parentElement;
         if(selectedElements.length === 0 || selectedElements[0].id.slice(0, -1) === "headerLabel")
@@ -122,17 +107,8 @@
         }
     });
 
-    /** functions for the buttons in the dropdowns*/
-    $(document).on('click', '[id="okButton"]', function()
-    {
-        var dropdownUl =  menuOn.lastChild;
-        dropdownUl.classList.remove("show");
-        menuOn = null;
-        labelDropdown(dropdownUl.parentElement.parentElement, false);
-        updateScreenJson(jsonVal);
-    });
-
-    $(document).on('change', '[id="columnWidthInput"]', function(e)
+    /** functions for the buttons in dropdownStyleHtml*/
+    $(document).on('change', '[id="columnWidthInput"]', function()
     {
         var delSelEl = false;
         var parEl = this.parentElement.parentElement.parentElement.parentElement;
@@ -309,20 +285,17 @@
     //     }
     // });
 
-   /** functions for box editing*/
+    /** functions for box editing*/
     $(document).on('mouseenter', '[class^="w3-display-container"]', function()
     {
-        boxDropDown(this.parentElement, true);
+        boxDropDown(this, true);
     });
 
-    $(document).on('mouseleave', '[class^="w3-display-container"]', function(e)
+    $(document).on('mouseleave', '[class^="w3-display-container"]', function()
     {
-        if(menuOn === null)
-        {
-            boxDropDown(this.parentElement, false);
-        }
+        boxDropDown(this, false);
     });
-	
+
     $(document).on('change', '[id="innerTextInput"]', function()
     {
         setBoxText(this.parentElement.parentElement.parentElement.parentElement.id, this.value, undefined);
@@ -343,7 +316,7 @@
 		{alert("variable name in use");}
     });
 
-     /** functions for the dropdown menu*/
+    /** functions for the dropdown menu*/
     $(document).on('mouseenter', '[class^="headerElement"]', function()
     {
         labelDropdown(this, true);
@@ -351,10 +324,7 @@
 
     $(document).on('mouseleave', '[class^="headerElement"]', function()
     {
-        if(menuOn === null)
-        {
-            labelDropdown(this, false);
-        }
+        labelDropdown(this, false);
     });
 
     $(document).on('mouseenter', '[class^="sideElement"]', function()
@@ -364,12 +334,9 @@
 
     $(document).on('mouseleave', '[class^="sideElement"]', function()
     {
-        if(menuOn === null)
-        {
-            attributeDropdown(this, false);
-        }
+        attributeDropdown(this, false);
     });
-	
+
     /** main menu buttons*/
     $(document).on('click', '[id="nameButton"]', function()
     {
@@ -609,40 +576,6 @@
         }
     });
 
-   /* function to manually toggle dropdown menus*/
-    $(document).on('click', '[class*="dropdownDiv"]', function(e)
-    {
-        if(this.lastChild.classList.contains("show") || (menuOn !== null && !menuOn.isSameNode(this)))
-        {
-            menuOn.lastChild.classList.remove("show");
-            menuOn = null;
-        }
-        else
-        {
-            this.lastChild.classList.add("show");
-            menuOn = this;
-            tempJsonVal = arrayCopy(jsonVal);
-            console.log(arrayCopy(tempJsonVal));
-        }
-    });
-
-    /* function to given prompt when clicked outside dropdown menu*/
-    $(document).on('click', 'body', function(e)
-    {
-        if(menuOn !== null && !$('.btn-primary').is(e.target))
-        {
-            if(JSON.stringify(tempJsonVal) === JSON.stringify(jsonVal) || confirm("Discard changes?"))
-            {
-                var dropdownUl =  menuOn.lastChild;
-                dropdownUl.classList.remove("show");
-                menuOn = null;
-                labelDropdown(dropdownUl.parentElement.parentElement, false);
-                console.log(arrayCopy(tempJsonVal));
-                jsonVal = arrayCopy(tempJsonVal);
-                updateScreenJson(jsonVal);
-            }
-        }
-    });																	
 	}
 	
     /** creates and deletes the dropdown menu for the labels*/
@@ -666,9 +599,8 @@
             var styleButtons = getStyleButtons();
 
             /* add the html dropdown  to the label */
-            element.innerHTML = '<div class="dropdown dropdownDiv">' +
-            //data-toggle="dropdown"
-            '<button class="btn btn-primary dropdown-toggle" type="button" >' + oldLabel +
+            element.innerHTML = '<div class="dropdown">' +
+            '<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">' + oldLabel +
             '<span class="caret"></span></button><ul class="dropdown-menu">' +
             'Label: <input type="text" id="labelColumnInput" value="' + oldLabel + '">' +
             'Name: <input type="text" id="nameColumnInput" value="' + oldName + '">' +
@@ -677,11 +609,9 @@
             '<li><a class="dropdown-item" type="text" id="swapColumnButton">Swap</a></li>' +
             '<li class="dropright"><a class="dropdown-toggle dropdown-item">style</a>' +
             '<ul class="dropdown-menu">' + styleButtons +
-            '</ul></li><div class="dropdown-divider"></div>' +
-            '<li><a class="dropdown-item" type="text" id="okButton">Ok</a></li>' +
-            '</div>';
+            '</ul></li></div>';
         }
-        else if(menuOn === null && jsonVal["opt"][element.id.substr(-1) - 1] !== undefined)
+        else
         {
             /* set the label back to the json label*/
             element.innerHTML = jsonVal["opt"][element.id.substr(-1) - 1]["label"];
@@ -702,8 +632,8 @@
             var styleButtons = getStyleButtons();
 
             /* add the html dropdown  to the div */
-            element.innerHTML = '<div class="dropdown dropdownDiv">' +
-                '<button class="btn btn-primary dropdown-toggle" type="button"">' + oldLabel +
+            element.innerHTML = '<div class="dropdown">' +
+                '<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">' + oldLabel +
                 '<span class="caret"></span></button><ul class="dropdown-menu">' +
                 'Label: <input type="text" id="labelAttriInput" value="' + oldLabel + '">' +
                 'Name: <input type="text" id="varAttriInput" value="' + name + '">' +
@@ -712,17 +642,14 @@
                 '<li><a class="dropdown-item" type="text" id="swapRowButton">Swap</a></li>' +
                 '<li class="dropright"><a class="dropdown-toggle dropdown-item">style</a>' +
                 '<ul class="dropdown-menu">' + styleButtons +
-                '</ul></li><div class="dropdown-divider"></div>' +
-                '<li><a class="dropdown-item" type="text" id="okButton">Ok</a></li>' +
-                '</div>';
+                '</ul></li></div>';
         }
-        else if(menuOn === null && jsonVal["attr"][element.getAttribute("id").substr(-1) - 1] !== undefined)
+        else
         {
             /* set the attribute label back to the json label*/
             element.innerHTML = jsonVal["attr"][element.getAttribute("id").substr(-1) - 1]["label"];
         }
     }
-
 
     /** adds the hover button to the box with the given id*/
     function boxDropDown(element, dropdownOff)
@@ -731,39 +658,34 @@
         if(dropdownOff && document.getElementById("boxDropdown") === null)
         {
             
-            var cell = getCell(element.id);
+            var cell = getCell(element.parentElement.id);
 			var varName = cell["var"];
-			console.log(varName)
 			var innerText = cell["txt"];
 			var outerText = cell["box"];
 			
 		    var styleButtons = getStyleButtons();
 
             /* add the html dropdown  to the div */
-            element.innerHTML = element.innerHTML + "<div class='dropdown dropdownDiv' id='boxDropdown'>" +
-                "<button class='btn btn-primary dropdown-toggle' type='button'>" +
+            element.innerHTML = element.innerHTML + "<div class='dropdown' id='boxDropdown'>" +
+                "<button class='btn btn-primary dropdown-toggle' type='button' data-toggle='dropdown'>" +
                 "<span class='caret'></span></button><ul class='dropdown-menu'>" +
                 "Inner text:<input type='text' id='innerTextInput' value=\"" + innerText.replace(/"/g, "'") + "\">" +
                 "Outer text:<input type='text' id='outerTextInput' value=\"" + outerText.replace(/"/g, "'") + "\">" +
                 "Variable name:<input type='text' id='varNameInput' value=\"" + varName + "\">" +
                 "<li class='dropright'><a class='dropdown-toggle dropdown-item'>style</a>" +
                 "<ul class='dropdown-menu'>" + styleButtons + "</ul></li>" +
-                '<div class="dropdown-divider"></div>' +
-                '<li><a class="dropdown-item" type="text" id="okButton">Ok</a></li>' +
-                '</div>';
-            element.style.position = "relative";
-            console.log(element);
-            $("#boxDropdown").css({"position": "absolute", "top": "4px", "right": "7px"});
+                "</ul></li></div>";
+            $("#boxDropdown").css({"position": "absolute", "top": "0px", "right": "0px"});
             /* code for the box handle*/
-//            element.innerHTML = element.innerHTML + '<div id="boxHandle"></div>';
-//            $("#boxHandle").css({"position": "absolute", "bottom": "0px", "right": "0px", "height":"15px", "width":"15px",
-//            "background-color":"white"});
+            element.innerHTML = element.innerHTML + '<div id="boxHandle"></div>';
+            $("#boxHandle").css({"position": "absolute", "bottom": "0px", "right": "0px", "height":"15px", "width":"15px",
+            "background-color":"white"});
         }
-        else if(!dropdownOff && menuOn === null)
+        else if(!dropdownOff)
         {
             /* set the attribute label back to the json label*/
             document.getElementById("boxDropdown").remove();
-//            document.getElementById("boxHandle").remove();
+            document.getElementById("boxHandle").remove();
         }
     }
 
@@ -1321,8 +1243,6 @@
     /** changes the json variable to the inputted variable and updates the screen*/
     function updateScreenJson(newJson)
     {
-		if(menuOn === null)
-        {				   
         json = Object.assign({}, newJson);
         printJSON();
 		var tempOpt = json["optOrders"][0]["opt"];
@@ -1343,8 +1263,7 @@
 
         /* make sure that selected elements are correctly shown*/
         changeColorSelected("dashed");
-		}
-	}
+    }
 
     /** changes the key of an option*/
     function changeOptKey(newKey, oldKey, oldKeyIndex)
