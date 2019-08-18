@@ -208,7 +208,6 @@
             delSelEl = true;
         }
         
-		console.log(selectedElements)
 		for(var i = 0; i < selectedElements.length; i++)
         {
             changeColumnValues(selectedElements[i].id, this.value, undefined, undefined);
@@ -223,8 +222,7 @@
     {
         var newStyle = this.id;
         var parEl = this.parentElement.parentElement.parentElement.parentElement.parentElement;
-		console.log(newStyle,parEl)
-        if(parEl.id.slice(0, -1) === "headerLabel")
+		if(parEl.id.slice(0, -1) === "headerLabel")
         {
             changeStyle(newStyle, parEl.id, undefined, undefined);
         }
@@ -660,7 +658,7 @@
         if(dropdownOff && document.getElementById("boxDropdown") === null)
         {
             
-            var cell = getCellFromId(element.parentElement.id);
+            var cell = getCell(element.parentElement.id);
 			var varName = cell["var"];
 			var innerText = cell["txt"];
 			var outerText = cell["box"];
@@ -722,19 +720,18 @@
             jsonVal["cell"][i][name] = arrayCopy(jsonVal["cell"][i][keys[keys.length - 1]]);
         }
 
-        /* adds a identical style to styles if needed and update cell style and var en delay var*/
-        for(i = 0; i < jsonVal["cell"].length; i++)
+        /*  update var en delay var*/
+        var varnames = getVarNames(jsonVal,jsonVal["opt"].length-2,undefined)
+		for(i = 0; i < varnames.length; i++)
         {
-            // var newStyle = addStyle();
-            jsonVal["cell"][i][name]["style"] = jsonVal["cell"][i][jsonVal["opt"][jsonVal["opt"].length -2]["name"]]["style"];
-            var varName = newName(jsonVal["cell"][i][name]["var"]);
-            jsonVal["cell"][i][name]["var"] = varName;
+            var varName = newName(getCell(undefined, varnames[i])["var"]);
+            getCell(undefined, varnames[i])["var"] = varName;
             jsonVal["delay"]["var"].push(varName);
         }
 
         /* updates the delay matrix, copying were possible, adding 0 otherwise*/
         var delayMatrix = jsonVal["delay"]["delays"];
-        var numAttri = jsonVal["attr"].length;
+        var numAttri = varnames.length;
         for(i = 0; i < numAttri; i++)
         {
             delayMatrix.push([]);
@@ -752,8 +749,10 @@
         }
 
         /* add the new option to the order*/
-        jsonVal["optOrders"][0]["opt"].push(name);
-
+        if (Array.isArray(jsonVal["optOrders"][0]["opt"]))
+		{
+		jsonVal["optOrders"][0]["opt"].push(name);
+		}
         /* updates the screen*/
         updateScreenJson(jsonVal);
     }
@@ -768,22 +767,26 @@
         }
 
         /* update the delay vars and matrix and update the names array*/
-        for(var i = 0; i < jsonVal["attr"].length; i++)
+         var varnames = getVarNames(jsonVal,indexTarget,undefined)
+		
+		for(var i = 0; i < varnames.length; i++)
         {
-            var varIndex = jsonVal["delay"]["var"].indexOf(jsonVal["cell"][i][getKey(i, indexTarget)]["var"]);
+            var varIndex = jsonVal["delay"]["var"].indexOf(varnames[i]);
             jsonVal["delay"]["var"].splice(varIndex, 1);
             jsonVal["delay"]["delays"].splice(varIndex, 1);
             for(var j = 0; j < jsonVal["delay"]["delays"].length; j++)
             {
                 jsonVal["delay"]["delays"][j].splice(varIndex, 1);
             }
-            deleteName(jsonVal["cell"][i][getKey(i, indexTarget)]["var"]);
+            deleteName(varnames[i]);
         }
 
         /* update the option order*/
-        var optOrderIndex = jsonVal["optOrders"][0]["opt"].indexOf(jsonVal["opt"][indexTarget]["name"]);
+        if (Array.isArray(jsonVal["optOrders"][0]["opt"]))
+		{
+			var optOrderIndex = jsonVal["optOrders"][0]["opt"].indexOf(jsonVal["opt"][indexTarget]["name"]);
         jsonVal["optOrders"][0]["opt"].splice(optOrderIndex, 1);
-
+		}
         /* update the names array*/
         deleteName(jsonVal["opt"][indexTarget]["name"]);
         // deleteName(jsonVal["opt"][indexTarget]["label"]);
@@ -809,11 +812,25 @@
         /* adds a new attribute with new name to attr*/
         jsonVal["attr"].push(arrayCopy(jsonVal["attr"][jsonVal["attr"].length - 1]));
         jsonVal["attr"][jsonVal["attr"].length-1]["name"] = newName(jsonVal["attr"][jsonVal["attr"].length - 2]["name"]);
+		jsonVal["cell"].push(arrayCopy(jsonVal["cell"][jsonVal["cell"].length - 1]));
+        /* updates the delay matrix, copying were possible, adding 0 otherwise*/
+		
+		 /*  update var en delay var*/
+        var varnames = getVarNames(jsonVal,undefined,jsonVal["attr"].length - 1)
+		console.log(varnames)
+		for(i = 0; i < varnames.length; i++)
+        {
+            var varName = newName(varnames[i]);
+			
+            getCell(undefined, varnames[i], undefined,jsonVal["attr"].length - 1)["var"] = varName;
+            jsonVal["delay"]["var"].push(varName);
+		}
 
         /* updates the delay matrix, copying were possible, adding 0 otherwise*/
-        var numColumn = jsonVal["opt"].length;
         var delayMatrix = jsonVal["delay"]["delays"];
-        for(var i = 0; i < numColumn; i++)
+        var numAttri = varnames.length;
+		
+		for(i = 0; i < numAttri; i++)
         {
             delayMatrix.push([]);
             for(var j = 0; j < delayMatrix[0].length; j++)
@@ -823,21 +840,12 @@
         }
         for(i = 0; i < delayMatrix.length; i++)
         {
-            for(j = 0; j < numColumn; j++)
+            for(j = 0; j < numAttri; j++)
             {
                 delayMatrix[i].push(0);
             }
         }
-
-        jsonVal["cell"].push(arrayCopy(jsonVal["cell"][jsonVal["cell"].length - 1]));
-        for(i = 0; i < jsonVal["opt"].length; i++)
-        {
-            var curCell = jsonVal["cell"][jsonVal["cell"].length - 1][getKey(jsonVal["cell"].length - 1, i)];
-            var newVar = newName(curCell["var"]);
-            curCell["var"] = newVar;
-            jsonVal["delay"]["var"].push(newVar);
-            //curCell["style"] = addStyle()["name"];
-        }
+			
 
         /* update the screen*/
         updateScreenJson(jsonVal);
@@ -854,21 +862,24 @@
 
         /* deletes the attribute en updates name*/
         deleteName(jsonVal["attr"][indexTarget]["name"]);
-        jsonVal["attr"].splice(indexTarget, 1);
-
-        /* delete the attribute for all cells, update the delay matrix and update names*/
-        for(var i = 0; i < jsonVal["cell"][indexTarget].length; i++)
+		
+		var varnames = getVarNames(jsonVal,undefined,indexTarget)
+		
+		for(var i = 0; i < varnames.length; i++)
         {
-            var varIndex = jsonVal["delay"]["var"].indexOf(jsonVal["cell"][indexTarget][getKey(indexTarget, i)]["var"]);
+            var varIndex = jsonVal["delay"]["var"].indexOf(varnames[i]);
             jsonVal["delay"]["var"].splice(varIndex, 1);
             jsonVal["delay"]["delays"].splice(varIndex, 1);
             for(var j = 0; j < jsonVal["delay"]["delays"].length; j++)
             {
                 jsonVal["delay"]["delays"][j].splice(varIndex, 1);
             }
-            deleteName(jsonVal["cell"][indexTarget][getKey(indexTarget, i)]["var"]);
+            deleteName(varnames[i]);
         }
+		
+        jsonVal["attr"].splice(indexTarget, 1);
 
+       
         /*deletes the attribute in cells*/
         jsonVal["cell"].splice(indexTarget, 1);
 
@@ -975,7 +986,7 @@
         }
 
         /* get the correct option corresponding to the id*/
-        var cell = getCellFromId(squareId);
+        var cell = getCell(squareId);
 
         /* if no text is specified, keep text the same, else replace ' with " and add an outer div*/
         if(textInside === undefined)
@@ -1014,7 +1025,7 @@
         }
 
         /* get the correct option corresponding to the id*/
-        var cell = getCellFromId(squareId);
+        var cell = getCell(squareId);
 
         /* if no text is specified or if it is the empty string, keep the var name the same*/
         var oldname = cell["var"];
@@ -1051,9 +1062,9 @@
         }
         if(newName !== undefined && newName !== "")
         {
-            if (checkNameInUse(newName)) {console.log("option name in use");return false};
+            if (checkNameInUse(newName)) {alert("option name in use");return false};
 			jsonVal["optOrders"][0]["opt"][jsonVal["optOrders"][0]["opt"].indexOf(option["name"])] = newName;
-            deleteName(option["name"]);
+            deleteName(option["name"]); 
 			names.push(newName);
 			changeOptKey(newName, option["name"]);
             option["name"] = newName;
@@ -1111,22 +1122,26 @@
             if(optId !== undefined)
             {
                 var optNum = optId.substr(-1) - 1;
-                for(var i = 0; i < jsonVal["cell"].length; i++)
+                var varnames = getVarNames(jsonVal,optNum, undefined)
+				
+				for(var i = 0; i < varnames.length; i++)
                 {
-                    jsonVal["cell"][i][getKey(i, optNum)]["style"] = newStyle
+                    getCell(undefined,varnames[i])["style"] = newStyle
                 }
             }
             if(attrId !== undefined)
             {
                 var attriNum = attrId.substr(-1) - 1;
-                for(i = 0; i < Object.keys(jsonVal["cell"][attriNum]).length; i++)
+                var varnames = getVarNames(jsonVal,undefined, attriNum)
+				
+				for(var i = 0; i < varnames.length; i++)
                 {
-                    jsonVal["cell"][attriNum][getKey(attriNum, i)]["style"] = newStyle;
+                    getCell(undefined,varnames[i])["style"] = newStyle
                 }
             }
             if(cellId !== undefined)
             {
-                getCellFromId(cellId)["style"] = newStyle;
+                getCell(cellId)["style"] = newStyle;
             }
         }
 
@@ -1176,7 +1191,7 @@
                 jsonVal = result;
                 undoStack.push(arrayCopy(jsonVal));
                 addStyleButtons();
-				names=getVarNames(jsonVal);
+				names=getVarNames(jsonVal, undefined, undefined);
             });
         }
         else if(json !== undefined)
@@ -1184,7 +1199,7 @@
             jsonVal = json;
             undoStack.push(arrayCopy(jsonVal));
             addStyleButtons();
-			names=getVarNames(jsonVal);
+			names=getVarNames(jsonVal, undefined, undefined);
         }
     }
 
@@ -1350,20 +1365,25 @@
     }
 
     /** finds the option corresponding to the given html id*/
-    function getCellFromId(squareId)
+    function getCell(squareId, cellname, optNum, attrNum)
     {
         //get cell name from name attribute of mother element
-		var cellname=$("#"+squareId).attr("name");
-		
+		if (squareId!==undefined) {cellname=$("#"+squareId).attr("name");}
+		cellout=[];	
 		//loop through all the cells to find the right cell values (note works with new subcell format)
-		for (i=0;i<jsonVal["cell"].length;i++)
+		for (var i=0;i<jsonVal["cell"].length;i++)
 			{	
-			Object.keys(jsonVal["cell"][i]).forEach(function(k){
-			
+			var optNames;
+			if (optNum!==undefined) {optNames=[jsonVal["opt"][optNum]["name"]]} else {optNames=Object.keys(jsonVal["cell"][i])}
+		
+			optNames.forEach(function(k){
+			if (i==attrNum || attrNum===undefined)
+			{
+		
 			if (jsonVal["cell"][i][k].length!==undefined)
 				{
 				// more than one cell
-					for (j=0;j<jsonVal["cell"][i][k].length;j++)
+					for (var j=0;j<jsonVal["cell"][i][k].length;j++)
 					//one row of cells
 					{
 					if (jsonVal["cell"][i][k][j].length!==undefined)
@@ -1388,23 +1408,11 @@
 					if (jsonVal["cell"][i][k]["var"]==cellname)
 					{cellout=jsonVal["cell"][i][k];}
 				}
+			}
 			})
 			}
 		return cellout;
-		/*
 		
-
-		var attriNum = squareId.substr(-1) - 1;
-		console.log(squareId,attriNum)
-	   for(var i = 0; i < Object.keys(jsonVal["cell"][attriNum]).length; i++)
-        {
-            if(Object.keys(jsonVal["cell"][attriNum])[i] === squareId.slice(0, -1))
-            {
-                console.log(jsonVal["cell"][attriNum][Object.keys(jsonVal["cell"][attriNum])[i]]);
-				return jsonVal["cell"][attriNum][Object.keys(jsonVal["cell"][attriNum])[i]];
-            }
-        }
-	*/
     }
 
     /** remove the given name from names*/
@@ -1420,17 +1428,24 @@
         return JSON.parse(JSON.stringify(array));
     }
 
-	function getVarNames(jsonPart)
+	function getVarNames(jsonPart, optNum, attrNum)
 	{
 	namesArray=[];
-	for (i=0;i<jsonPart["cell"].length;i++)
+	for (var i=0;i<jsonPart["cell"].length;i++)
 		{	
-		Object.keys(jsonPart["cell"][i]).forEach(function(k){
+		//get names
+		var optNames;
+		if (optNum!==undefined) {optNames=[jsonVal["opt"][optNum]["name"]]} else {optNames=Object.keys(jsonPart["cell"][i])}
 		
+		optNames.forEach(function(k){
+			
+		if (i==attrNum || attrNum===undefined)
+		{
+			
 		if (jsonPart["cell"][i][k].length!==undefined)
 			{
 			// more than one cell
-				for (j=0;j<jsonPart["cell"][i][k].length;j++)
+				for (var j=0;j<jsonPart["cell"][i][k].length;j++)
 				//one row of cells
 				{
 				if (jsonPart["cell"][i][k][j].length!==undefined)
@@ -1452,12 +1467,16 @@
 			{
 				namesArray.push(jsonPart["cell"][i][k]["var"]);
 			}
+			}
+			
 		})
 		}
-	for (i=0;i<jsonPart["opt"].length;i++)
+	if (optNum===undefined && attrNum==undefined)
+	{ //add opt and attr names 
+	for (var i=0;i<jsonPart["opt"].length;i++)
 		{namesArray.push(jsonPart["opt"][i]["name"])}
-	for (i=0;i<jsonPart["attr"].length;i++)
+	for (var i=0;i<jsonPart["attr"].length;i++)
 		{namesArray.push(jsonPart["attr"][i]["name"])}
-	
+	}
 	return namesArray
 	}
