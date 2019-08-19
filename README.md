@@ -7,14 +7,22 @@ This github contains a beta version of mouselabWEB 2.0. What are the important n
 - works with a touch screen 
 - using blurring on boxes rather than a box covering the information
 - new mysqli code compatible with newer php versions in the php scripts
+- new editor to edit the JSON files
 ------------------
 # Demo
 Go the the following link to test a demo version (enter your own identifier in the "subject=" part)
-http://www.mouselabweb.org/MLWEB20demo/tv.php?subject=test&condnum=0
+https://mlweb2.mouselabweb.org/demo/tv.php?subject=test&condnum=0
 Use condnum to see different versions of the orders or use condnum=-1 to determine this randomly
 
 Check for the data:
-http://www.mouselabweb.org/MLWEB20demo/datalyser.php 
+https://mlweb2.mouselabweb.org/demo/datalyser.php 
+------------------
+# Editor
+
+MouselabWEB comes with a new editor (beta) that allows you to edit the JSON structure by point and click, 
+or load files ad adjust them. The files allow for creating and adjusting the boxes. 
+https://mlweb2.mouselabweb.org/demo/mouselabEditor.html
+bug: While loading the page the json does not always gets loaded, refresh (F5) if you don;t see add buttons
 
 ------------------
 # Installation
