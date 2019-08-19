@@ -30,6 +30,14 @@ Check for the data:
 https://mlweb2.mouselabweb.org/demo/datalyser.php
 
 ------------------
+# Editor
+
+MouselabWEB comes with a new editor (beta) that allows you to edit the JSON structure by point and click, 
+or load files ad adjust them. The files allow for creating and adjusting the boxes. 
+https://mlweb2.mouselabweb.org/demo/mouselabEditor.html
+bug: While loading the page the json does not always gets loaded, refresh (F5) if you don;t see add buttons
+
+------------------
 # Installation
 - Download all files
 - Edit the mlwebdb.inc.php with your database connection  
