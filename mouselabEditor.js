@@ -256,7 +256,7 @@
         }
         else
         {
-            parEl = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
+            parEl = this.parentElement.parentElement.parentElement.parentElement.parentElement;
             changeStyle(newStyle, undefined, undefined, parEl.id);
         }
     });
@@ -325,19 +325,19 @@
 	
     $(document).on('change', '[id="innerTextInput"]', function()
     {
-        setBoxText(this.parentElement.parentElement.parentElement.parentElement.id, this.value, undefined);
+        setBoxText(this.parentElement.parentElement.parentElement.id, this.value, undefined);
     });
 
     $(document).on('change', '[id="outerTextInput"]', function()
     {
-        setBoxText(this.parentElement.parentElement.parentElement.parentElement.id, undefined, this.value);
+        setBoxText(this.parentElement.parentElement.parentElement.id, undefined, this.value);
     });
 
     $(document).on('change', '[id="varNameInput"]', function()
     {
         if(!checkNameInUse(this.value))
         {
-            changeVarName(this.parentElement.parentElement.parentElement.parentElement.id, this.value);
+            changeVarName(this.parentElement.parentElement.parentElement.id, this.value);
         }
 		else
 		{alert("variable name in use");}
@@ -622,7 +622,7 @@
             this.lastChild.classList.add("show");
             menuOn = this;
             tempJsonVal = arrayCopy(jsonVal);
-            console.log(arrayCopy(tempJsonVal));
+            //console.log(arrayCopy(tempJsonVal));
         }
     });
 
@@ -637,7 +637,7 @@
                 dropdownUl.classList.remove("show");
                 menuOn = null;
                 labelDropdown(dropdownUl.parentElement.parentElement, false);
-                console.log(arrayCopy(tempJsonVal));
+//                console.log(arrayCopy(tempJsonVal));
                 jsonVal = arrayCopy(tempJsonVal);
                 updateScreenJson(jsonVal);
             }
@@ -733,7 +733,7 @@
             
             var cell = getCell(element.id);
 			var varName = cell["var"];
-			console.log(varName)
+//			console.log(varName)
 			var innerText = cell["txt"];
 			var outerText = cell["box"];
 			
@@ -752,7 +752,6 @@
                 '<li><a class="dropdown-item" type="text" id="okButton">Ok</a></li>' +
                 '</div>';
             element.style.position = "relative";
-            console.log(element);
             $("#boxDropdown").css({"position": "absolute", "top": "4px", "right": "7px"});
             /* code for the box handle*/
 //            element.innerHTML = element.innerHTML + '<div id="boxHandle"></div>';
@@ -895,7 +894,7 @@
 		
 		 /*  update var en delay var*/
         var varnames = getVarNames(jsonVal,undefined,jsonVal["attr"].length - 1)
-		console.log(varnames)
+//		console.log(varnames)
 		for(i = 0; i < varnames.length; i++)
         {
             var varName = newName(varnames[i]);
@@ -1323,26 +1322,26 @@
     {
 		if(menuOn === null)
         {				   
-        json = Object.assign({}, newJson);
-        printJSON();
-		var tempOpt = json["optOrders"][0]["opt"];
-		var tempAttr = json["optOrders"][0]["attr"];
-		
-		json["optOrders"][0]["opt"]="standard";
-		json["optOrders"][0]["attr"]="standard";
-		refreshTrial($("#trialid").val(), 0);
-		json["optOrders"][0]["opt"]=tempOpt;
-		json["optOrders"][0]["attr"]=tempAttr;
-        /* regulates the undo/redo functionality*/
-        undoStack.push(arrayCopy(jsonVal));
-        allowedRedo = false;
+            json = Object.assign({}, newJson);
+            printJSON();
+            var tempOpt = json["optOrders"][0]["opt"];
+            var tempAttr = json["optOrders"][0]["attr"];
 
-        /* adds the add buttons*/
-        addAddButton();
-        addAttriButton();
+            json["optOrders"][0]["opt"]="standard";
+            json["optOrders"][0]["attr"]="standard";
+            refreshTrial($("#trialid").val(), 0);
+            json["optOrders"][0]["opt"]=tempOpt;
+            json["optOrders"][0]["attr"]=tempAttr;
+            /* regulates the undo/redo functionality*/
+            undoStack.push(arrayCopy(jsonVal));
+            allowedRedo = false;
 
-        /* make sure that selected elements are correctly shown*/
-        changeColorSelected("dashed");
+            /* adds the add buttons*/
+            addAddButton();
+            addAttriButton();
+
+            /* make sure that selected elements are correctly shown*/
+            changeColorSelected("dashed");
 		}
 	}
 
