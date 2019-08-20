@@ -19,3 +19,7 @@
 .dropdown-menu {
     padding: 5px;
 }
+
+.curStyle {
+    font-weight: bold;
+}

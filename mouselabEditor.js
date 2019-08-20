@@ -258,6 +258,18 @@
         {
             parEl = this.parentElement.parentElement.parentElement.parentElement.parentElement;
             changeStyle(newStyle, undefined, undefined, parEl.id);
+            var ShownStyles = document.getElementsByClassName("dropdown-item styleButton");
+            for(var i = 0; i < ShownStyles.length; i++)
+            {
+                if(ShownStyles[i].id === getCell(parEl.id)["style"])
+                {
+                    ShownStyles[i].classList.add("curStyle");
+                }
+                else
+                {
+                    ShownStyles[i].classList.remove("curStyle");
+                }
+            }
         }
     });
 
@@ -753,6 +765,16 @@
                 '</div>';
             element.style.position = "relative";
             $("#boxDropdown").css({"position": "absolute", "top": "4px", "right": "7px"});
+
+            var ShownStyles = document.getElementsByClassName("dropdown-item styleButton");
+            for(var i = 0; i < ShownStyles.length; i++)
+            {
+                if(ShownStyles[i].id === cell["style"])
+                {
+                    ShownStyles[i].classList.add("curStyle");
+                }
+            }
+//            document.getElementById(cell["style"]).classList.add("curStyle");
             /* code for the box handle*/
 //            element.innerHTML = element.innerHTML + '<div id="boxHandle"></div>';
 //            $("#boxHandle").css({"position": "absolute", "bottom": "0px", "right": "0px", "height":"15px", "width":"15px",
@@ -1218,6 +1240,7 @@
             }
             if(cellId !== undefined)
             {
+                console.log(cellId);
                 getCell(cellId)["style"] = newStyle;
             }
         }
