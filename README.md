@@ -7,16 +7,16 @@ This github contains a beta version of mouselabWEB 2.0. What are the important n
 - works with a touch screen 
 - can use blurring on boxes rather than a box covering the information
 - new mysqli code compatible with newer php versions in the php scripts
-- this version: new very flexible layout with cells containing subcells
-- this version: beta version of an editor 
+- new very flexible layout with cells containing subcells
+- beta version of an editor 
 
 many todo's such as:
 - update datalyser and playback to new style and new approach
 - better tools for running multiple pages
 
 ------------------
-# Demo 
-Go the the following link to test a demo version (enter your own identifier in the "subject=" part or keep using test)
+# Demo
+Go the the following link to test a demo version (enter your own identifier in the "subject=" part)
 
 https://mlweb2.mouselabweb.org/demo/tv.php?subject=test&condnum=0
 Use condnum to see different versions of the orders or use condnum=-1 to determine this randomly
@@ -27,9 +27,10 @@ The demo covers 4 pages:
 - page 3 and 4: two gambles with options that have several outcomes and probabilities, again using subcells to hold an probability outcome pair. Two versions using two different sets defined in the same json file, that have a transposed order (using attributeCol or optionCol formatting). So both gamble pages use the same json-definition file! The file also has many delays between some comparisons.
 
 Check for the data:
+
 https://mlweb2.mouselabweb.org/demo/datalyser.php
 
-------------------
+----------------
 # Editor
 
 MouselabWEB comes with a new editor (beta) that allows you to edit the JSON structure by point and click, 
