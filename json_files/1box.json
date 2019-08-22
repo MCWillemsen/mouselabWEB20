@@ -1,70 +1,99 @@
 {
- "cells":[
+ "styles":[
+	{
+		"name":"defaults",
+		"mainClass":["w3-white", "w3-center","w3-padding-small"],
+		"txtClass":["w3-light-blue"],
+		"boxClass":["w3-indigo"],
+		"labelClass":["w3-white"],
+		"btnClass":["w3-button", "w3-block", "w3-border", "w3-border-gray", "w3-round-xlarge", "w3-display-middle"],
+		"btnTxt": ["w3-white"],
+		"btnSel":["w3-blue", "w3-hover-blue"], 
+		"btnNotSel":["w3-light-blue"]
+	},
 	{
 	   "name":"A",
 	   "mainClass":"default",
 	   "txtClass":"default",
 	   "boxClass":"default",
-	   "labelClass":"default",
-	   "width":"25%",
-	   "height":"80px"
+	   "boxType":"closed"
+	},
+	{
+		"name":"label",
+		"width":"10%",
+		"labelClass":"default",
+	    "height":"50px"
+	}
+	,
+	{
+		"name":"button",
+		"btnClass":"default",
+		"btnTxt": "default",
+		"btnSel":"default", 
+		"btnNotSel":"default",
+		"height": "30px",
+		"width":"10%"
 	}
  ]
 ,
- "options":[
+ "opt":[
 	{
 	   "name":"A",
-	   "optionName":"A",
-	   "attributes":[
-		  {
-			 "label":"Option A",
-			 "txt":[
-				"inside box 1"
-				],
-			 "box":[
-			 "outside box1"
-					],
-			"var": ["box1"]
-		  }
-		],
-	   "attributeLabels":[
-		  "attr 1"
-	   ]
+	   "label":"option A",
+	   "width":"30%"
 	}
- ]
+]
+ ,
+"attr":[
+	{
+		"name":"attr1",
+		"label":"attr1",
+	   	"height":"50px"
+	}
+]
+,
+"cell":
+	[
+		{"A":{"var":"box1",
+			 "txt":"inside box1",
+			 "box":"outside box1",
+			 "style":"A"
+			 }
+		}
+	]
+,
+ "delay":
+	{
+	"var" : [
+					"box1"
+				],
+	"delays" : [
+				[0]
+				]
+				
+	}
 ,
  "optOrders":[
 	{
 	   "name":"order1",
-	   "items":[
-		  "A"
-		    ]
+	   "opt":["A"],
+	   "attr":"standard"
 	}
  ]
 ,
  "sets":[
 	{
-	   "name":"Set1",
-	   "styling":"byAtt",
-	   "styleStructure":[
-				"fixAttributes"
-			],
-	   "cellFormat":[
-		   {
-			 "cellType":"A",
-			 "boxType":"closed"
-		  }
-		],
+	   "name":"dynSet",
 	   "optOrder":[
-			 "order1"		 
+			 "order1"
 	   ],
-	   "attOrder":"random",
 	   "layout":"optionCol",
 	   "buttons":"on",
-	   "displayLabels":"optOnly",
+	   "displayLabels":"all",
 	   "addedVars":[
 		  "test=2"
 	   ]
 	}
  ]
 }
+
