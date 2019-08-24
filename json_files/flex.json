@@ -1,0 +1,308 @@
+{
+ "styles":[
+	{
+		"name":"defaults",
+		"mainClass":["w3-white", "w3-center","w3-padding-small"],
+		"txtClass":["w3-light-blue"],
+		"boxClass":["w3-indigo"],
+		"labelClass":["w3-white"],
+		"btnClass":["w3-button", "w3-block", "w3-border", "w3-border-gray", "w3-round-xlarge", "w3-display-middle"],
+		"btnTxt": ["w3-white"],
+		"btnSel":["w3-blue", "w3-hover-blue"], 
+		"btnNotSel":["w3-light-blue"]
+	},
+	{
+	   "name":"P",
+	   "mainClass":"default",
+	   "txtClass":["w3-purple"],
+	   "boxClass":"default",
+	   "boxType":"open"
+	},
+	{
+	   "name":"A",
+	   "mainClass":"default",
+	   "txtClass":"default",
+	   "boxClass":"default",
+	   "boxType":"closed"
+	},
+	{
+	   "name":"B",
+	   "mainClass":"default",
+	   "txtClass":"default",
+	   "boxClass":["w3-green", "w3-small"],
+	   "boxType":"blur"
+	   },
+	{
+		"name":"label",
+		"width":"10%",
+		"labelClass":"default",
+	    "height":"50px"
+	}
+	,
+	{
+		"name":"button",
+		"btnClass":"default",
+		"btnTxt": "default",
+		"btnSel":"default", 
+		"btnNotSel":"default",
+		"height": "30px",
+		"width":"10%"
+	}
+ ]
+,
+ "opt":[
+	{
+	   "name":"A",
+	   "label":"option A",
+	   "width":"25%",
+	   "txt_button":"Choose option A"
+	}
+	,
+	{
+		"name":"B",
+		"label":"option B",
+	   "width":"25%",
+	   "txt_button":"Choose option B"
+	}
+	,
+	{
+		"name":"C",
+		"label":"option C",
+	   "width":"25%",
+	   "txt_button":"Choose option C"
+	}
+]
+ ,
+"attr":[
+	{
+		"name":"img",
+		"label":"picture",
+	   	"height":"150px"
+	}
+	,
+	{
+		"name":"price",
+		"label":"price",
+	    "height":"150px"
+	}
+	,
+	{
+		"name":"features",
+		"label":"features",
+		"height":"150px"
+	}
+]
+,
+"cell":
+	[
+		{"A":{"var":"imgA",
+			 "txt":"<img src='tva.jpg' height=150px style='overflow: hidden;'>",
+			 "box":"Pict A",
+			 "style":"A"
+			 }
+		 
+		,
+		"B":
+			{"var":"imgB",
+			 "txt":"<img src='tvb.jpg' height=150px style='overflow: hidden;'>",
+			 "box":"Pict B",
+			 "style":"A"
+			 }
+			 
+		,
+		"C":
+			 {"var":"imgC",
+			 "txt":"<img src='tvc.jpg' height=150px style='overflow: hidden;'>",
+			 "box":"Pict C",
+			 "style":"A"
+			 }
+		}
+	,
+	
+		{"A":{"var":"prA",
+			 "txt":"23 euro",
+			 "box":"Price A",
+			 "style":"P"
+			 }
+		,
+		"B":{
+			 "var":"prB",
+			 "txt":"56 euro",
+			 "box":"Price B",
+			 "style":"P"
+			 }
+			 
+		,
+		"C":
+			 {"var":"prC",
+			 "txt":"56 euro",
+			 "box":"Price C",
+			 "style":"P"
+			 }
+		}
+	,
+	
+		{"A":[[
+			{"var":"fA1",
+			 "txt":"nice1",
+			 "box":"features A",
+			 "pwidth":".60",
+			 "pheight":".40",
+			 "style":"B"
+			 },{"var":"fA2",
+			 "txt":"nice2",
+			 "box":"features A",
+			 "pwidth":".40",
+			 "pheight":".40",
+			 "style":"B"
+			 }],
+			 [
+			{"var":"fA3",
+			 "txt":"nice3",
+			 "box":"features A",
+			 "pwidth":".30",
+			 "pheight":".60",
+			 "style":"B"
+			 },{"var":"fA4",
+			 "txt":"nice4",
+			 "box":"features A",
+			 "pwidth":".70",
+			 "pheight":".60",
+			 "style":"B"
+			 }]]
+			 
+		
+		,
+		"B":[[
+			{"var":"fB1",
+			 "txt":"ok-isch",
+			 "box":"features B",
+			 "pheight":".60",
+			 "pwidth":"1",
+			 "style":"B"
+			 }],
+			 [{"var":"fB2",
+			 "txt":"ok2",
+			 "box":"features B",
+			 "pheight":".40",
+			 "pwidth":"1",
+			 "style":"B"
+			 }]]
+			 
+		,
+		"C":[{"var":"fC1",
+			 "txt":"awesome1",
+			 "box":"features C",
+			 "pwidth":".60",
+			 "pheight":"1",
+			 "style":"B"
+			 },{"var":"fC2",
+			 "txt":"awesome2",
+			 "box":"features C",
+			 "pwidth":".40",
+			 "pheight":"1",
+			 "style":"B"
+			 }]
+			 
+		}
+	]
+,
+ "delay":
+	{
+	"var" : [
+					"imgA",
+					"imgB",
+					"imgC",
+					"prA",
+					"prB",
+					"prC",
+					"fA1",
+					"fB1",
+					"fC1",
+					"fA2",
+					"fB2",
+					"fC2",
+					"fA3",
+					"fA4"
+				],
+	"delays" : [
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+				[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+				]
+				
+	}
+,
+ "optOrders":[
+	{
+	   "name":"order1",
+	   "opt":[
+		  "A",
+		  "B",
+		  "C"
+	   ],
+	   "attr":"random"
+	},
+	{
+	   "name":"order2",
+	   "items":[
+		  "B",
+		  "A",
+		  "C"
+	   ],
+	   "attr":"random"
+	}
+	,
+	{
+	   "name":"order3",
+	   "items":[
+		  "C",
+		  "B"
+	   ],
+	   "attr":"random"
+	}
+ ]
+,
+ "sets":[
+	{
+	   "name":"dynSet",
+	   "optOrder":[
+			 "order1",
+			 "order2",
+			 "order3"
+	   ],
+	   "layout":"optionCol",
+	   "buttons":"on",
+	   "displayLabels":"all",
+	   "addedVars":[
+		  "test=2"
+	   ]
+	},
+	{
+	   "name":"dynSet2",
+	   "optOrder":[
+			 "order1",
+			 "order2",
+			 "order3"
+	   ],
+	   "layout":"attributeCol",
+	   "buttons":"on",
+	   "displayLabels":"all",
+	   "addedVars":[
+		  "test=2"
+	   ]
+	}
+ ]
+}
+

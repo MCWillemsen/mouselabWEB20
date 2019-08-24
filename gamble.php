@@ -1,8 +1,16 @@
 <?php 
-if (isset($_GET['subject'])) {$subject=$_GET['subject'];}
- else {$subject="anonymous";}
+session_start();
+if (isset($_GET['subject'])) {$subject=$_GET['subject'];$_SESSION['subject']=$subject;}
+ else {
+	 if (isset($_SESSION['subject'])) {$subject=$_SESSION['subject'];}
+	 else {$subject="anonymous";};
+		}
 if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
-	else {$condnum=-1;}
+ else {
+	 if (isset($_SESSION['condnum'])) {$condnum=$_SESSION['condnum'];$_SESSION['condnum']=$condnum;}
+		else {$condnum=-1;};
+	}
+	
 ?>
 <html>
     <head>
@@ -49,7 +57,7 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
         <div class="w3-white w3-container">
 
             <h1>Introduction</h1>
-            <p>In this example, You decide between two gambles, that each have three outcomes with three probabilities. The rows are randomized and the order of the options too. different formatting is applied to the rows.</p>
+            <p>In this example, You decide between two gambles, that each have three outcomes with three probabilities. The rows are randomized and the order of the options too. different formatting is applied to some cells.</p>
             <div id="container"  class="w3-white w3-container w3-col" style="width:90%">
             </div>
 			

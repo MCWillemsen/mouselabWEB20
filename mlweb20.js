@@ -25,11 +25,11 @@ dtNewDate = new Date();
 starttime = dtNewDate.getTime(); // abs. starttime of experiment
 
 // default values 
-mlweb_outtype="XML"; 	// format for output to database in [XML,CSV]
-mlweb_fname=0;			// name of form [0=is first or only form]
+mlweb_outtype="CSV"; 	// format for output to database in [XML,CSV]
+mlweb_fname="mlwebform";	// name of form [0=is first or only form]
 chkFrm = false // flag to test whether additional form elements have to be checked on submission
 warningTxt = "Some questions have not been answered. Please answer all questions before continuing!";
-
+choice="";
 
 //define basic blur settings 
 var foggyset = {
@@ -39,6 +39,7 @@ var foggyset = {
 };
 
 currentid = "";
+previd = "";
 
 
 
@@ -117,6 +118,16 @@ if (chkFrm)
 
 	var filled=true;
 
+	var radio_groups = {}
+$(":radio").each(function(){
+    radio_groups[this.name] = true;
+})
+
+for(group in radio_groups){
+    if_checked = !!$(":radio[name='"+group+"']:checked").length
+    alert(group+(if_checked?' has checked radios':' does not have checked radios'))
+}
+
 	for (i=0;i<noElm;i++)
 		{	
 		elemHandle = document.forms[0].elements[i];
@@ -152,22 +163,24 @@ function hideBox(bid, evt)
 	
 	if ($("#" + bid + "_box").length)
 	{
-		$("#" + bid + "_box").show();
-		$("#" + bid + "_txt").hide();
+		$("#" + bid + "_box").finish().show();
+		$("#" + bid + "_txt").finish().hide();
 	} else
 	{
 		$("#" + bid + "_txt").foggy(foggyset);
 	}
 }
 
-function showBox(bid, evt)
+function showBox(bid, evt, delay)
 {
 	timefunction(evt, $("#"+bid).attr("name"), "");
 	//blur if not _box div
 	if ($("#" + bid + "_box").length)
 	{
-		$("#" + bid + "_box").hide();
-		$("#" + bid + "_txt").show();
+		$("#" + bid + "_box").fadeOut(0.9*delay, function() {
+		$("#" + bid + "_txt").fadeIn(0.1*delay);}
+			);
+		
 	} else
 	{
 		$("#" + bid + "_txt").foggy(false);
@@ -188,8 +201,11 @@ function InitBoxes(){
 				hideBox(currentid, 'mouseout')
 			}
 			;
-			currentid = $(this).attr("id"); // stores the current open box 
-			showBox(currentid, 'mouseover');
+			currentid = $(this).attr("id");
+			if (previd == "") {previd=currentid;}
+			var delay = delayMatrix[$("#"+previd).attr("name")][$("#"+currentid).attr("name")];
+			// stores the current open box 
+			showBox(currentid, 'mouseover', delay);
 		},
 		touchstart: function (event) {
 			event.preventDefault();
@@ -197,12 +213,15 @@ function InitBoxes(){
 				hideBox(currentid, 'touchout')
 			}
 			;
-			currentid = $(this).attr("id"); // stores the current open box 
-			showBox(currentid, 'touchover');
+			currentid = $(this).attr("id");
+			if (previd == "") {previd=currentid;}
+			var delay = delayMatrix[$("#"+previd).attr("name")][$("#"+currentid).attr("name")];
+			showBox(currentid, 'touchover', delay);
 		},
 		mouseleave: function () {
 			if (currentid == "")
 				return false;
+			previd = currentid; 
 			currentid = "";
 			hideBox($(this).attr("id"), 'mouseout')
 		},
@@ -210,26 +229,39 @@ function InitBoxes(){
 			event.preventDefault();
 			if (currentid == "")
 				return false;
+			previd = currentid; 
 			currentid = "";
 			hideBox($(this).attr("id"), 'touchout')
-		},
-		dblclick: function () {
-
-			alert($("#" + $(this).attr("id") + "_txt").html());
 		}
 
 	});
 
+	
+
 	$("#container .choiceButton").click(function (event) {
+		// remove previous choice style if one has been made
+		if (choice!="") {removeClasses(def_btnSel, $("#"+choice).attr("id"), "id");
+		assignClasses(def_btnNotSel, $("#"+choice).attr("id"), "id");}
+		//save choice in gloval var and add to form
 		choice = $(this).val();
 		$("#choice").val(choice);
-		$(".choiceButton").removeClass(def_buttonclick);
-		$(this).addClass(def_buttonclick);
+		removeClasses(def_btnNotSel, $(this).attr("id"), "id");
+		assignClasses(def_btnSel, $(this).attr("id"), "id");
 		timefunction("btnClick", choice, "");
 		});
 
 	blurBoxes.forEach(function (item) {
-		$("#" + item).foggy(foggyset).show();
+		
+		if (item==".mask") 
+		{// for uniform styles use class to blur 
+		$("div[id$='_box']").each(function (i) {$(this).html($("#"+$(this).attr("id").replace("box","txt")).html());});		
+		$(item).foggy(foggyset).show();
+			}
+		else{
+		//otherwise only blur specific items
+		// but first swap content from each _txt box to _box 	
+		$("#" + item).html($("#"+item.replace("box","txt")).html());
+		$("#" + item).foggy(foggyset).show();}
 		});
 
 };
