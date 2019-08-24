@@ -348,7 +348,7 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput,d
             if(item["name"] == orderO[i]){
                 var cellCounter = 0;
                 currentOption=orderO[i];
-				
+				optionWidth = item["width"];
 				
 				orderAnum.forEach(function(k){
 					cellCounter++;
@@ -544,7 +544,7 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput,d
 						})
 					}	
 				}		
-				optionWidth = 	$("#"+currentOption + (cellCounter)).css("width");
+				//optionWidth = 	$("#"+currentOption + (cellCounter)).css("width");
 				
 					if(i == 0){
 						if(dataInput["displayLabels"] == "attOnly" || dataInput["displayLabels"] == "all"){
