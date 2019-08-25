@@ -6,6 +6,7 @@
 
 <title>Untitled Document</title>
 <link href="mlweb.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="jquery-3.1.1.min.js"></script>
 <script language="javascript">
 function objEvent(event,name,value,time)
 {
@@ -68,43 +69,21 @@ handlecount = 0;
 handle = new Array();
 for (i=0; i<eventArray.length; i++)
 	{
-if (eventArray[i].event.toLowerCase() == "onclick")
+if (eventArray[i].event.toLowerCase() == "btnclick")
 	{ 
-	for (x=0;x<top.page.btnTag.length;x++)
-		{if (eventArray[i].name == top.page.btnTag[x]) {handle[handlecount]=setTimeout("top.page.recChoice('"+eventArray[i].event+"','"+eventArray[i].name+"','"+eventArray[i].value+"')",(eventArray[i].time-timeoffset)/speed);handlecount++;break;}
-		}
+	console.log(eventArray[i].name)
+	$("#"+eventArray[i].name, window.parent.frames["page"].document).click();
 	}
 if (eventArray[i].event == "mouseover")
 		{
-		box = new Array();
-		box = recode(eventArray[i].name); // find coordinates of this tag name
-		if (!box) {continue;} // go to next if not a tagname
-		for (x=0;x<top.page.RowOut.length;x++)
-			{
-			// remap the coordinates based on counterbalancing
-			if (box[0] == top.page.RowOut[x]) {boxname=String.fromCharCode(97+x);break;}
-			}
-		for (x=0;x<top.page.ColOut.length;x++)
-			{
-			if (box[1] == top.page.ColOut[x]) {boxname=boxname+x.toString();break;}
-			}
-		handle[handlecount] = setTimeout("top.page.ShowCont('"+boxname+"','"+eventArray[i].event+"')",(eventArray[i].time-timeoffset)/speed);
+		boxid = $("[name='"+eventArray[i].name+"']", window.parent.frames["page"].document).attr("id");
+		handle[handlecount] = setTimeout("top.page.showBox('"+boxid+"','"+eventArray[i].event+"', 0)",(eventArray[i].time-timeoffset)/speed);
 		handlecount++;
 		}
 	if (eventArray[i].event == "mouseout")
 		{
-		box = new Array();
-		box = recode(eventArray[i].name);
-		if (!box) {continue;}
-		for (x=0;x<top.page.RowOut.length;x++)
-			{
-			if (box[0] == top.page.RowOut[x]) {boxname=String.fromCharCode(97+x);break;}
-			}
-		for (x=0;x<top.page.ColOut.length;x++)
-			{
-			if (box[1] == top.page.ColOut[x]) {boxname=boxname+x.toString();break;}
-			}	
-		handle[handlecount] = setTimeout("top.page.HideCont('"+boxname+"','"+eventArray[i].event+"')", (eventArray[i].time-timeoffset)/speed)
+		boxid = $("[name='"+eventArray[i].name+"']", window.parent.frames["page"].document).attr("id");
+		handle[handlecount] = setTimeout("top.page.hideBox('"+boxid+"','"+eventArray[i].event+"', 0)",(eventArray[i].time-timeoffset)/speed);
 		handlecount++;
 		}
 	lasttime=eventArray[i].time-timeoffset;	
