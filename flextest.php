@@ -68,7 +68,7 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
             o=$("#condnum").val();
 			if (o<0) {o="random"};
             
-			generateTrial("json_files/flex.json", "dynSet", o);
+			generateTrial("container","json_files/flex.json", "dynSet", o);
 
             			
      		//function that starts the page

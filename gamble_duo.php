@@ -58,8 +58,11 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
 
             <h1>Introduction</h1>
             <p>In this example, You decide between two gambles, that each have three outcomes with three probabilities. The rows are randomized and the order of the options too. different formatting is applied to some cells.</p>
-            <div id="container"  class="w3-white w3-container w3-col" style="width:90%">
-            </div>
+            <div class="w3-row">
+				<div id="G1"  class="w3-white w3-container w3-col s5"></div>
+				<div class="w3-green w3-col s1 ">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</div>
+				<div id="G2"  class="w3-white  w3-col s5"></div>
+			</div>
 			
         </div>
 		<div class="w3-white w3-container w3-center w3-padding">
@@ -77,7 +80,8 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
             o=$("#condnum").val();
 			if (o<0) {o="random"};
             
-			generateTrial("container", "json_files/gamble.json", "dynSet", o);
+			window.setTimeout('generateTrial("G1", "json_files/gamble_duo.json", "dynSet3",'+ o +')',10);
+			window.setTimeout('generateTrial("G2", "json_files/gamble_duo.json", "dynSet4",'+o+')',100);
 
             			
      		//function that starts the page

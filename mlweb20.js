@@ -191,11 +191,11 @@ function showBox(bid, evt, delay)
 
 //function to activate the boxes and the choiceButtons
 // 
-function InitBoxes(){
+function InitBoxes(mid){
 	
 	
 	// function that responds to mouseovers and tocuhes
-	$("#container .Hoverable").on({
+	$("#"+mid+" .Hoverable").on({
 		mouseenter : function () {
 			if (currentid != "") {
 				hideBox(currentid, 'mouseout')
@@ -238,7 +238,7 @@ function InitBoxes(){
 
 	
 
-	$("#container .choiceButton").click(function (event) {
+	$("#"+mid+" .choiceButton").click(function (event) {
 		// remove previous choice style if one has been made
 		if (choice!="") {removeClasses(def_btnSel, $("#"+choice).attr("id"), "id");
 		assignClasses(def_btnNotSel, $("#"+choice).attr("id"), "id");}

@@ -51,21 +51,22 @@ var set = "";
 
 
 //Main function to call from LimeSurvey or standalon HTML page --> jsonIdentifier is the filename, trialIdentifier is the name of the set element (trial) to call
-function generateTrial(jsonUrl, trialIdentifier, orderNum){
+function generateTrial(id, jsonUrl, trialIdentifier, orderNum){
    //store values for datafile
+   mid = id;
    jsonFile = jsonUrl;
    set = trialIdentifier;  
    //retrieve data from json file
   var retrieveData = $.getJSON(jsonUrl); 
   
     retrieveData.done(function(JSONdata){
-        interpreter(JSONdata, trialIdentifier, orderNum);
+        interpreter(mid,JSONdata, trialIdentifier, orderNum);
     })
     
 }
 
 //Main function calling all subfunctions
-function interpreter(dataInput, setInput, orderNum){
+function interpreter(mid,dataInput, setInput, orderNum){
     json=dataInput;
 	var setData = [];
     if (setInput==0)
@@ -87,27 +88,27 @@ function interpreter(dataInput, setInput, orderNum){
 	var delayData = dataInput["delay"];
 	var styleInput = dataInput["styles"];
 	
-    insertStructure(setData, orderData, optionData, attrData, orderNum);
+    insertStructure(mid,setData, orderData, optionData, attrData, orderNum);
     
     //insert stimuli/text in the boxes
-    insertStimuli(setData, optionData, attrData, cellData,styleInput,delayData);
+    insertStimuli(mid,setData, optionData, attrData, cellData,styleInput,delayData);
     
     
     //insert styling (width, blur, closed boxes, classes etc.)
     //insertStyles(setData, styleInput, optionData, attrData, cellData);
     
     //put all added variables, including condition number, in hidden input fields
-    fillAddedVariables(setData);
+    fillAddedVariables(mid,setData);
 	
     //call InitBoxes to make the boxes active/hoverable
-	InitBoxes();
+	InitBoxes(mid);
    
    	}
 
 
 
 //Main function for displaying the structure (rows and columns
-function insertStructure(dataInput, orderInput, optionInput, attrInput, orderNum){
+function insertStructure(mid,dataInput, orderInput, optionInput, attrInput, orderNum){
     var optList = [];
 	var attrList = [];
 	//retrieve the order and resolve random is necessary
@@ -219,15 +220,15 @@ function insertRows(dataInput){
         rowCounter++;
                       
         if(topLabels == true && j == 0){
-            $("#container").append("<div id='headerLabels' class='w3-row w3-white'></div>");
+            $("#"+mid).append("<div id='headerLabels"+mid+"' class='w3-row w3-white'></div>");
         }
-        $("#container").append("<div id='row" + (rowCounter) + "' class='w3-row w3-white'></div>");
+        $("#"+mid).append("<div id='row" + (rowCounter) + mid + "' class='w3-row w3-white'></div>");
     }
 
     if(dataInput["buttons"] == "on"){    
         if(dataInput["layout"] == "optionCol"){
             bottomButtons = true;
-            $("#container").append("<div id='buttons' class='w3-row w3-white'></div>");
+            $("#"+mid).append("<div id='buttons"+mid+"' class='w3-row w3-white'></div>");
         }else{
             sideButtons = true;
         }
@@ -284,11 +285,11 @@ function insertColumns(dataInput, optionInput){
                        
                         if(topLabels == true && j==0 && ((dataInput["layout"] == "optionCol" && topLabelCounter < totalCols) || (dataInput["layout"] == "attributeCol" && i == 0))){
                             topLabelCounter++;
-                            $("#headerLabels").append('<div id="headerLabel' + (topLabelCounter) + '" class="headerElement w3-col"></div>');
-                            $("#headerLabel" + (topLabelCounter)).append('<div id="headerLabel' + (topLabelCounter) + '_txt" class="headerTxt w3-display-container"></div>');
+                            $("#headerLabels"+mid).append('<div id="headerLabel' + (topLabelCounter) + mid + '" class="headerElement w3-col"></div>');
+                            $("#headerLabel" + (topLabelCounter)+mid).append('<div id="headerLabel' + (topLabelCounter) + mid + '_txt" class="headerTxt w3-display-container"></div>');
                         }
                         
-						$("#row" + rowCounter).append('<div id="' + currentOption + (colSelector) + '" class="colElement w3-col"></div>');
+						$("#row" + rowCounter + mid).append('<div id="' + currentOption + (colSelector) + '" class="colElement w3-col"></div>');
                          
                     }
                        
@@ -296,23 +297,23 @@ function insertColumns(dataInput, optionInput){
                    //insert sidelabels
                     if((dataInput["layout"] == "attributeCol" && (dataInput["displayLabels"] == "optOnly" || dataInput["displayLabels"] == "all")) || (dataInput["layout"] == "optionCol" && (dataInput["displayLabels"] == "attOnly" || dataInput["displayLabels"] == "all") && i ==0)){
                         sideLabels = true;
-                        $("#row" + (rowCounter)).prepend('<div id="sideLabel' + (rowCounter) + '" class="sideElement w3-col"></div>');
-                        $("#sideLabel" + (rowCounter)).append('<div id="sideLabel' + (rowCounter) + '_txt" class=" sideTxt w3-display-container"></div>');
+                        $("#row" + (rowCounter) + mid).prepend('<div id="sideLabel' + (rowCounter) + mid +'" class="sideElement w3-col"></div>');
+                        $("#sideLabel" + (rowCounter) + mid).append('<div id="sideLabel' + (rowCounter) + mid + '_txt" class=" sideTxt w3-display-container"></div>');
                     }                    
                     if(sideLabels == true && i == 0 && j == 0){
-                        $("#headerLabels").prepend('<div id="headerLabel0" class="headerElement w3-col"></div>');
-                        $("#headerLabel0").append('<div id="headerLabel0_txt" class="headerTxt w3-display-container"></div>');
+                        $("#headerLabels"+mid).prepend('<div id="headerLabel0'+mid+'" class="headerElement w3-col"></div>');
+                        $("#headerLabel0"+mid).append('<div id="headerLabel0'+mid+'_txt" class="headerTxt w3-display-container"></div>');
                     }
                 }
             }
         });
         if(bottomButtons==true){
             if(sideLabels == true && i==0){
-                $("#buttons").append('<div id="button0" class="buttonCell w3-col"></div>');
-                $("#button0").append('<div id="button0_txt" class="buttonTxt w3-display-container"></div>');
+                $("#buttons"+mid).append('<div id="button0'+mid+'" class="buttonCell w3-col"></div>');
+                $("#button0"+mid).append('<div id="button0'+mid+'_txt" class="buttonTxt w3-display-container"></div>');
             }
-            $("#buttons").append('<div id="button' + currentOption + '" class="buttonCell w3-col"></div>');
-            $("#button" + (currentOption)).append('<div id="button' + (currentOption) + '_txt" class="buttonTxt w3-display-container"></div>');
+            $("#buttons"+mid).append('<div id="button' + currentOption + mid + '" class="buttonCell w3-col"></div>');
+            $("#button" + (currentOption) + mid).append('<div id="button' + (currentOption) + mid +'_txt" class="buttonTxt w3-display-container"></div>');
 
         }  
     }
@@ -320,8 +321,8 @@ function insertColumns(dataInput, optionInput){
         var rowBtnCounter = 0;
         for(l = 0; l < (orderO.length); l++){
             rowBtnCounter++;
-            $("#row" + (rowBtnCounter)).append('<div id="button' + orderO[l] + '" class="buttonCell w3-col"></div>');
-            $("#button" + orderO[l]).append('<div id="button' + orderO[l] + '_txt" class=" buttonTxt w3-display-container"></div>');
+            $("#row" + (rowBtnCounter) + mid).append('<div id="button' + orderO[l] + mid + '" class="buttonCell w3-col"></div>');
+            $("#button" + orderO[l] + mid).append('<div id="button' + orderO[l] + mid + '_txt" class=" buttonTxt w3-display-container"></div>');
             }
     }
    
@@ -330,7 +331,7 @@ function insertColumns(dataInput, optionInput){
 
 
 //insert stimuli in the boxes
-function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput,delayInput){
+function insertStimuli(mid,dataInput, optionInput, attrInput, cellInput,styleInput,delayInput){
     var randomTxtArray = [];
     var workingArray = [];
 	varList = [];
@@ -549,15 +550,15 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput,d
 					if(i == 0){
 						if(dataInput["displayLabels"] == "attOnly" || dataInput["displayLabels"] == "all"){
 							if(dataInput["layout"] == "attributeCol"){
-								$("#headerLabel" + (txtNumber+1) + "_txt").append('<div class="w3-display-middle">' + attrInput[txtNumber]["label"] + '</div>').css("height",labelHeight);
-								$("#headerLabel" + (txtNumber+1)).css("width",optionWidth)
-								$("#headerLabel0").css("width",labelWidth);
-								$("#headerLabel0_txt").css("height",labelHeight);
+								$("#headerLabel" + (txtNumber+1) + mid + "_txt").append('<div class="w3-display-middle">' + attrInput[txtNumber]["label"] + '</div>').css("height",labelHeight);
+								$("#headerLabel" + (txtNumber+1) + mid).css("width",optionWidth)
+								$("#headerLabel0"+mid).css("width",labelWidth);
+								$("#headerLabel0"+mid +"_txt").css("height",labelHeight);
 				
 								
 							}else{
-								$("#sideLabel" + (cellCounter) + "_txt").append('<div class="w3-display-middle">' + attrInput[txtNumber]["label"] + '</div>').css("height",attrInput[txtNumber]["height"]);
-								$("#sideLabel"+ (cellCounter)).css("width",labelWidth);
+								$("#sideLabel" + (cellCounter) + mid + "_txt").append('<div class="w3-display-middle">' + attrInput[txtNumber]["label"] + '</div>').css("height",attrInput[txtNumber]["height"]);
+								$("#sideLabel"+ (cellCounter) + mid).css("width",labelWidth);
 								
 							}
 						}
@@ -566,14 +567,14 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput,d
 				if (k==0){
 					if(dataInput["displayLabels"] == "optOnly" || dataInput["displayLabels"] == "all"){
 					if(dataInput["layout"] == "attributeCol"){
-						$("#sideLabel" + (i+1)).css("width",labelWidth);
-						$("#sideLabel" + (i+1) + "_txt").append('<div class="w3-display-middle">' + item["label"] + '</div>').css("height",attrInput[txtNumber]["height"])
+						$("#sideLabel" + (i+1)+mid).css("width",labelWidth);
+						$("#sideLabel" + (i+1)+mid + "_txt").append('<div class="w3-display-middle">' + item["label"] + '</div>').css("height",attrInput[txtNumber]["height"])
 						;
 					}else{
-						$("#headerLabel" + (i+1)).css("width",optionWidth);
-						$("#headerLabel" + (i+1) + "_txt").append('<div class="w3-display-middle">' + item["label"] + '</div>').css("height",labelHeight);
-						$("#headerLabel0").css("width",labelWidth);
-						$("#headerLabel0_txt").css("height",labelHeight);
+						$("#headerLabel" + (i+1) + mid).css("width",optionWidth);
+						$("#headerLabel" + (i+1) + mid + "_txt").append('<div class="w3-display-middle">' + item["label"] + '</div>').css("height",labelHeight);
+						$("#headerLabel0" + mid).css("width",labelWidth);
+						$("#headerLabel0" + mid +"_txt").css("height",labelHeight);
 				
 						}
                     }
@@ -587,18 +588,18 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput,d
                 
 			   if (item["txt_button"]) {txtButton=item["txt_button"]} else {txtButton=item["label"]}
 			   
-                $("#button" + currentOption + "_txt").append('<button type="button" class="choiceButton" id="' + currentOption + '" name="choice" value="' + currentOption + '">' + txtButton + '</button>');
+                $("#button" + currentOption + mid +  "_txt").append('<button type="button" class="choiceButton" id="' + currentOption + '" name="choice" value="' + currentOption + '">' + txtButton + '</button>');
 				if(sideButtons){
-					$("#button" + currentOption).css("width",buttonWidth);
-				$("#button" + currentOption+ "_txt").css("height",attrInput[txtNumber]["height"]);
+					$("#button" + currentOption + mid).css("width",buttonWidth);
+				$("#button" + currentOption+ mid +  "_txt").css("height",attrInput[txtNumber]["height"]);
 				}
 				else{
-					$("#button" + currentOption).css("width",optionWidth);
-				$("#button" + currentOption+ "_txt").css("height",buttonHeight);
+					$("#button" + currentOption + mid).css("width",optionWidth);
+				$("#button" + currentOption+ mid+"_txt").css("height",buttonHeight);
 				
 				}
-				$("#button0").css("width",labelWidth);
-				$("#button0").css("height",buttonHeight);
+				$("#button0" + mid).css("width",labelWidth);
+				$("#button0" + mid).css("height",buttonHeight);
 				
 				
 				assignClasses(def, ("buttonCell"), "class");
@@ -662,7 +663,7 @@ function removeClasses(classInput, divElement, elementType){
 
 
 //add all the extra variables as a hidden input
-function fillAddedVariables(dataInput){
+function fillAddedVariables(mid,dataInput){
     var varsToAdd = dataInput["addedVars"];
     
     for(i=0; i<varsToAdd.length; i++){

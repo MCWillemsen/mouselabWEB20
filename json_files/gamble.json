@@ -220,6 +220,19 @@
 	   "name":"order2",
 	   "opt":"random",
 	   "attr":["outc2","outc1","outc3"]
+	},{
+	   "name":"order3",
+	   "opt":[
+		  "A"
+	   ],
+	   "attr": "random"
+	},
+	{
+	   "name":"order4",
+	   "opt":[
+		  "B"
+	   ],
+	   "attr": "random"
 	}
  ]
 ,
@@ -244,6 +257,30 @@
 			 "order2"
 	   ],
 	   "layout":"attributeCol",
+	   "buttons":"on",
+	   "displayLabels":"all",
+	   "addedVars":[
+		  "test=2"
+	   ]
+	},
+	{
+	   "name":"dynSet3",
+	   "optOrder":[
+			  "order4"
+	   ],
+	   "layout":"optionCol",
+	   "buttons":"on",
+	   "displayLabels":"all",
+	   "addedVars":[
+		  "test=2"
+	   ]
+	},
+	{
+	   "name":"dynSet4",
+	   "optOrder":[
+			 "order3"
+	   ],
+	   "layout":"optionCol",
 	   "buttons":"on",
 	   "displayLabels":"all",
 	   "addedVars":[
