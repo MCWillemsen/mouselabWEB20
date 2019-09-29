@@ -78,10 +78,10 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
 			// here the json file to generate the trial, for a particular set in the json file is generated. If the third attribute is set to random, it will select an order at random.
 			// if you enter a number, it will choose one of the orders using modulo of that number
             o=$("#condnum").val();
-			if (o<0) {o="random"};
+			//if (o<0) {o="random"};
             
 			window.setTimeout('generateTrial("G1", "json_files/gamble_duo.json", "dynSet3",'+ o +')',10);
-			window.setTimeout('generateTrial("G2", "json_files/gamble_duo.json", "dynSet4",'+o+')',100);
+			window.setTimeout('generateTrial("G2", "json_files/gamble_duo.json", "dynSet4",'+ o +')',100);
 
             			
      		//function that starts the page

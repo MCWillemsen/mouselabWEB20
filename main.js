@@ -56,9 +56,10 @@ function generateTrial(id, jsonUrl, trialIdentifier, orderNum){
    mid = id;
    jsonFile = jsonUrl;
    set = trialIdentifier;  
+   if (orderNum<0) {orderNum="random"}
    //retrieve data from json file
   var retrieveData = $.getJSON(jsonUrl); 
-  
+	
     retrieveData.done(function(JSONdata){
         interpreter(mid,JSONdata, trialIdentifier, orderNum);
     })
