@@ -610,16 +610,32 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput,d
         });
     }
 	//create delaymatrix
+	delayM = [];
+	delayM["var"]=[];
+	delayM["delays"]=[];
+	
+	//this checks if we have a delay-name specified in the set: otherwise assume there is one delay matrix.
+	if (dataInput["delay"]) {	
+		delayInput.forEach(function(item){
+            if(item["name"] == dataInput["delay"])
+			{delayM["var"]=item["var"];delayM["delays"]=item["delays"]}
+		})
+	}
+	else
+	{
+		// no delay name so delayInput is a one delat matrix, not an array of matrices
+		delayM["var"]=delayInput["var"];delayM["delays"]=delayInput["delays"]}
+	
 	for( var i = 0; i<varList.length;i++)
 	{
-			delayMatrix[varList[i]] = [];
+		delayMatrix[varList[i]] = [];
 		for( var j = 0; j<varList.length;j++)
 		{
-			var di=delayInput["var"].indexOf(varList[i]);
-			var dj=delayInput["var"].indexOf(varList[j]);
+			var di=delayM["var"].indexOf(varList[i]);
+			var dj=delayM["var"].indexOf(varList[j]);
 		
 			if (di>-1 && dj>-1) {
-			delayMatrix[varList[i]][varList[j]]=delayInput["delays"][di][dj];}
+			delayMatrix[varList[i]][varList[j]]=delayM["delays"][di][dj];}
 			else 
 			{delayMatrix[varList[i]][varList[j]]=0;}
 			}

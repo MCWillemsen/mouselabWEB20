@@ -57,7 +57,7 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
         <div class="w3-white w3-container">
 
             <h1>Introduction</h1>
-            <p>In this example, You decide between two gambles, that each have three outcomes with three probabilities. The rows are randomized and the order of the options is determined. This version uses the second set (dynSet2) that flips the rows and cols via layout: attributeCol and changes the styling of the cells compared to the previous set </p>
+            <p>In this example, You decide between two gambles, that each have three outcomes with three probabilities. The rows are randomized and the order of the options is determined. This version uses the second set (dynSet2) that flips the rows and cols via layout: attributeCol and changes the styling of the cells compared to the previous set. Also the delays are different: comparisons of outcomes between A and B are delayed (using a second delay matrix)</p>
             <div id="container"  class="w3-white w3-container w3-col" style="width:90%">
             </div>
 			

@@ -175,7 +175,8 @@
 	]
 ,
  "delay":
-	{
+	[{
+	"name" : "dm1",
 	"var" : [
 					"A_o1",
 					"A_o2",
@@ -205,7 +206,27 @@
 				[700, 700, 700, 50, 50, 50, 700, 700, 700, 50, 50, 0]
 				]
 				
+	},
+	{
+	"name" : "dm2",
+"var" : [
+					"A_o1",
+					"A_o2",
+					"A_o3",
+					"B_o1",
+					"B_o2",
+					"B_o3"		
+				],
+	"delays" : [
+				[0, 50, 50, 500, 50, 50],
+				[50, 0, 50, 50, 500, 50],
+				[50, 50, 0, 50, 50, 500],
+				[500, 50, 50, 0, 50, 50],
+				[50, 500, 50, 50, 0, 50],
+				[50, 50, 500, 50, 50, 0]
+				]		
 	}
+	]
 ,
  "optOrders":[
 	{
@@ -233,6 +254,7 @@
 	   "layout":"optionCol",
 	   "buttons":"on",
 	   "displayLabels":"all",
+	   "delay":"dm1",
 	   "addedVars":[
 		  "test=2"
 	   ]
@@ -246,6 +268,7 @@
 	   "layout":"attributeCol",
 	   "buttons":"on",
 	   "displayLabels":"all",
+	    "delay":"dm2",
 	   "addedVars":[
 		  "test=2"
 	   ]
