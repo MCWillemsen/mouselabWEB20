@@ -246,11 +246,11 @@ Styles &#9660;</button>
 				updateScreenJson(json)
 				});
 				
-
-				
-				initializeEdit();
+				//wait 200ms before initializing to wait for jsonfile to load
+				setTimeout(function (){initializeEdit();
 				$("#trialid").val(json["sets"][0]["name"]);
-				printJSON();
+				printJSON();},200);
+				
 				});	
 				
 

@@ -27,6 +27,7 @@ var attNumericOrder = "";
 var JSONData = [];
 var elementIdentifier;
 var delayMatrix = [];
+var jsonLoaded = false;
 
 //default values of layout
 var def = ["w3-white", "w3-center"];  //general layout and space between boxes
@@ -59,7 +60,8 @@ function generateTrial(jsonUrl, trialIdentifier, orderNum){
   var retrieveData = $.getJSON(jsonUrl); 
   
     retrieveData.done(function(JSONdata){
-        interpreter(JSONdata, trialIdentifier, orderNum);
+        jsonLoaded = true;
+		interpreter(JSONdata, trialIdentifier, orderNum);
     })
     
 }
