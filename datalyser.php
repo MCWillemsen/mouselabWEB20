@@ -152,7 +152,7 @@ $sqlQuery = "SELECT * from $table where expname='".$nameofexp."'";
 	$vararr[0] = array();
 	$varlistarr = array();
 	# Make the headerrow with table column names 
-    while (list($key, $value) = each($row)) 
+    foreach($row as $key => $value) 
     { 
         $i++; 
         if(!($i%2)) 
@@ -171,7 +171,7 @@ $sqlQuery = "SELECT * from $table where expname='".$nameofexp."'";
 	while ($row = mysqli_fetch_array($result)) 
 		{
         $i=0;
-		while (list($key, $value) = each($row)) 
+		foreach($row as $key => $value)
     		{ 
         	$i++; 
 	        if(!($i%2)) 
