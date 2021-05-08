@@ -1,0 +1,75 @@
+<html>
+    <head>
+        <title>Import from MLWEB 1.00</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
+        <script src="import.js"></script>
+        
+		<link rel="stylesheet" href="w3.css">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+		
+		
+	</head>
+
+    <body class="w3-light-grey w3-content" style="max-width:1600px">
+ 
+
+        <header class="w3-container w3-blue">
+            <h1>MouselabWEB 2.0 Importer from version 1</h1>
+        </header>
+		<div class="w3-row">
+        <div class="w3-half w3-white w3-container">
+			
+            <h1>Input Table Structure</h1>
+			<p>Copy and paste HTML (or php) code from any previous mouselabWEB table into the box below.As much information as possible is extracted from the code, such as the window title, pre- and post-HTML, and the mouselabWEB table structure. All other HTML/php code will be ignored</p>
+			<form id="import">
+			<textarea name="txt" id="txt" cols="70" rows="10"></textarea><br>
+			<input type="button" value="get Structure" onclick="getStruct()"><br/>
+			<input type=radio value="1" name="optCol" id="optCol" checked>Options in Columns<br/><input type=radio value="0" name="optCol">Options in Rows
+			</div>
+            </form>
+       
+		<div class="w3-half w3-white w3-container">
+		<p>HTML output</p>
+		<form id="pageHtml" method="post" action="download.php">
+		<textarea id="pagetxt" name="pagetxt" cols="70" rows="5"></textarea><br><input type="text" id="pagename" name="pagename" value=""><input type="submit" id="dh" value="download php"></form>
+		<p>JSON output</p>
+		<form id="pageJson" method="post" action="download.php"><textarea id="jsontxt" name="pagetxt" cols="70" rows="5"></textarea><br><input type="text" id="jsonname" name="pagename" value=""><input type="submit" id="dj" value="download JSON"></form>
+		
+		</div>
+		</div>
+		<div id="container"  class="w3-white w3-container w3-col" style="width:90%">
+            </div>
+		<div class="w3-white w3-container w3-center w3-padding">
+			<button class="confirm w3-button w3-center w3-round-xlarge" name="submit" value="confirm">Confirm</button>
+		</div>
+        <footer class="w3-container w3-blue">
+		<h4>(C) Martijn Willemsen and Martijn ter Meulen</h4>
+        </footer>
+</div>
+
+        <script type="text/javascript">
+
+			// here the json file to generate the trial, for a particular set in the json file is generated. If the third attribute is set to random, it will select an order at random.
+			// if you enter a number, it will choose one of the orders using modulo of that number
+			// now taking the number from the condnum variable to set the order of the options
+            o=$("#condnum").val();
+			if (o<0) {o="random"};
+            
+			//generateTrial("json_files/tv.json", "dynSet", o);
+
+            			
+     		//function that starts the page
+	$(document).ready(function () { 
+		$(".confirm").click(function (event) {
+			if (choice=="" && $(".choiceButton").length>0) {event.preventDefault();return false;}           
+			});
+	
+		});	
+	
+			
+
+        </script>
+    </body>
+</html>
