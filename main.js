@@ -67,6 +67,7 @@ function generateTrial(jsonUrl, trialIdentifier, orderNum){
 //Main function calling all subfunctions
 function interpreter(dataInput, setInput, orderNum){
     json=dataInput;
+	set=setInput;
 	var setData = [];
     if (setInput==0)
 		{setData=dataInput["sets"][0]}
@@ -91,7 +92,6 @@ function interpreter(dataInput, setInput, orderNum){
     
     //insert stimuli/text in the boxes
     insertStimuli(setData, optionData, attrData, cellData,styleInput,delayData);
-    
     
     //insert styling (width, blur, closed boxes, classes etc.)
     //insertStyles(setData, styleInput, optionData, attrData, cellData);
@@ -339,8 +339,7 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput,d
 	var varSelector;
 	var boxLabelSelector;
    var sideLabelCounter = 0;
-   
-    
+       
     for(i = 0; i < orderO.length; i++){
             
         optionInput.forEach(function(item){

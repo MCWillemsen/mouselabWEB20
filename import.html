@@ -5,45 +5,72 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
         <script src="import.js"></script>
-        
+         <script type="text/javascript" src="main.js"></script>   
+        <script src="jquery.foggy.min.js"></script>
+        <script language=javascript src="mlweb20.js"></script>		 
 		<link rel="stylesheet" href="w3.css">
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 		
 		
 	</head>
 
-    <body class="w3-light-grey w3-content" style="max-width:1600px">
+   <body class="w3-light-grey w3-content" style="max-width:1600px" onLoad="timefunction('onload', 'body', 'body')">
+        <!--BEGIN set vars-->
+        <script language="javascript">
+
+            //override defaults
+            mlweb_outtype = "CSV";
+            mlweb_fname = "mlwebform";
+            chkFrm = true;
+            warningTxt = "U heeft nog niet alle vragen beantwoord!";
+			choice = "";
+        </script>
  
 
         <header class="w3-container w3-blue">
             <h1>MouselabWEB 2.0 Importer from version 1</h1>
         </header>
-		<div class="w3-row">
+		<div class="w3-row w3-white">
         <div class="w3-half w3-white w3-container">
 			
             <h1>Input Table Structure</h1>
-			<p>Copy and paste HTML (or php) code from any previous mouselabWEB table into the box below.As much information as possible is extracted from the code, such as the window title, pre- and post-HTML, and the mouselabWEB table structure. All other HTML/php code will be ignored</p>
+			<p>Copy and paste HTML (or php) code from any previous mouselabWEB table into the box below. As much information as possible is extracted from the code, such as the window title, pre- and post-HTML, and the mouselabWEB table structure. All other HTML/php code will be ignored. </p>
 			<form id="import">
-			<textarea name="txt" id="txt" cols="70" rows="10"></textarea><br>
-			<input type="button" value="get Structure" onclick="getStruct()"><br/>
-			<input type=radio value="1" name="optCol" id="optCol" checked>Options in Columns<br/><input type=radio value="0" name="optCol">Options in Rows
+			<textarea name="txt" id="txt" cols="70" rows="5"></textarea><br>
+			<input type="button" value="get Structure" onclick="getStruct()" class="w3-button"><br/>
+			<input type=radio value="1" name="optCol" id="optCol" checked> Options are in Columns / attributes in rows<br/><input type=radio value="0" name="optCol"> Options in Rows / attributes in columns<br/>
+			<input type="checkbox" value=1 name="MakeOrder" CHECKED> Create orders as defined
 			</div>
             </form>
        
 		<div class="w3-half w3-white w3-container">
 		<p>HTML output</p>
 		<form id="pageHtml" method="post" action="download.php">
-		<textarea id="pagetxt" name="pagetxt" cols="70" rows="5"></textarea><br><input type="text" id="pagename" name="pagename" value=""><input type="submit" id="dh" value="download php"></form>
+		<textarea id="pagetxt" name="pagetxt" cols="70" rows="5"></textarea><br><input type="text" id="pagename" name="pagename" value=""><input type="submit" id="dh" value="download php" class="w3-button"></form>
 		<p>JSON output</p>
-		<form id="pageJson" method="post" action="download.php"><textarea id="jsontxt" name="pagetxt" cols="70" rows="5"></textarea><br><input type="text" id="jsonname" name="pagename" value=""><input type="submit" id="dj" value="download JSON"></form>
+		<form name="pageJson" method="post" action="download.php"><input type=hidden name="act" id="act" value="download"><textarea id="jsontxt" name="pagetxt" cols="70" rows="5"></textarea><br><input type="text" id="jsonname" name="pagename" value=""><input type="submit" id="dj" value="download JSON" class="w3-button"><form target="_blank" id="editJson" method="post" action="download.php"><input type="submit" id="ej" value="edit JSON" class="w3-button" onClick="document.pageJson.act.value='edit';document.pageJson.pagetxt.value=document.pageJson.pagetxt.value.replace(/\t/g, '').replace(/\n/g, '');"></form>
 		
 		</div>
 		</div>
+		<div class="w3-blue w3-bar">
+		<FORM id="mlwebform" name="mlwebform" >
+			<INPUT type=hidden id='processData' name="procdata" value="">
+            <!-- set all variables here -->
+            <input id="expName" type=hidden name="expname" value="test">
+            <input type=hidden name="nextURL" value="">
+            <input type=hidden name="to_email" value="">
+            <!--these will be set by the script -->
+			<input type=hidden name="subject" value="">
+			<input type=hidden name="condnum" value="">
+			<input id="choice" type=hidden name="choice" value="">
+		<div class="w3-bar-item">Example output</div>
+		</div>			
 		<div id="container"  class="w3-white w3-container w3-col" style="width:90%">
             </div>
 		<div class="w3-white w3-container w3-center w3-padding">
-			<button class="confirm w3-button w3-center w3-round-xlarge" name="submit" value="confirm">Confirm</button>
+<!--			<button class="confirm w3-button w3-center w3-round-xlarge" name="submit" value="confirm">Confirm</button-->
 		</div>
+		</form>
         <footer class="w3-container w3-blue">
 		<h4>(C) Martijn Willemsen and Martijn ter Meulen</h4>
         </footer>
@@ -62,10 +89,10 @@
             			
      		//function that starts the page
 	$(document).ready(function () { 
-		$(".confirm").click(function (event) {
-			if (choice=="" && $(".choiceButton").length>0) {event.preventDefault();return false;}           
-			});
-	
+		//$(".confirm").click(function (event) {
+		//	if (choice=="" && $(".choiceButton").length>0) {event.preventDefault();return false;}           
+		//});
+
 		});	
 	
 			

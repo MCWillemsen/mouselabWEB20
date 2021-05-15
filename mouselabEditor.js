@@ -7,7 +7,7 @@
     var redoStack = [];
     var allowedRedo = false;
     var controlPressed = false;
-    var fileName = "virus";
+    var fileName = "newpage";
     var colorTable;
     var swapFirstColumn = null;
     var swapFirstRow = null;
@@ -23,7 +23,7 @@
         
         loadJson(undefined, json);
 
-        /* adds the add button for collumns*/
+        /* adds the add button for columns*/
         addAddButton();
         addAttriButton();
 
@@ -1282,7 +1282,7 @@
     }
 
     /** loads the json on page load*/
-    function loadJson(filepath, json)
+    function loadJson(filepath, jsonF)
     {
         if(filepath !== undefined)
         {
@@ -1294,9 +1294,9 @@
 				names=getVarNames(jsonVal, undefined, undefined);
             });
         }
-        else if(json !== undefined)
+        else if(jsonF !== undefined)
         {
-            jsonVal = json;
+            jsonVal = jsonF;
             undoStack.push(arrayCopy(jsonVal));
             addStyleButtons();
 			names=getVarNames(jsonVal, undefined, undefined);

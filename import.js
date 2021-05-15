@@ -340,192 +340,6 @@ evtClose = 0; // default value for close event 0=mouseout, 1=click, 2=none (box 
 undo1="";
 undo2="";
 
-function createTableStruct(espFlag)
-{ // create the variable structure of a mouselabWEB table
-
-var docstr="";
-
-if (espFlag==true) {docstr+="\n<!--BEGIN phpESP TABLE STRUCTURE-->";
-docstr+="\n<SCRIPT language=\"javascript\">\nnewversion=true;\n"}
-else {docstr+="\n<!--BEGIN TABLE STRUCTURE-->"; docstr+="\n<SCRIPT language=\"javascript\">\n\/\/override defaults\nmlweb_outtype=\""+mlweb_outtype+"\";\nmlweb_fname=\""+mlweb_fname+"\";\n"}
-
-var tagstr="";
-var txtstr="";
-var statestr="";
-var boxstr="";
-// tagChk is used to check if their are double tag names
-tagChk =new Array();
-tagOk = true;
-
-for (i=0;i<txtM.length;i++)
-	{
- 	if (i==0) {prestr="\""} else {prestr=" + \""};
-	tagstr+=prestr;
-	txtstr+=prestr;
-	statestr+=prestr;
-	boxstr+=prestr;
-	
-	
-	
-	for (j=0;j<txtM[0].length;j++)
-		{
-		if (j<txtM[0].length-1) {sepstr="^"} else {if (i<txtM.length-1) {sepstr="`\"\n"} else {sepstr="\";\n"}}
-		for (c = 0; c<tagChk.length; c++)
-			{ if (tagM[i][j] == tagChk[c]) {tagOk = false;} }
-			
-		tagChk[tagChk.length]=tagM[i][j];
-		tagstr+=repl_sep(tagM[i][j])+sepstr;
-		txtstr+=repl_sep(txtM[i][j])+sepstr;
-		statestr+=repl_sep(stateM[i][j])+sepstr;
-		boxstr+=repl_sep(boxM[i][j])+sepstr;
-		}
-	}
-if (!tagOk) {alert("WARNING: some boxes have duplicate names. This might cause inconsistencies in the data set. You are advised to use unique names for each box.")}
-docstr+="tag = "+tagstr+ "\n" + "txt = " + txtstr + "\n" + "state = " + statestr + "\n" + "box = " + boxstr + "\n";
-
-colstr="";
-wcolstr="";
-
-for (i=0;i<colType.length;i++)
-{if (i<colType.length-1) { sepstr="^"} else {sepstr="\";\n"};
-colstr+=colType[i]+sepstr;
-wcolstr+=colWidth[i]+sepstr;
-}
-
-rowstr="";
-wrowstr="";
-for (i=0;i<rowType.length;i++)
-{if (i<rowType.length-1) { sepstr="^"} else {sepstr="\";\n"};
-rowstr+=rowType[i]+sepstr;
-wrowstr+=rowHeight[i]+sepstr;
-}
-
-docstr+="CBCol = \"" + colstr;
-docstr+="CBRow = \"" + rowstr;
-
-docstr+="W_Col = \"" + wcolstr;
-docstr+="H_Row = \"" + wrowstr;
-
-
-if (btnFlg>0)
-{
-docstr+="\nchkchoice = false;\n";
-btxtstr="";
-bstatestr="";
-btagstr="";
-
-tagChk =new Array();
-for (i=0;i<btnTxt.length;i++)
-	{tagChk[i]="btn_"+i.toString();}
-tagOk = true;
-
-for (i=0;i<btnTxt.length;i++)
-	{if (i<btnTxt.length-1) { sepstr="^"} else {sepstr="\";\n"};
-	// tag check to check if there are no duplicate names: duplicate names will break checking and
-	// coloring of pressed button
-	for (c = 0; c<tagChk.length; c++)
-			{ if (btnTag[i] == tagChk[c]) {tagOk = false;} }
-	tagChk[tagChk.length]=btnTag[i];		
-	
-	btxtstr+=repl_sep(btnTxt[i])+sepstr;
-	bstatestr+=btnState[i]+sepstr;
-	btagstr+=repl_sep(btnTag[i])+sepstr;
-	}
-if (!tagOk) {alert("ALERT: some buttons have duplicate names, or a non-valid name is used (btn_XX). Buttons need to have unique names to work correctly.");}
-}
-else
-{
-docstr+="\nchkchoice = \"nobuttons\";\n";
-btxtstr="\";\n";
-bstatestr="\";\n";
-btagstr="\";\n";
-}
-
-docstr+="btnFlg = "+btnFlg+";\n";
-docstr+="btnType = \""+btnType+"\";\n";
-docstr+="btntxt = \"" +btxtstr;
-docstr+="btnstate = \"" + bstatestr;
-docstr+="btntag = \"" + btagstr;
-docstr+="to_email = \""+ to_email + "\";\n";
-
-docstr+="colFix = "+ colFix + ";\n";
-docstr+="rowFix = "+ rowFix + ";\n";
-docstr+="CBpreset = " + CBpreset + ";\n"
-
-docstr+="evtOpen = "+ evtOpen + ";\n";
-docstr+="evtClose = "+ evtClose + ";\n";
-
-if (CBpreset)
-	{
-	CBstr="";
-	for (i=0;i<CBcolList.length;i++)
-		{
-		if (i==0) {CBstr+="CBord = \""} else {CBstr+="+ \""}
-		CBstr+=CBcolList[i].join("^")+"^"+CBrowList[i].join("^");
-		if (i==CBcolList.length-1) {CBstr+="\";\n"} else {CBstr+="`\"\n"}
-		}
-	docstr+=CBstr+"\n";
-	}
-			
-if (chkFrm) {docstr+="chkFrm=true;\n"} else {docstr+="chkFrm=false;\n"}
-docstr+="warningTxt = \""+ warningTxt + "\";\n";
-
-docstr+="tmTotalSec = "+parseInt(tmTotalSec)+";\n";
-docstr+="tmStepSec = "+parseInt(tmStepSec)+";\n";
-docstr+="tmWidthPx = "+parseInt(tmWidthPx)+";\n";
-docstr+="tmFill = "+tmFill+";\n";
-docstr+="tmShowTime = "+tmShowTime+";\n";
-docstr+="tmCurTime = 0;\n";
-docstr+="tmActive = "+tmActive+";\n";
-docstr+="tmDirectStart = "+tmDirectStart+";\n";
-docstr+="tmMinLabel = \""+tmMinLabel+"\";\n";
-docstr+="tmSecLabel = \""+tmSecLabel+"\";\n";
-docstr+="tmLabel = \""+tmLabel+"\";\n";
-
-Dlist = new Array();
-for (i=0;i<rowType.length;i++)
-	{
-	for (j=0;j<colType.length;j++)
-		{
-		if (stateM[i][j]=="1") {Dlist[Dlist.length]=tagM[i][j];}
-		}
-	}
-	
-dstr="";
-for (i=0;i<Dlist.length;i++)
-	{
-	if (i==0) {prestr=""} else {prestr=" + \""};
-	dstr+=prestr;
-	
-		for (j=0;j<Dlist.length;j++)
-		{
-		if (j<Dlist.length-1) {sepstr="^"} else {if (i<Dlist.length-1) {sepstr="`\"\n"} else {sepstr=""}}
-		dstr+="0"+sepstr;
-		}
-	}
-docstr+="\n//Delay: "+Dlist.join(" ")+"\ndelay = \""+ dstr + "\";\n";
-
-docstr+="activeClass = \"" + activeClass + "\";\ninactiveClass = \""+ inactiveClass + "\";\nboxClass = \""+ boxClass + "\";\ncssname = \""+cssname+"\";\n";
-docstr+="nextURL = \""+nextURL+"\";\nexpname = \""+expname+ "\";\nrandomOrder = "+randomOrder +";\n";
-docstr+="recOpenCells = false;\nmasterCond = "+masterCond+";\nloadMatrices();\n<\/SCRIPT>\n";
-docstr+="<!--END TABLE STRUCTURE-->\n";
-return docstr;
-}
-
-function inTableStruct()
-{  // input screen to retrieve code from existing pages
-
-saveFields();
-
-var docstr="";
-docstr="<h1>Input Table Structure</h1>";
-docstr+="<P style=\"color: red;\"><B>This will erase the current structure!</B></P>";
-docstr+="<P>Copy and paste HTML (or php) code from any previous mouselabWEB table into the box below.As much information as possible is extracted from the code, such as the window title, pre- and post-HTML, and the mouselabWEB table structure. All other HTML/php code will be ignored</P>";
-docstr+="<TEXTAREA name=txt id=txt cols=100 rows=10></TEXTAREA><BR>";
-docstr+="<INPUT type=button value=\"get Structure\" onClick=\"top.getStruct()\">&nbsp;&nbsp;<input type=button value=\"close\" onClick=\"top.refreshTable()\">"
-
-top.tableFrm.document.getElementById("edit").innerHTML = docstr;
-}
 headerStr="<?php\r\nsession_start();\r\nif (isset($_GET['subject'])) \r\n{$subject=$_GET['subject'];$_SESSION['subject']=$subject;} \r\nelse {\r\n if (isset($_SESSION['subject'])) {$subject=$_SESSION['subject'];}\r\n else {$subject='anonymous';};}\r\n if (isset($_GET['condnum']))\r\n{$condnum=$_GET['condnum'];}\r\n else {\r\n	 if (isset($_SESSION['condnum'])) {$condnum=$_SESSION['condnum'];$_SESSION['condnum']=$condnum;}\r\n	else {$condnum=-1;};\r\n	}\r\n ?> \r\n <html>\r\n    <head>"
 scriptStr="        <meta charset=\"UTF-8\">\r\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n        <script type=\"text/javascript\" src=\"main.js\"></script>\r\n        <script type=\"text/javascript\" src=\"jquery-3.1.1.min.js\"></script>\r\n        <script src=\"jquery.foggy.min.js\"></script>\r\n        <script language=\"javascript\" src=\"mlweb20.js\"></script>\r\n        <link rel=\"stylesheet\" href=\"w3.css\">\r\n		<link rel=\"stylesheet\" href=\"https://use.fontawesome.com/releases/v5.7.0/css/all.css\" integrity=\"sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ\" crossorigin=\"anonymous\">\r\n		\r\n		\r\n	</head> \r\n    <body class=\"w3-light-grey w3-content\" style=\"max-width:1600px\" onLoad=\"timefunction('onload', 'body', 'body')\">\r\n"
 formStr = "<!--END set vars-->\r\n\<FORM id=\"mlwebform\" name=\"mlwebform\" onSubmit=\"return checkForm(this)\" method=\"POST\" action=\"save.php\">\r\n <INPUT type=hidden id='processData' name=\"procdata\" value=\"\"> \r\n   <!-- set all variables here -->\r\n"
@@ -616,7 +430,7 @@ for (i = 0; i < stateM[0].length; i++)
 r=0;
 for (i = 0; i < getCol(stateM,0).length; i++)
 	{r+=parseInt(getCol(stateM,0)[i])}
-
+console.log(c,r)
 if (c==0) {
 	// first horz inactive, check first vertumn
 	if (r==0) 
@@ -626,6 +440,7 @@ if (c==0) {
 		vertLabels.shift()
 		horzLabels=Array.from(getCol(txtM,0))
 		horzLabels.shift()
+		
 	}
 	else
 	{
@@ -633,7 +448,10 @@ if (c==0) {
 		for (i=0; i<getCol(txtM,0).length;i++)
 		{
 			horzLabels[i]=horzLabel+(i+1)
+		json["sets"][0]["displayLabels"]="none";
+
 		}
+		
 	}
 }
 else
@@ -661,7 +479,40 @@ else
 		
 }
 
-
+if (optCol==1)
+{
+	if (c==0) 
+	{
+		if (r==0)
+		{json["sets"][0]["displayLabels"]="all";}
+		else
+		{json["sets"][0]["displayLabels"]="optOnly";}
+	}
+	else
+	{
+		if (r==0)
+		{json["sets"][0]["displayLabels"]="attrOnly";}
+		else
+		{json["sets"][0]["displayLabels"]="none";}
+	}
+}
+else
+{
+	if (c==0) 
+	{
+		if (r==0)
+		{json["sets"][0]["displayLabels"]="all";}
+		else
+		{json["sets"][0]["displayLabels"]="attrOnly";}
+	}
+	else
+	{
+		if (r==0)
+		{json["sets"][0]["displayLabels"]="optOnly";}
+		else
+		{json["sets"][0]["displayLabels"]="none";}
+	}	
+}
 console.log(horzLabels,vertLabels)
 
 
@@ -687,22 +538,22 @@ for (i=rs;i<txtM[0].length;i++)
 	{
 		if (optCol==1)
 		{
-		json["opt"][i-rs]=JSON.parse("{\"name\": \""+tagM[0][i]+ "\",\"label\": \""+txtM[0][i]+ "\",\"width\": \""+Math.round(100*colWidth[i]/w)+"%\"}")
+		json["opt"][i-rs]=JSON.parse("{\"name\": \""+tagM[0][i]+ "\",\"label\": \""+vertLabels[i]+ "\",\"width\": \""+Math.round(100*colWidth[i]/w)+"%\"}")
 		}
 		else
 		{
-		json["attr"][i-rs]=JSON.parse("{\"name\": \""+tagM[0][i]+ "\",\"label\": \""+txtM[0][i]+ "\",\"height\": \""+rowHeight[i]+"px\"}")
+		json["attr"][i-rs]=JSON.parse("{\"name\": \""+tagM[0][i]+ "\",\"label\": \""+horzLabels[i]+ "\",\"height\": \""+rowHeight[i]+"px\"}")
 		}
 	}
 for (i=cs;i<getCol(txtM,0).length;i++)
 	{
 		if (optCol==1)
 		{
-		json["attr"][i-cs]=JSON.parse("{\"name\": \""+tagM[i][0]+ "\",\"label\": \""+txtM[i][0]+ "\",\"height\": \""+rowHeight[i]+"px\"}")
+		json["attr"][i-cs]=JSON.parse("{\"name\": \""+tagM[i][0]+ "\",\"label\": \""+horzLabels[i]+ "\",\"height\": \""+rowHeight[i]+"px\"}")
 		}
 		else
 		{
-		json["opt"][i-cs]=JSON.parse("{\"name\": \""+tagM[i][0]+ "\",\"label\": \""+txtM[i][0]+ "\",\"width\": \""+Math.round(100*colWidth[i]/w)+"%\"}")
+		json["opt"][i-cs]=JSON.parse("{\"name\": \""+tagM[i][0]+ "\",\"label\": \""+vertLabels[i]+ "\",\"width\": \""+Math.round(100*colWidth[i]/w)+"%\"}")
 		}
 	}
 
@@ -758,7 +609,11 @@ CBpreset = top.hiddenFrm.CBpreset;
 
 CBcolList = new Array();
 CBrowList = new Array();
-		
+
+MakeOrder=$("input[name='MakeOrder']:checked").val();
+
+if (MakeOrder)
+{	
 if (CBpreset)
 		{	
 		CBordM = copyOfArray(ExpMatrix(top.hiddenFrm.CBord));
@@ -868,6 +723,8 @@ if (CBcolList.length>0)
 	}
 	
 }
+//end of creating orders
+}
 
 if (btnFlg) {json["sets"][0]["buttons"]="on"} else {json["sets"][0]["buttons"]="off"}
 
@@ -925,5 +782,22 @@ $("#pagetxt").val(docstr);
 $("#jsonname").val(expname+".json")
 $("#jsontxt").val(JSON.stringify(json,null,'\t'));
 
+blurBoxes = [];
+				 order = [];
+				 attributeOrder = "";
+				 attNumericOrder = "";
+				 JSONData = [];
+
+				 topLabels = false;
+				 sideLabels = false;
+				 bottomButtons = false;
+				 sideButtons = false;
+				 numRows = 0;
+				 numCols = 0;
+				 totalRows = 0;
+				 totalCols = 0;
+				 item = [];
+			   $("#container").empty();
+interpreter(json, "dynSet", "random");
 }
 
