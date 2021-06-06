@@ -32,8 +32,8 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
  
 			<INPUT type=hidden id='processData' name="procdata" value="">
             <!-- set all variables here -->
-            <input id="expName" type=hidden name="expname" value="gamble">
-            <input type=hidden name="nextURL" value="thanks.html">
+            <input id="expName" type=hidden name="expname" value="flextest">
+            <input type=hidden name="nextURL" value="survey.php">
             <input type=hidden name="to_email" value="">
             <!--these will be set by the script -->
 			<input type=hidden name="subject" value="<?php echo($subject)?>">
@@ -46,8 +46,8 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
         </header>
         <div class="w3-white w3-container">
 
-            <h1>Introduction</h1>
-            <p>testing</p>
+            <h1>Flexible cells</h1>
+            <p>This page shows how flexible cells can be combined in other cells, such that they are kept together while reordering.</p>
             <div id="container"  class="w3-white w3-container w3-col" style="width:90%">
             </div>
 			

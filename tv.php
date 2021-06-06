@@ -35,7 +35,7 @@ if (isset($_GET['condnum'])) {$condnum=$_GET['condnum'];}
 			<INPUT type=hidden id='processData' name="procdata" value="">
             <!-- set all variables here -->
             <input id="expName" type=hidden name="expname" value="tv">
-            <input type=hidden name="nextURL" value="survey.php">
+            <input type=hidden name="nextURL" value="flextest.php">
             <input type=hidden name="to_email" value="">
             <!--these will be set by the script -->
 			<input type=hidden name="subject" value="<?php echo($subject)?>">
