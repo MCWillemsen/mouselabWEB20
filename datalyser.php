@@ -28,6 +28,7 @@ $password = "mlweb";
 // set a larger memory limit required for processing large files
 ini_set('memory_limit', '64M'); 
 include('mlwebdb.inc.php');
+$glcnt = 0;
 
 function multi2dSortAsc(&$arr, $key1, $key2){ 
   $sort_col1 = array(); 
@@ -80,20 +81,29 @@ for ($j=1;$j<count($rowarr);$j++)
 					//echo $evt."|".implode("|",$addrow[$evt])."\n";
 					$data = substr($data,strpos($data, "<eventblock>", 2));
 					if ($evtarr[0]=='events') {$opentype=substr($evtarr[2],0,1);}
-					if ($evtarr[0]==$openevt[$opentype]) {$procvars=array_merge($procvars,array($evtarr[1]=>0));}					
+					if (substr($evtarr[0],-4)==substr($openevt[$opentype],-4)) {$procvars=array_merge($procvars,array($evtarr[1]=>0));}					
 					}
 				}
 			elseif (strpos($procdata,"\"")!==false)
 				{
 				$eventstr = explode("\n",rtrim($procdata));
 				unset($evtarr,$addrow);
+				$prevevtarr=[];   
 				for ($evt=1;$evt<count($eventstr);$evt++)
 					{
 					$evtarr=explode("\",\"", substr(trim($eventstr[$evt]),1,strlen(trim($eventstr[$evt]))-2));
-					$addrow[$evt-1]=array_merge(array_slice($rowarr[$j],0,$prockey),$evtarr,array_slice($rowarr[$j],$prockey+1));
+					if ($evtarr!=$prevevtarr) //clean up: two gazeovers with same time, delete second one
+					{
+					//if there is a gazeout/over sequence with same time/box then delete (first) out event
+					if ($evtarr[0]=="gazeover" && $prevevtarr[0]=="gazeover" && $evtarr[3]==$prevevtarr[3]) {array_pop($addrow);}
+					if ($evtarr[0]=="gazeover" && $prevevtarr[0]=="gazeout" && $evtarr[2]==$prevevtarr[2] && $evtarr[3]==$prevevtarr[3]) {array_pop($addrow);}
+					//otherwise good to go and add the event to the list
+					$addrow[]=array_merge(array_slice($rowarr[$j],0,$prockey),$evtarr,array_slice($rowarr[$j],$prockey+1));
+					}
 					//echo $evt."|".implode("|",$addrow[$evt])."\n";
 					if ($evtarr[0]=='events') {$opentype=substr($evtarr[2],0,1);}
-					if ($evtarr[0]==$openevt[$opentype]) {$procvars[$evtarr[1]]=0;}			
+					if (substr($evtarr[0],-4)==substr($openevt[$opentype],-4)) {$procvars[$evtarr[1]]=0;}			
+					$prevevtarr = $evtarr; 							
 					}
 				}
 			}
@@ -126,12 +136,22 @@ if (strpos($procdata, "<?xml")!==false)
 			elseif (strpos($procdata,"\"")!==false)
 				{
 				$eventstr = explode("\n",rtrim($procdata));
+				$prevevtarr=[];   
 				for ($evt=1;$evt<count($eventstr);$evt++)
 					{
-					$evtarr[$evt-1]=explode("\",\"", substr(trim($eventstr[$evt]),1,strlen(trim($eventstr[$evt]))-2));
+					$evtarr=explode("\",\"", substr(trim($eventstr[$evt]),1,strlen(trim($eventstr[$evt]))-2));
+					if ($evtarr!=$prevevtarr) //clean up: two gazeovers with same time, delete second one
+					{
+					//if there is a gazeout/over sequence with same time/box then delete (first) out event
+					if (substr($evtarr[0],-4)=="over" && substr($prevevtarr[0],-4)=="over" && $evtarr[3]==$prevevtarr[3]) {array_pop($evtarr_proc);}
+					if (substr($evtarr[0],-4)=="over" && substr($prevevtarr[0],-3)=="out" && $evtarr[2]==$prevevtarr[2] && $evtarr[3]==$prevevtarr[3]) {array_pop($evtarr_proc);}
+					//otherwise good to go and add the event to the list
+					$evtarr_proc[]=$evtarr;
+					}
+					$prevevtarr = $evtarr;
 					}
 				}
-return $evtarr;
+return $evtarr_proc;
 }
 
 function ExpfromDB($nameofexp,$table)
@@ -274,14 +294,18 @@ if(isset($_POST['act']))
 ?>
 <HTML>
 <HEAD>
-<TITLE>
-MouselabWEB Datalyser
-</TITLE>
-<link rel="stylesheet" href="mlweb.css" type="text/css">
-</head>
-<body>
+<TITLE>MouselabWEB Datalyser</TITLE>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="w3.css">
+</HEAD>
+<body class="w3-light-grey w3-content" style="max-width:1600px">
+<header class="w3-container w3-blue">
+<H1>MouselabWEB Datalyser</H1>
+</header>
+<div class="w3-white w3-container">
 <H1>Links to CSV files for selected experiments</H1>
-<Table>
+<Table class="w3-table-all">
 <?php 
 for ($expcount=0;$expcount<count($arr);$expcount++)
 {
@@ -289,8 +313,12 @@ $filename = 'tmp/'.$arr[$expcount].".csv";
 echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename\">$filename</a></TD></TR>");
 }
 ?>
-
-</body>
+</table>
+</div>
+<footer class="w3-container w3-blue">
+		<h4>(C) Martijn Willemsen</h4>
+        </footer>
+</BODY>
 </HTML>
 <?php
 		} // end of download part
@@ -312,15 +340,21 @@ echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename\">$filename</a></TD><
 		// make datafile for each experiment
 			{
 			$outstr="";
+			$delay=0;
 			$outrow=array();
 			$freqvar = array();
 			$timevar = array();
 			$outrow_s = array();
 			$glprocvars=array(); // this array is used to save names of the boxes to count the process vars...
 			$gladdvars=array(); 
+			$glproccount=array();
+			$gldelay=array();				
 			$rowarr = ExpfromDB($arr[$expcount],$table);
 			for ($j=0;$j<count($rowarr);$j++)
 				{ 
+				$colord="";
+				$roword="";
+				$evttype="0_0";
 				$gladdvars[$j]=array();
 				$glcnt++;
 				$temprow=array($rowarr[0],$rowarr[$j+1]); 
@@ -337,132 +371,142 @@ echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename\">$filename</a></TD><
 								$glprocvars=array_merge($glprocvars,$procvars);
 								}	
 							*/	
-							$outrow[0]=array_merge(array_slice($temprow2[0],0,$timeKey-2),array("roword" => "roword", "colord" => "colord","evttype" => "evttype","boxname" => "boxname","boxin" => "boxin","boxtime" => "boxtime","counter" => "counter"), array_slice($temprow2[0],$timeKey+1));
+							$outrow[0]=array_merge(array_slice($temprow2[0],0,$timeKey-2),array("roword" => "roword", "colord" => "colord","evttype" => "evttype","boxname" => "boxname","boxin" => "boxin","boxtime" => "boxtime","delay" => "delay", "counter" => "counter"), array_slice($temprow2[0],$timeKey+1));
 							
 							}
-							$localcount=0;
-							$outrowtmp = array();
-							for ($c=1;$c<count($temprow2);$c++)
+				$localcount=0;
+				$outrowtmp = array();
+				for ($c=1;$c<count($temprow2);$c++)
+						{
+						if (substr($temprow2[$c][$eventKey],-3)==substr($closeevt[$closetype],-3))
+						// a close event!
+								{
+								$boxname=$temprow2[$c][$eventKey+1];
+								if ($glprocvars[$boxname]==0)
 									{
-									if ($temprow2[$c][$eventKey]==$closeevt[$closetype])
-									// a close event!
-											{
-											$boxname=$temprow2[$c][$eventKey+1];
-											if ($glprocvars[$boxname]==0)
-												{
-												if ($opentype==1 & $closetype>0)
-													{//generate open event because this click was from an open click 
-													$boxname=$temprow2[$c][$eventKey+1];
-													$glprocvars[$boxname]=$temprow2[$c][$eventKey+3]-$starttime;
-													$localcount++;
-													$glproccount[$boxname]=$localcount;
-													}
-												}
-												else
-												{
-												$boxendtime=$temprow2[$c][$eventKey+3]-$starttime;
-												$boxtime=$boxendtime-$glprocvars[$boxname];
-												if ($boxtime>$th) 
-													{																			
-													$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], $boxtime));
-													}
-												$glprocvars[$boxname]=0;
-												$glproccount[$boxname]=0;
-												}
+									if ($opentype==1 & $closetype>0)
+										{//generate open event because this click was from an open click 
+										$boxname=$temprow2[$c][$eventKey+1];
+										$glprocvars[$boxname]=$temprow2[$c][$eventKey+3]-$starttime;
+										$localcount++;
+										$glproccount[$boxname]=$localcount;
+										if (substr($temprow2[$c][$eventKey+2],0,2)=="d=") $gldelay[$boxname]=intval(substr($temprow2[$c][$eventKey+2],2)); else $gldelay[$boxname]=0;
+										}
+									}
+									else
+									{
+									$boxendtime=$temprow2[$c][$eventKey+3]-$starttime;
+									$boxtime=$temprow2[$c][$eventKey+3]-$starttime-$glprocvars[$boxname];
+									if ($boxtime>$th) 
+										{																			
+										$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], $boxtime-$gldelay[$boxname], $gldelay[$boxname]));
+										}
+									$glprocvars[$boxname]=0;
+									$glproccount[$boxname]=0;
+									$gldelay[$boxname]=0;
+									}
+								}
+						else if (substr($temprow2[$c][$eventKey],-4)==substr($openevt[$opentype],-4))
+						// an open event!
+								{
+								$boxname=$temprow2[$c][$eventKey+1];
+			
+								if ($glprocvars[$boxname]==0) 
+										{$glprocvars[$boxname]=$temprow2[$c][$eventKey+3]-$starttime;
+										$localcount++;
+										$glproccount[$boxname]=$localcount;
+										if (substr($temprow2[$c][$eventKey+2],0,2)=="d=") $gldelay[$boxname]=intval(substr($temprow2[$c][$eventKey+2],2)); else $gldelay[$boxname]=0;
+										}
+										else 
+										{
+										// there was already a time so close this event
+										$boxendtime=$temprow2[$c][$eventKey+3]-$starttime;
+										$boxtime=$temprow2[$c][$eventKey+3]-$starttime-$glprocvars[$boxname];
+										$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], $boxtime-$delay, $delay));
+									$glprocvars[$boxname]=0;
+									$glproccount[$boxname]=0;
+									$gldelay[$boxname]=0;
+										}
+								if ($closetype==3) 
+											{																			
+											// no close event, write events with no time directly
+											$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], 0, $gldelay[$boxname]));
+									$glprocvars[$boxname]=0;
+									$glproccount[$boxname]=0;
+									$gldelay[$boxname]=0;
 											}
-									else if ($temprow2[$c][$eventKey]==$openevt[$opentype])
-									// an open event!
-											{
-											$boxname=$temprow2[$c][$eventKey+1];
-						
-											if ($glprocvars[$boxname]==0) 
-													{$glprocvars[$boxname]=$temprow2[$c][$eventKey+3]-$starttime;
-													$localcount++;
-													$glproccount[$boxname]=$localcount;
-													}
-													else 
-													{
-													// there was already a time so close this event
-													$boxendtime=$temprow2[$c][$eventKey+3]-$starttime;
-													$boxtime=$boxendtime-$glprocvars[$boxname];
-													$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], $boxtime));
-												$glprocvars[$boxname]=0;
-												$glproccount[$boxname]=0;
-													}
-											if ($closetype==3) 
-														{																			
-														// no close event, write events with no time directly
-														$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], 0));
-												$glprocvars[$boxname]=0;
-												$glproccount[$boxname]=0;
-														}
-											}
-									else if ($temprow2[$c][$eventKey]=="mouseover" & $openevt[$opentype]!="mouseover")
-											{
-											//this must be an mouseover on another form element
-											// set an open time for this element
-											$boxname=$temprow2[$c][$eventKey+1];
-											$glprocvars[$boxname]=$temprow2[$c][$eventKey+3]-$starttime;
-											$localcount++;
-											$glproccount[$boxname]=$localcount;
-											}
-									else if ($temprow2[$c][$eventKey]=="onclick")
-											{
-											//this must be an click on another form element
-											$boxname=$temprow2[$c][$eventKey+1];
-											$localcount++;
-											$glproccount[$boxname]=$localcount;
-											if ($glprocvars[$boxname]==0) 
-											// generate a click event without time if there was no time registered
-													{$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], 0));
-												$glprocvars[$boxname]=0;
-												$glproccount[$boxname]=0;
-													}
-													else 
-													{
-													// there was already a time so close this event
-													// for example, this registers the total time needed for clicking on a button after a mouseover event occurred (measure for deliberation time?)
-													$boxendtime=$temprow2[$c][$eventKey+3]-$starttime;
-													$boxtime=$boxendtime-$glprocvars[$boxname];
-													$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], $boxtime));
-												$glprocvars[$boxname]=0;
-												$glproccount[$boxname]=0;
-													}
-											}
-										else if ($temprow2[$c][$eventKey]=="mouseout" & $closeevt[$closetype]!="mouseover")
-											{
-											//this must be an click on another form element
-											$boxname=$temprow2[$c][$eventKey+1];
-											if ($glprocvars[$boxname]>0) 
-													{
-													// there was already a time so close this event
-													// for example, this registers the total time needed for clicking on a button after a mouseover event occurred (measure for deliberation time?)
-													$boxendtime=$temprow2[$c][$eventKey+3]-$starttime;
-													$boxtime=$boxendtime-$glprocvars[$boxname];
-													$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], $boxtime));
-												$glprocvars[$boxname]=0;
-												$glproccount[$boxname]=0;
-													}
-											}		
-											
-									if ($temprow2[$c][$eventKey]=="events")
-											{$opentype=substr($temprow2[$c][$eventKey+2],0,1);
-											 $closetype=substr($temprow2[$c][$eventKey+2],2,1);
-											$evttype=$temprow2[$c][$eventKey+2];
-											}
-									if ($temprow2[$c][$eventKey]=="order")
-											{
-											if ($temprow2[$c][$eventKey+1]=="col") $colord=$temprow2[$c][$eventKey+2];
-											if ($temprow2[$c][$eventKey+1]=="row") $roword=$temprow2[$c][$eventKey+2];
-											}
-									if ($temprow2[$c][$eventKey]=="onload")
-											{
-											$starttime=$temprow2[$c][$eventKey+3];
-											}
-									if ($temprow2[$c][$eventKey]=="submit")
-											{
-											$endtime=$temprow2[$c][$eventKey+3];
-											}											
+								}
+						else if (substr($temprow2[$c][$eventKey],-4)=="over" & $openevt[$opentype]!="mouseover")
+								{
+								//this must be an mouseover on another form element
+								// set an open time for this element
+								$boxname=$temprow2[$c][$eventKey+1];
+								if (substr($temprow2[$c][$eventKey+2],0,2)=="d=") $gldelay[$boxname]=intval(substr($temprow2[$c][$eventKey+2],2)); else $gldelay[$boxname]=0;
+								$glprocvars[$boxname]=$temprow2[$c][$eventKey+3]-$starttime;
+								$localcount++;
+								$glproccount[$boxname]=$localcount;
+								}
+						else if ($temprow2[$c][$eventKey]=="onclick")
+								{
+								//this must be an click on another form element
+								$boxname=$temprow2[$c][$eventKey+1];
+								$localcount++;
+								$glproccount[$boxname]=$localcount;
+								if (substr($temprow2[$c][$eventKey+2],0,2)=="d=") $gldelay[$boxname]=intval(substr($temprow2[$c][$eventKey+2],2)); else $gldelay[$boxname]=0;
+								if ($glprocvars[$boxname]==0) 
+								// generate a click event without time if there was no time registered
+										{$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], 0, $gldelay[$boxname]));
+									$glprocvars[$boxname]=0;
+									$glproccount[$boxname]=0;
+									$gldelay[$boxname]=0;
+										}
+										else 
+										{
+										// there was already a time so close this event
+										// for example, this registers the total time needed for clicking on a button after a mouseover event occurred (measure for deliberation time?)
+										$boxendtime=$temprow2[$c][$eventKey+3]-$starttime;
+										$boxtime=$temprow2[$c][$eventKey+3]-$starttime-$glprocvars[$boxname];
+										$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], $boxtime-$gldelay[$boxname],$gldelay[$boxname]));
+									$glprocvars[$boxname]=0;
+									$glproccount[$boxname]=0;
+									$gldelay[$boxname]=0;
+										}
+								}
+							else if (substr($temprow2[$c][$eventKey],-3)=="out" & $closeevt[$closetype]!="mouseout")
+								{
+								//this must be an hover on another form element
+								$boxname=$temprow2[$c][$eventKey+1];
+								if ($glprocvars[$boxname]>0) 
+										{
+										// there was already a time so close this event
+										// for example, this registers the total time needed for hovering over a button after a mouseover event occurred (measure for deliberation time?)
+										$boxendtime=$temprow2[$c][$eventKey+3]-$starttime;
+										$boxtime=$temprow2[$c][$eventKey+3]-$starttime-$glprocvars[$boxname];
+										$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], $boxtime-$gldelay[$boxname],$gldelay[$boxname]));
+									$glprocvars[$boxname]=0;
+									$glproccount[$boxname]=0;
+									$gldelay[$boxname]=0;
+										}
+								}		
+								
+						if ($temprow2[$c][$eventKey]=="events")
+								{$opentype=substr($temprow2[$c][$eventKey+2],0,1);
+								 $closetype=substr($temprow2[$c][$eventKey+2],2,1);
+								$evttype=$temprow2[$c][$eventKey+2];
+								}
+						if ($temprow2[$c][$eventKey]=="order")
+								{
+								if ($temprow2[$c][$eventKey+1]=="col") $colord=$temprow2[$c][$eventKey+2];
+								if ($temprow2[$c][$eventKey+1]=="row") $roword=$temprow2[$c][$eventKey+2];
+								}
+						if ($temprow2[$c][$eventKey]=="onload")
+								{
+								$starttime=$temprow2[$c][$eventKey+3];
+								}
+						if ($temprow2[$c][$eventKey]=="submit")
+								{
+								$endtime=$temprow2[$c][$eventKey+3];
+								}											
 											
 									}	
 							foreach ($glprocvars as $key => $value)
@@ -475,7 +519,7 @@ echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename\">$filename</a></TD><
 										if ($boxtime>$th) 
 											{																			
 											//$outrow[]=array_merge($temprow2[count($temprow)], array($roword, $colord, $evttype, $key, $glprocvars[$key], $boxtime, $localcount));
-											$outrowtmp[$glproccount[$key]]=array_merge(array_slice($temprow2[$c-1],0,$timeKey-2), array($roword, $colord, $evttype, $key, $glprocvars[$key], $boxtime));
+											$outrowtmp[$glproccount[$key]]=array_merge(array_slice($temprow2[$c-1],0,$timeKey-2), array($roword, $colord, $evttype, $key, $glprocvars[$key], $boxtime, 0));
 											}
 										$glprocvars[$key]=0;	
 										$glproccount[$key]=0;
@@ -634,15 +678,19 @@ $i=0;
 ?>
 <HTML>
 <HEAD>
-<TITLE>
-MouselabWEB Datalyser
-</TITLE>
-<link rel="stylesheet" href="mlweb.css" type="text/css">
-</head>
-<body>
+<TITLE>MouselabWEB Datalyser</TITLE>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="w3.css">
+</HEAD>
+<body class="w3-light-grey w3-content" style="max-width:1600px">
+<header class="w3-container w3-blue">
+<H1>MouselabWEB Datalyser</H1>
+</header>
+<div class="w3-white w3-container">
 <H1>Links to processed CSV files for selected experiments</H1>
-<Table border=1>
-<tr><tH>Experiment</tH><th>all events</th><th>summarized by division</th></tr>
+<Table class="w3-table-all">
+<thead class="w3-light-blue"><tr><tH>Experiment</tH><th>all events</th><th>summarized by division</th></tr></thead>
 <?php 
 for ($expcount=0;$expcount<count($arr);$expcount++)
 {
@@ -651,8 +699,13 @@ $filename2 = 'tmp/'.$arr[$expcount]."_proc_sum".$division.".csv";
 echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename1\">$filename1</a></TD><TD><a href=\"$filename2\">$filename2</a></TD></TR>");
 }
 ?>
+</table>
 
-</body>
+</div>
+<footer class="w3-container w3-blue">
+		<h4>(C) Martijn Willemsen</h4>
+        </footer>
+</BODY>
 </HTML>
 <?php
 	} // end of process part
@@ -678,8 +731,8 @@ echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename1\">$filename1</a></TD
 										$outstr.="<TR>";
 										for ($i=0;$i<count($outrow[$z]);$i++)
 											{
-											if ($outrow[$z][$i]=="") $outstr.="<TD class=\"tdstyle\">&nbsp;</TD>"; 
-						 				else $outstr.="<TD class=\"tdstyle\">".htmlspecialchars($outrow[$z][$i])."</TD>";
+											if ($outrow[$z][$i]=="") $outstr.="<TD>&nbsp;</TD>"; 
+						 				else $outstr.="<TD>".htmlspecialchars($outrow[$z][$i])."</TD>";
 											}	
 										$outstr.="</TR>";
 										}
@@ -688,13 +741,13 @@ echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename1\">$filename1</a></TD
 									{
 									
 									$outrow= $temprow2[0];
-									$outstr.="<TR>";
+									$outstr.="<thead><TR>";
 									for ($z=0;$z<count($outrow);$z++)
 										{
-										if ($outrow[$z]=="") $outstr.="<TD class=\"tdstyle\">&nbsp;</TD>"; 
-						 				else $outstr.="<TD class=\"tdstyle\">".htmlspecialchars($outrow[$z])."</TD>";
+										if ($outrow[$z]=="") $outstr.="<TH>&nbsp;</TH>"; 
+						 				else $outstr.="<TH>".htmlspecialchars($outrow[$z])."</TH>";
 										}	
-										$outstr.="</TR>";
+										$outstr.="</TR></thead>";
 											
 									}
 						}
@@ -705,35 +758,43 @@ echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename1\">$filename1</a></TD
 							$outstr.="<TR>";
 									for ($z=0;$z<count($outrow);$z++)
 										{
-										if ($outrow[$z]=="") $outstr.="<TD class=\"tdstyle\">&nbsp;</TD>"; 
-						 				else $outstr.="<TD class=\"tdstyle\">".htmlspecialchars($outrow[$z])."</TD>";
+										if ($j==0)
+										{
+											if ($outrow[$z]=="") $outstr.="<TH>&nbsp;</TH>"; 
+						 				else $outstr.="<TH>".htmlspecialchars($outrow[$z])."</TH>";
+										}	
+										else
+										{
+										if ($outrow[$z]=="") $outstr.="<TD>&nbsp;</TD>"; 
+						 				else $outstr.="<TD>".htmlspecialchars($outrow[$z])."</TD>";
+										}
 										}	
 										$outstr.="</TR>";
+										
 						}
 				}
 	?>
 <HTML>
 <HEAD>
-<TITLE>
-Download form for MouselabWEB data
-</TITLE>
-<link rel="stylesheet" href="mlweb.css" type="text/css">
-<style type="text/css">
-<!--
-.tdstyle {font-size: 12px; 
-background-color: #FFFFFF;
-font-color: #000000;
-}
--->
-</style>
-</head>
-<body>
+<TITLE>MouselabWEB Datalyser</TITLE>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="w3.css">
+</HEAD>
+<body class="w3-light-grey w3-content" style="max-width:1600px">
+<header class="w3-container w3-blue">
+<H1>MouselabWEB Datalyser</H1>
+</header>
+<div class="w3-white w3-container">
 <H1>Results of Experiment <?php echo($expname);?></H1>
-<Table border=1>
+<Table class="w3-table-all w3-tiny w3-hoverable">
 <?php echo($outstr); ?> 
-</TABLE>
-
-</body>
+</table>
+</div>
+<footer class="w3-container w3-blue">
+		<h4>(C) Martijn Willemsen</h4>
+        </footer>
+</BODY>
 </HTML>
 <?php
 	} // end of show part
@@ -741,7 +802,7 @@ font-color: #000000;
 		{// start of play part
 		$expname = $_POST['expname'];
 		
-	$sqlQuery = "SELECT id, subject, submitted, procdata, condnum from $table where expname='$expname'";
+	$sqlQuery = "SELECT id, subject, submitted, procdata, condnum, choice, addvar, adddata from $table where expname='$expname'";
 
     # Execute SQL query 
     $result=mysqli_query($link, $sqlQuery) or die("Invalid Query : ".mysqli_error($link)); 
@@ -753,25 +814,20 @@ font-color: #000000;
 	// get subject data from database and unpack events
 	while($rec=mysqli_fetch_row($result)) 
     	{ 	
-		$rowarr[$i] = array($rec[0], $rec[1], $rec[2], $rec[4]);
+		
+		$dataarr=explode(";",str_replace(chr(34),'',$rec[7]));$last = array_pop($dataarr);
+		$vararr=explode(";",$rec[6]);$last = array_pop($vararr);
+		$rowarr[$i] = array($rec[0], $rec[1], $rec[2], $rec[4], $rec[5], $dataarr[array_search("optionOrder",$vararr)], $dataarr[array_search("attributeOrder",$vararr)], $dataarr[array_search("jsonfile",$vararr)], $dataarr[array_search("set",$vararr)]);
 		$procarr[$i] = unpackProc($rec[3]);
 		if ($procarr[$i] !== FALSE) $i++; // only put subjects in the list with process data
 		}
     ?>
 <HTML>
 <HEAD>
-<TITLE>
-MouselabWEB Datalyser 
-</TITLE>
-<link rel="stylesheet" href="mlweb.css" type="text/css">
-<style type="text/css">
-<!--
-.tdstyle {font-size: 12px; 
-background-color: #FFFFFF;
-font-color: #000000;
-}
--->
-</style>
+<TITLE>MouselabWEB Datalyser</TITLE>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="w3.css">
 <script language="javascript">
 function objEvent(event,name,value,time)
 {
@@ -796,13 +852,19 @@ id = new Array();
 subj = new Array();
 subm = new Array();
 proc = new Array();
+choice = new Array();					 
 condnum = new Array();
 numevents = new Array();
-
+optorder = new Array();
+attrorder = new Array();
+json = new Array();
+set = new Array();
 <?php
 for ($i=0;$i<count($rowarr);$i++)
     { 	
-	echo("id[".$i."]=".$rowarr[$i][0].";\nsubj[".$i."]=\"".$rowarr[$i][1]."\";\nsubm[".$i."]=\"".$rowarr[$i][2]."\";\ncondnum[".$i."]=".$rowarr[$i][3].";\n");
+	echo("id[".$i."]=".$rowarr[$i][0].";\nsubj[".$i."]=\"".$rowarr[$i][1]."\";\nsubm[".$i."]=\"".$rowarr[$i][2]."\";\ncondnum[".$i."]=".$rowarr[$i][3].";\nchoice[".$i."]=\"".$rowarr[$i][4]."\";\n");
+	echo("optorder[".$i."]=\"".$rowarr[$i][5]."\";\nattrorder[".$i."]=\"".$rowarr[$i][6]."\";\njson[".$i."]=\"".$rowarr[$i][7]."\";\nset[".$i."]=\"".$rowarr[$i][8]."\";\n");
+	
 	echo("numevents[".$i."]=".count($procarr[$i]).";\n");
 	echo("proc[$i] = new Array();");	
 	for($j=0;$j<count($procarr[$i]);$j++)
@@ -820,18 +882,24 @@ if (document.forms[0].subj.value!="")
 	playArray = new Array();
 	for (i=0;i<numevents[idnum];i++)
 		{playArray[i] = proc[idnum][i];}
-	playexp = "<?php echo($expname);?>.php";
+	playexp = json[idnum];
+	playset= set[idnum];
 	playcondnum = condnum[idnum];
+	playchoice = choice[idnum];		
 	var newWind=window.open("playback.html","Playback","height="+(screen.availHeight-60).toString()+",width="+(screen.availWidth-30).toString() +",scrollbars,status,resizable, left=2, top=2");
 	newWind.focus();
 	}
 }
 </script>
 </head>
-<body>
+<body class="w3-light-grey w3-content" style="max-width:1600px">
+<header class="w3-container w3-blue">
+<H1>MouselabWEB Datalyser</H1>
+</header>
+<div class="w3-white w3-container">
 <H1>Playback for experiment: <?php echo($expname);?></H1>
 <form>
-<table><TR><TD><P>Subject selection</P><select name="subj" onChange="showData(this.form)" class="tdstyle"><option value="">Select subject</option> 
+<table><TR><TD><P>Subject selection</P><select name="subj" onChange="showData(this.form)" ><option value="">Select subject</option> 
 <?php 
 for ($i=0;$i<count($rowarr);$i++)
     { 	
@@ -839,11 +907,15 @@ for ($i=0;$i<count($rowarr);$i++)
 	}
 ?>
 </select></TD>
-<TD><P>Process data of current subject</P><textarea name="proctxt" cols=80 rows=10 class="tdstyle"></textarea></TD></TR></table>
+<TD><P>Process data of current subject</P><textarea name="proctxt" cols=80 rows=10 style="font-family:courier;font-size: 12px;"></textarea></TD></TR></table>
 <input type="button" onClick="playData()" value="Playback Data">
-<p><strong>Note:</strong>The Replay routine assumes that the php-file you want to replay has the same name as the experiment itself: <?php echo($expname);?>.php . You can change the name of the file on the replay page if it is different from the file name.</p>
+<p><strong>Note:</strong>The Replay routine assumes that the data you want to replay has uses the json file as in the dataset based on condnum of that participant. </p>
 </form>
-</body>
+</div>
+<footer class="w3-container w3-blue">
+		<h4>(C) Martijn Willemsen</h4>
+        </footer>
+</BODY>
 </HTML>
 <?php
 
@@ -868,10 +940,10 @@ $sqlQuery = "SELECT DISTINCT expname from $table";
 ?>
 <HTML>
 <HEAD>
-<TITLE>
-MouselabWEB Datalyser
-</TITLE>
-<link rel="stylesheet" href="mlweb.css" type="text/css">
+<TITLE>MouselabWEB Datalyser</TITLE>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="w3.css">
 <script language="javascript">
 function show(exp1)
 {
@@ -902,9 +974,12 @@ document.forms[0].submit();
 
 </script>
 </HEAD>
-<BODY>
+<body class="w3-light-grey w3-content" style="max-width:1600px">
+<header class="w3-container w3-blue">
 <H1>MouselabWEB Datalyser</H1>
-<P><strong>Part of MouselabWEB, version 1.00beta</strong></P>
+</header>
+<div class="w3-white w3-container">
+<P><strong>Part of MouselabWEB, version 2</strong></P>
 <form method="post" action="datalyser.php">
 <input type="hidden" name="act" value="">
 <input type="hidden" name="expname" value="">
@@ -913,12 +988,14 @@ This screen enables you to download data in CSV (comma separated values) format.
 This is a textfile format in which each field is enclosed in brackets (") and separated by commas. Such a file can be read by most statistical programs. If the <strong>unpack events</strong> box is checked, the program will unpack the process data (whether it is in XML or CSV format in the database) into a list of events. 
 </P>
 <p>The <strong>download and process selected</strong> button allows to download processed data that can be analyzed directly. It will delete acquisitions below the threshold, will calculate time and frequency columns for each box on the screen, and will summarize data in divisions.</p>
-<p><strong>Disclaimer: The processing module has not been checked extensively for the 1.00beta version! Check whether the output is consistent with the event files.</strong></p><p>
-The <strong>Show Table</strong> button allows you to look at the data in one table, either unpacked or as is. The <strong>Playback</strong> allows for playback of participants in one of the experiments. This button wil open a new page in which you can select a participant from the list.</P>
+<p>The <strong>Show Table</strong> button allows you to look at the data in one table, either unpacked or as is. The <strong>Playback</strong> allows for playback of participants in one of the experiments. This button wil open a new page in which you can select a participant from the list.</p>
 <P>
 <strong>Password:</strong> For any action you do on this page, a password is required. Type the password before pressing a button. This prevents unauthorized users that browse to this page from actually reading your data!
-</P><Table border=1>
-<TR><TH>Experiment name</TH><TH>Download</TH><TH>Show data</TH><TH>Play back</TH></TR>
+</P>
+<div class="w3-row">
+<div class="w3-twothird w3-container">
+<table class="w3-table-all w3-hoverable">
+<thead><TR class="w3-light-blue"><TH>Experiment name</TH><TH>Select<input type=button value="all" onClick="selecting(1);"> <input type=button value="Reset" onClick="selecting(2);"> <input type=button value="Inv" onClick="selecting(3)"></TH><TH>Show data</TH><TH>Play back</TH></TR></thead>
 <?php
 	// Make rows for records 
     while($rec=mysqli_fetch_row($result)) 
@@ -951,11 +1028,24 @@ for (i=0;i<document.forms[0].elements.length;i++)
 	}
 }
 </script>
-<TR><TD>&nbsp;</TD><td><input type=button value="sel all" onClick="selecting(1);"> <input type=button value="Reset sel" onClick="selecting(2);"><br><input type=button value="Invert sel" onClick="selecting(3)"></td><TD>&nbsp;</TD><TD>&nbsp;</TD></TR>
-<TR><TD rowspan=2>Password: <input type=password name="pwd" size=10 value="mlweb"></TD><TD colspan=3><input type=button value="download selected" onClick="download()"><br><input type=checkbox name=unpack value=true checked>Unpack events</TD></TR><tr><TD colspan=3><input type=button value="download and process selected" onClick="process()"><br/>Threshold (ms)<input type=text name=threshold value='200'><br/>divisions (1=all, 2=halfs ect.):<input type=text name=divisions value='1'></TD></TR>
+</TABLE>
+</div>
+<div class="w3-third w3-container">
+<table class="w3-table w3-border">
+<thead><tr class="w3-light-blue"><th colspan=2>Downloads</th></tr>
+<tr><TD colspan=2>Password: <input type=password name="pwd" size=10 value="mlweb"></TD><tr>
+<tr class="w3-light-grey w3-border"><TD><input type=button value="download selected" onClick="download()"></td><td><input type=checkbox name=unpack value=true checked>Unpack events</TD></tr>
+<tr><td>Threshold (ms):</td><td><input type=text name=threshold value='200'></td></tr>
+<tr><td>divisions (1=all, 2=halfs ect.):</td><td><input type=text name=divisions value='1'></td></tr>
+<tr><td colspan=2><input type=button value="download and process selected" onClick="process()"></td></tr>
 </Table>
+</div>
+</div>
 </form>
-
+</div>
+<footer class="w3-container w3-blue">
+		<h4>(C) Martijn Willemsen</h4>
+        </footer>
 </BODY>
 </HTML>
 <?php } // end if

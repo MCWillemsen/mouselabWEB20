@@ -173,7 +173,7 @@ function hideBox(bid, evt)
 
 function showBox(bid, evt, delay)
 {
-	timefunction(evt, $("#"+bid).attr("name"), "");
+	timefunction(evt, $("#"+bid).attr("name"), "d="+delay);
 	//blur if not _box div
 	if ($("#" + bid + "_box").length)
 	{

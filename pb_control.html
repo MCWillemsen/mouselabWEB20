@@ -3,10 +3,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-
-<title>Untitled Document</title>
-<link href="mlweb.css" rel="stylesheet" type="text/css">
-<script type="text/javascript" src="jquery-3.1.1.min.js"></script>
+<title>Playback</title>
+<link rel="stylesheet" href="w3.css">
+ <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
 <script language="javascript">
 function objEvent(event,name,value,time)
 {
@@ -38,18 +37,6 @@ evObj[toti].time=eventstr.substring(eventstr.indexOf("<time>")+6,eventstr.indexO
 	}
 return evObj
 }
-function recode(name)
-{
-out = new Array();
-for (row=0;row<parent.page.RowOut.length;row++)
-	{
-	for (col=0;col<parent.page.ColOut.length;col++)
-		{
-		if (parent.page.tagcont[row][col]==name) {out[0]=row;out[1]=col;return out}
-		}
-	}		
-return false;
-}
 
 
 
@@ -63,32 +50,58 @@ timeoffset = parseInt(document.forms[0].offset.value);
 if (isNaN(timeoffset)) {timeoffset = 0};
 
 
-window.status="Playing...";
+document.forms[0].status.value="Playing...";
 lasttime=0
 handlecount = 0;
 handle = new Array();
 for (i=0; i<eventArray.length; i++)
 	{
-if (eventArray[i].event.toLowerCase() == "btnclick")
-	{ 
-	console.log(eventArray[i].name)
-	$("#"+eventArray[i].name, window.parent.frames["page"].document).click();
-	}
+	
+	//if (window.top.page.document.getElementsByName(eventArray[i].name)[0].id)
+		//{boxid=top.page.document.getElementsByName(eventArray[i].name)[0].id}
+//boxid = top.page.document.getElementsByName(eventArray[i].name)[0].id;
+	//alert(eventArray[i].name + " "+boxid)
 if (eventArray[i].event == "mouseover")
 		{
-		boxid = $("[name='"+eventArray[i].name+"']", window.parent.frames["page"].document).attr("id");
-		handle[handlecount] = setTimeout("top.page.showBox('"+boxid+"','"+eventArray[i].event+"', 0)",(eventArray[i].time-timeoffset)/speed);
+		boxid=top.page.document.getElementsByName(eventArray[i].name)[0].id;
+		handle[handlecount] = setTimeout("top.page.showBox('"+boxid+"','mouseover')",(eventArray[i].time-timeoffset)/speed);
 		handlecount++;
 		}
 	if (eventArray[i].event == "mouseout")
 		{
-		boxid = $("[name='"+eventArray[i].name+"']", window.parent.frames["page"].document).attr("id");
-		handle[handlecount] = setTimeout("top.page.hideBox('"+boxid+"','"+eventArray[i].event+"', 0)",(eventArray[i].time-timeoffset)/speed);
+		boxid=top.page.document.getElementsByName(eventArray[i].name)[0].id;
+		handle[handlecount] = setTimeout("top.page.hideBox('"+boxid+"','mouseout')", (eventArray[i].time-timeoffset)/speed)
 		handlecount++;
 		}
+if (eventArray[i].event == "touchover")
+		{
+		boxid=top.page.document.getElementsByName(eventArray[i].name)[0].id;
+		handle[handlecount] = setTimeout("top.page.showBox('"+boxid+"','touchover')",(eventArray[i].time-timeoffset)/speed);
+		handlecount++;
+		}
+	if (eventArray[i].event == "touchout")
+		{
+		boxid=top.page.document.getElementsByName(eventArray[i].name)[0].id;
+		handle[handlecount] = setTimeout("top.page.hideBox('"+boxid+"','touchout')", (eventArray[i].time-timeoffset)/speed)
+		handlecount++;
+		}
+if (eventArray[i].event == "gazeover")
+		{
+		boxid=eventArray[i].name;
+		handle[handlecount] = setTimeout("top.page.$('#"+boxid+"').addClass('w3-border-red w3-border')",(eventArray[i].time-timeoffset)/speed);
+		console.log("top.page.$('#"+boxid+"').addClass('w3-red')")
+		handlecount++;
+		}
+	if (eventArray[i].event == "gazeout")
+		{
+		boxid=eventArray[i].name;
+		handle[handlecount] = setTimeout("top.page.$('#"+boxid+"').removeClass('w3-border-red w3-border')", (eventArray[i].time-timeoffset)/speed)
+		handlecount++;
+		}
+
 	lasttime=eventArray[i].time-timeoffset;	
 	}
-handle[handlecount] = setTimeout("window.status='Finished playing';inPlay=false;", lasttime/speed+500);
+handle[handlecount] = setTimeout("document.forms[0].status.value='Finished playing';inPlay=false;", lasttime/speed+500);
 }
 
 function stopPlay()
@@ -100,7 +113,7 @@ for (i=0;i<handlecount;i++)
 	{
 	clearTimeout(handle[i]);
 	}
-window.status='Finished playing';inPlay=false;
+document.forms[0].status.value='Finished playing';inPlay=false;
 }
 
 function getValues()
@@ -109,23 +122,36 @@ var timeset = false;
 eventArray = new Array();
 for (i=0;i<parent.opener.playArray.length;i++)
 	{eventArray[i] = parent.opener.playArray[i];
-	if ((eventArray[i].event == "mouseover")&!timeset) {document.forms[0].offset.value = eventArray[i].time;timeset = true;}
+	if ((eventArray[i].event == "mouseover" | eventArray[i].event == "touchover" | eventArray[i].event == "gazeover") &!timeset) {document.forms[0].offset.value = eventArray[i].time;timeset = true;}
+	if (eventArray[i].value == "succeeded") {document.forms[0].endtime.value = eventArray[i].time;}
 	}
 
 if (document.forms[0].filename.value=="")	{document.forms[0].filename.value = parent.opener.playexp;}
-parent.page.location.href = document.forms[0].filename.value+"?subject=test&condnum="+parent.opener.playcondnum;		
+document.forms[0].set.value = parent.opener.playset;
+document.forms[0].choice.value = parent.opener.playchoice;
+document.forms[0].status.value = "ready...";
+
+parent.page.location.href = "playback.php?subject=test&condnum="+parent.opener.playcondnum+"&json="+parent.opener.playexp+"&set="+parent.opener.playset;	
 }
 
 </script>
 </head>
 
-<body onLoad="getValues()">
+<body onLoad="getValues()" class="w3-blue-grey">
+<div class="w3-container w3-padding-small">
+<p>
 <form>
 	<input onClick="playData(1)" type="button" name="Play" value="Play 1X">
 	<input onClick="playData(2)" type="button" name="Play2" value="Play 2X">
 	<input onClick="stopPlay()" type="button" name="stop" value="Stop">
-	php file:<input type="text" value="" name="filename" size=20 onChange="getValues()">
+	json:<input type="text" value="" name="filename" size=20 onChange="getValues()">
+	set: <input type="text" value="" name="set" value="">
 	time-offset (ms): <input type="text" value="" name="offset" size=5>
+	end time: <input type=text value="" name="endtime">
+	choice: <input type=text value="" name="choice">
+	status: <input type=text value="" name="status">
+</p>
 </form>
+</div>
 </body>
 </html>
