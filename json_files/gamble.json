@@ -214,11 +214,13 @@
 		  "A",
 		  "B"
 	   ],
+	   "fixedOptLabels": ["gamble X","gamble Y"],
 	   "attr": "random"
 	},
 	{
 	   "name":"order2",
 	   "opt":"random",
+	   "fixedOptLabels": ["gamble X","gamble Y"],
 	   "attr":["outc2","outc1","outc3"]
 	}
  ]
@@ -246,6 +248,20 @@
 	   "layout":"attributeCol",
 	   "buttons":"on",
 	   "displayLabels":"all",
+	   "addedVars":[
+		  "test=2"
+	   ]
+	},
+	{
+	   "name":"dynSet3",
+	   "optOrder":[
+			 "order2",
+			 "order1"
+	   ],
+	   "layout":"optionCol",
+	   "buttons":"on",
+	   "displayLabels":"all",
+	   "fixedOptLabels":"on",
 	   "addedVars":[
 		  "test=2"
 	   ]

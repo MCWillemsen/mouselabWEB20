@@ -121,6 +121,8 @@ function insertStructure(dataInput, orderInput, optionInput, attrInput, orderNum
         if(item["name"] == orderID){
             orderO = item["opt"];
 			orderA = item["attr"];
+			fixedLabels = item["fixedOptLabels"];
+			
 		optionInput.forEach(function(item){
             optList.push(item["name"]);
 		});
@@ -563,14 +565,23 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput,d
 					}
 				
 				if (k==0){
+					if (dataInput["fixedOptLabels"]=="on")
+					{
+						labelInsert=fixedLabels[i]
+					}
+					else
+						{
+							labelInsert=item["label"]
+							}
+				
 					if(dataInput["displayLabels"] == "optOnly" || dataInput["displayLabels"] == "all"){
 					if(dataInput["layout"] == "attributeCol"){
 						$("#sideLabel" + (i+1)).css("width",labelWidth);
-						$("#sideLabel" + (i+1) + "_txt").append('<div class="w3-display-middle">' + item["label"] + '</div>').css("height",attrInput[txtNumber]["height"])
+						$("#sideLabel" + (i+1) + "_txt").append('<div class="w3-display-middle">' + labelInsert + '</div>').css("height",attrInput[txtNumber]["height"])
 						;
 					}else{
 						$("#headerLabel" + (i+1)).css("width",optionWidth);
-						$("#headerLabel" + (i+1) + "_txt").append('<div class="w3-display-middle">' + item["label"] + '</div>').css("height",labelHeight);
+						$("#headerLabel" + (i+1) + "_txt").append('<div class="w3-display-middle">' + labelInsert + '</div>').css("height",labelHeight);
 						$("#headerLabel0").css("width",labelWidth);
 						$("#headerLabel0_txt").css("height",labelHeight);
 				
@@ -584,7 +595,7 @@ function insertStimuli(dataInput, optionInput, attrInput, cellInput,styleInput,d
 				 assignClasses(def, "headerElement", "class");
             assignClasses(def_labelTxt, "headerTxt", "class");
                 
-			   if (item["txt_button"]) {txtButton=item["txt_button"]} else {txtButton=item["label"]}
+			   if (item["txt_button"]) {txtButton=item["txt_button"]} else {txtButton=labelInsert}
 			   
                 $("#button" + currentOption + "_txt").append('<button type="button" class="choiceButton" id="' + currentOption + '" name="choice" value="' + currentOption + '">' + txtButton + '</button>');
 				if(sideButtons){
