@@ -334,6 +334,7 @@ echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename\">$filename</a></TD><
 		 if (substr($key,0,4)=="exp_") {$arr[$i]=$value;$i++;}
     	 if ($key=="threshold") {$th=round($value);}
 		 if ($key=="divisions") {$division=round($value);}
+		 if ($key=="compdelay") {$compDelay=$value;} else {$compDelay=false;}
 		 		}
 
 		for ($expcount=0;$expcount<count($arr);$expcount++) 
@@ -382,6 +383,7 @@ echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename\">$filename</a></TD><
 						// a close event!
 								{
 								$boxname=$temprow2[$c][$eventKey+1];
+								if (!array_key_exists($boxname, $glprocvars)) {$glprocvars[$boxname]=0;};
 								if ($glprocvars[$boxname]==0)
 									{
 									if ($opentype==1 & $closetype>0)
@@ -397,9 +399,10 @@ echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename\">$filename</a></TD><
 									{
 									$boxendtime=$temprow2[$c][$eventKey+3]-$starttime;
 									$boxtime=$temprow2[$c][$eventKey+3]-$starttime-$glprocvars[$boxname];
+									if ($compDelay==="true") {$boxtime=$boxtime-$gldelay[$boxname];}
 									if ($boxtime>$th) 
 										{																			
-										$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], $boxtime-$gldelay[$boxname], $gldelay[$boxname]));
+										$outrowtmp[$glproccount[$boxname]]=array_merge(array_slice($temprow2[$c],0,$timeKey-2), array($roword, $colord, $evttype, $boxname, $glprocvars[$boxname], $boxtime, $gldelay[$boxname]));
 										}
 									$glprocvars[$boxname]=0;
 									$glproccount[$boxname]=0;
@@ -410,7 +413,8 @@ echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename\">$filename</a></TD><
 						// an open event!
 								{
 								$boxname=$temprow2[$c][$eventKey+1];
-			
+								if (!array_key_exists($boxname, $glprocvars)) { $glprocvars[$boxname]=0;};
+								
 								if ($glprocvars[$boxname]==0) 
 										{$glprocvars[$boxname]=$temprow2[$c][$eventKey+3]-$starttime;
 										$localcount++;
@@ -476,6 +480,7 @@ echo ("<TR><TD>$arr[$expcount]</TD><TD><a href=\"$filename\">$filename</a></TD><
 								{
 								//this must be an hover on another form element
 								$boxname=$temprow2[$c][$eventKey+1];
+								
 								if ($glprocvars[$boxname]>0) 
 										{
 										// there was already a time so close this event
@@ -987,7 +992,7 @@ document.forms[0].submit();
 This screen enables you to download data in CSV (comma separated values) format. 
 This is a textfile format in which each field is enclosed in brackets (") and separated by commas. Such a file can be read by most statistical programs. If the <strong>unpack events</strong> box is checked, the program will unpack the process data (whether it is in XML or CSV format in the database) into a list of events. 
 </P>
-<p>The <strong>download and process selected</strong> button allows to download processed data that can be analyzed directly. It will delete acquisitions below the threshold, will calculate time and frequency columns for each box on the screen, and will summarize data in divisions.</p>
+<p>The <strong>download and process selected</strong> button allows to download processed data that can be analyzed directly. It will delete acquisitions below the threshold, will calculate time and frequency columns for each box on the screen, and will summarize data in divisions. If you used delays, you can use the substract delay option that will substract the delaytime from the box opening time. This will result in negative boxtimes if people don't wait for the box to be fully opened. The threshold will filter out these trials. If you untick the substract delay option, you will get the total boxtime including delay and you can do the processing youself (using the column with the delay time for that box).</p>
 <p>The <strong>Show Table</strong> button allows you to look at the data in one table, either unpacked or as is. The <strong>Playback</strong> allows for playback of participants in one of the experiments. This button wil open a new page in which you can select a participant from the list.</p>
 <P>
 <strong>Password:</strong> For any action you do on this page, a password is required. Type the password before pressing a button. This prevents unauthorized users that browse to this page from actually reading your data!
@@ -1033,11 +1038,13 @@ for (i=0;i<document.forms[0].elements.length;i++)
 <div class="w3-third w3-container">
 <table class="w3-table w3-border">
 <thead><tr class="w3-light-blue"><th colspan=2>Downloads</th></tr>
-<tr><TD colspan=2>Password: <input type=password name="pwd" size=10 value="mlweb"></TD><tr>
-<tr class="w3-light-grey w3-border"><TD><input type=button value="download selected" onClick="download()"></td><td><input type=checkbox name=unpack value=true checked>Unpack events</TD></tr>
-<tr><td>Threshold (ms):</td><td><input type=text name=threshold value='200'></td></tr>
+<tr><TD colspan=2>Password: <input type=password name="pwd" size=10 value=""></TD><tr>
+<tr class="w3-light-grey w3-border"><td colspan=2><h3>Raw data</h3></td></tr>
+<tr><TD><input type=button value="download selected" onClick="download()"></td><td><input type=checkbox name=unpack value=true checked>Unpack events</TD></tr>
+<tr class="w3-light-grey w3-border"><td colspan=2><h3>Processed data</h3></td></tr><tr><td>Threshold (ms):</td><td><input type=text name=threshold value='200'></td></tr>
 <tr><td>divisions (1=all, 2=halfs ect.):</td><td><input type=text name=divisions value='1'></td></tr>
-<tr><td colspan=2><input type=button value="download and process selected" onClick="process()"></td></tr>
+<tr><td>substract delay time</td><td><input type=checkbox name=compdelay value=true checked></td></tr>
+<tr><td colspan=2><input type=button value="download and process selected" onClick="process()" width="100%"></td></tr>
 </Table>
 </div>
 </div>
